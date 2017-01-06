@@ -391,7 +391,7 @@ parameters
 
 $gdxin '%datadir%gsddat.gdx'
 $load vdga viga vdgm vigm vdpa vipa vdpm vipm evoa evfa vfm vdfa 
-$load vifa vdfm vifm vims viws vxmd vxwd vst vtwr=vtwrini ftrv fbep isep 
+$load vifa vdfm vifm vims viws vxmd vxwd vst vtwr=vtmfsd ftrv fbep isep 
 $load osep adrv=adrev tfrv=tarifrev purv=purev vrrv=verrev mfrv=mfarev xtrv=xtrev
 $load vkb vdep
 $gdxin
@@ -526,7 +526,7 @@ parameter
 	edf(i,i,r)      Volume of domestic purchases by firms (mtoe)
 
 $gdxin '%datadir%gsdvole.gdx'
-$load evt=exidag eip eig eif edp edg edf  
+$load evt=exi eip eig eif edp edg edf  
 $gdxin
 
 

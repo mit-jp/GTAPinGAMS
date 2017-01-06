@@ -244,7 +244,22 @@ OTN.othr  transport equipment nec
 ELE.othr  electronic equipment                           	 
 OME.othr  machinery and equipment nec                    	 
 OMF.othr  manufactures nec                               	 
-ELY.elec  electricity                                    	 
+
+*ELY.elec  electricity                                    	 
+CoalBL.elec  electricity                                    	 
+GasBL.elec  electricity                                    	 
+GasP.elec  electricity                                    	 
+HydroBL.elec  electricity                                    	 
+HydroP.elec  electricity                                    	 
+NuclearBL.elec  electricity                                    	 
+OilBL.elec  electricity                                    	 
+OilP.elec  electricity                                    	 
+OtherBL.elec  electricity                                    	 
+SolarP.elec  electricity                                    	 
+WindBL.elec  electricity                                    	 
+TnD.elec  electricity                                    	 
+
+
 GDT.gas   gas manufacture - distribution                  	 
 WTR.othr  water                                          	 
 CNS.othr  construction                                   	 
