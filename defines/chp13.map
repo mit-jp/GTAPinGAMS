@@ -1,0 +1,206 @@
+$title	 Aggregation from the GSD Source Data 
+
+$setglobal source gsd001
+
+SET   rr   Regions in aggregation /
+	nam	North America (US - Canada)
+	eur	European Union
+	anz	Australia and New Zealand
+	sea	South East Asia
+*		(Malaysia and Singapore, Thailand and the Philippines, Indonesia)
+	eas	East Asia
+*		(Japan, Peoples' Republic of China, Hong Kong, Republic of Korea, Taiwan)
+	row	Rest of the World /;
+
+set ii	Commodities in the aggregation /
+	crp	Crops
+	lvs	Livestock
+	foo	Processed food
+	mfr	Mining and manufactures
+	ser	Services /;
+
+SET	mapr(*,rr)	Mapping for regions /
+	aus.anz	Australia
+	nzl.anz	New Zealand
+	xoc.row	Rest of Oceania
+
+	chn.eas	China
+	hkg.eas	Hong Kong
+	jpn.eas	Japan
+	kor.eas	Korea
+	twn.eas	Taiwan
+	xea.eas	Rest of East Asia
+
+	idn.sea	Indonesia
+	mys.sea	Malaysia
+	phl.sea	Philippines
+	sgp.sea	Singapore
+	tha.sea	Thailand
+	vnm.sea	Vietnam
+	xse.sea	Rest of Southeast Asia
+
+	bgd.row	Bangladesh
+	ind.row	India
+	lka.row	Sri Lanka
+	xsa.row	Rest of South Asia
+
+	can.nam	Canada
+	usa.nam	United States
+
+	mex.row	Mexico
+	xna.row	Rest of North America
+	col.row	Colombia
+	per.row	Peru
+	ven.row	Venezuela
+	xap.row	Rest of Andean Pact
+	arg.row	Argentina
+	bra.row	Brazil
+	chl.row	Chile
+	ury.row	Uruguay
+	xsm.row	Rest of South America
+	xca.row	Central America
+	xfa.row	Rest of FTAA
+	xcb.row	Rest of the Caribbean
+
+	aut.eur	Austria
+	bel.eur	Belgium
+	dnk.eur	Denmark
+	fin.eur	Finland
+	fra.eur	France
+	deu.eur	Germany
+	gbr.eur	United Kingdom
+	grc.eur	Greece
+	irl.eur	Ireland
+	ita.eur	Italy
+	lux.eur	Luxembourg
+	nld.eur	Netherlands
+	prt.eur	Portugal
+	esp.eur	Spain
+	swe.eur	Sweden
+
+	che.row	Switzerland
+	xef.row	Rest of EFTA
+	xer.row	Rest of Europe
+	alb.row	Albania
+	bgr.row	Bulgaria
+	hrv.row	Croatia
+	cyp.row	Cyprus
+	cze.row	Czech Republic
+	hun.row	Hungary
+	mlt.row	Malta
+	pol.row	Poland
+	rom.row	Romania
+	svk.row	Slovakia
+	svn.row	Slovenia
+	est.row	Estonia
+	lva.row	Latvia
+	ltu.row	Lithuania
+	rus.row	Russian Federation
+	xsu.row	Rest of Former Soviet Union
+	tur.row	Turkey
+	xme.row	Rest of Middle East
+	mar.row	Morocco
+	tun.row	Tunisia
+	xnf.row	Rest of North Africa
+
+	bwa.row	Botswana 
+	zaf.row	South Africa
+	xsc.row	Rest of South African CU 
+	mwi.row	Malawi
+	moz.row	Mozambique
+	tza.row	Tanzania
+	zmb.row	Zambia
+	zwe.row	Zimbabwe
+	xsd.row	Rest of SADC 
+	mdg.row	Madagascar
+	uga.row	Uganda
+	xss.row	Rest of Sub-Saharan Africa /;
+
+SET eec /
+	col	Coal
+	cru	Crude oil
+	gas	Natural gas,
+	oil	Refined oil products,
+	ele	Electricity /;
+
+SET   ff   Factors of production /
+	LND	Land,
+	SKL	Skilled labor,
+	LAB	Unskilled labor,
+	CAP	Capital,
+	RES	Natural resources /
+	
+set mapi(*,ii) /
+	pdr.crp	"Paddy rice",
+	wht.crp	"Wheat",
+	gro.crp	"Cereal grains nec",
+	v_f.crp	"Vegetables, fruit, nuts",
+	osd.crp	"Oil seeds",
+	c_b.crp	"Sugar cane, sugar beet",
+	pfb.crp	"Plant-based fibers",
+	ocr.crp	"Crops nec",
+	ctl.lvs	"Cattle,sheep,goats,horses",
+	oap.crp	"Animal products nec",
+	rmk.crp	"Raw milk",
+	wol.crp	"Wool, silk-worm cocoons",
+	frs.mfr	"Forestry",
+	fsh.mfr	"Fishing",
+	coa.mfr	"Coal",
+	oil.mfr	"Oil",
+	gas.mfr	"Gas",
+	omn.mfr	"Minerals nec",
+	cmt.lvs	"Meat: cattle,sheep,goats,horse",
+	omt.foo	"Meat products nec",
+	vol.foo	"Vegetable oils and fats",
+	mil.foo	"Dairy products",
+	pcr.foo	"Processed rice",
+	sgr.foo	"Sugar",
+	ofd.foo	"Food products nec",
+	b_t.foo	"Beverages and tobacco products",
+	tex.mfr	"Textiles",
+	wap.mfr	"Wearing apparel",
+	lea.mfr	"Leather products",
+	lum.mfr	"Wood products",
+	ppp.mfr	"Paper products, publishing",
+	p_c.mfr	"Petroleum, coal products",
+	crp.mfr	"Chemical,rubber,plastic prods",
+	nmm.mfr	"Mineral products nec",
+	i_s.mfr	"Ferrous metals",
+	nfm.mfr	"Metals nec",
+	fmp.mfr	"Metal products",
+	mvh.mfr	"Motor vehicles and parts",
+	otn.mfr	"Transport equipment nec",
+	ele.mfr	"Electronic equipment",
+	ome.mfr	"Machinery and equipment nec",
+	omf.mfr	"Manufactures nec",
+	ely.ser	"Electricity",
+	gdt.ser	"Gas manufacture, distribution",
+	wtr.ser	"Water",
+	cns.ser	"Construction",
+	trd.ser	"Trade",
+	otp.ser	"Transport nec",
+	wtp.ser	"Sea transport",
+	atp.ser	"Air transport",
+	cmn.ser	"Communication",
+	ofi.ser	"Financial services nec",
+	isr.ser	"Insurance",
+	obs.ser	"Business services nec",
+	ros.ser	"Recreation and other services",
+	osg.ser	"PubAdmin/Defence/Health/Educat",
+	dwe.ser	"Dwellings",
+	cgds.ser "Aggregate investment" /;
+
+SET	mapf(*,ff)   Factors of production /
+	Land.LND	Land,
+	SkLab.SKL	Skilled labor,
+	UnskLab.LAB	Unskilled labor,
+	Capital.CAP	Capital,
+	NatlRes.RES	Natural resources /
+
+
+SET	mape(*,eec) /
+	ecoa.col	Coal,
+	eoil.cru	Crude oil,
+	(egas,egdt).gas	Natural gas,
+	ep_c.oil	Refined oil products,
+	eely.ele	Electricity/;

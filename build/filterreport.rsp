@@ -1,0 +1,4 @@
+par=regtotals cdim=1 clear EpsOut="0" rng=RegionalTotals!a5
+par=sectotals cdim=1 clear EpsOut="0" rng=SectoralTotals!a5
+par=regtrade  cdim=1 clear EpsOut="0" rng=RegionalTrade!a5
+par=sectrade  cdim=1 clear EpsOut="0" rng=SectoralTrade!a5

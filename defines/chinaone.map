@@ -1,0 +1,53 @@
+$TITLE  Mapping from GTAP version 6
+
+$setglobal source china
+
+set   rr	Regions /
+	USA	United States                        
+	EUR	Europe
+	CHN	China
+	ROW	Rest of world    /;                    
+
+set   ii	Sectors/
+	Y	All goods and services /;
+
+set   ff	Factors of production /
+	LAB	Unskilled labor,
+	CAP	Capital /;
+
+SET  mapr(*,rr)  Regions /
+	USA.USA	United States                        
+	EUR.EUR	Europe
+	CHN.CHN	China
+	ROW.ROW	Rest of world    /;                    
+
+set  mapi(*,ii)  Mapping for sectors and goods /
+	AGR.Y	Agriculture
+	MFR.Y	Manufactured goods
+	SER.Y	Services
+	ENR.Y	Energy
+	cgds.Y	Savings good /;
+
+SET	mapf(*,ff)   Factors of production /
+	LND.CAP		Land,
+	SKL.LAB		Skilled labor,
+	LAB.LAB		Unskilled labor,
+	Capital.CAP	Capital,
+	RES.CAP		Natural resources /
+
+*	--------------------------------------------------
+*	Define energy statistics:
+
+SET eec /
+	col	Coal
+	cru	Crude oil
+	gas	Natural gas,
+	oil	Refined oil products,
+	ele	Electricity /;
+
+SET	mape(*,eec) /
+	ecoa.col	Coal,
+	eoil.cru	Crude oil,
+	(egas,egdt).gas	Natural gas,
+	ep_c.oil	Refined oil products,
+	eely.ele	Electricity   /;

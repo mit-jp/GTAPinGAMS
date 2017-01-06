@@ -1,0 +1,357 @@
+$TITLE   GTAP Mapping for matching EPA nonCO2-GHG
+
+$if "%1"=="mapr" $goto mapr
+
+set ff /
+	lab	Unskilled labor
+	skl	Skilled labor
+	cap	Capital
+	res	Resources
+	lnd	Land /
+
+set mapf(*,*) /UnskLab.lab,Land.lnd,SkLab.skl,Capital.cap,NatlRes.res/;
+
+set rr  Regions in the aggregation /
+
+*  Aggregate regions for GTAP and EPA		
+	rasi	Rest of Asia
+	rame	Rest of America	
+	reur	Rest of Europe
+	rfsu	Rest of Former Soviet Union
+	rafr	Rest of Africa
+	rmid	Rest of Middle East
+	
+*  Explicit regions for GTAP and EPA	
+	alb	Albania
+	arg	Argentina,
+	aus	Australia,
+	aut	Austria,
+	bgd	Bangladesh,
+	bel	Belgium,
+	bra	Brazil,
+	bgr	Bulgaria,
+	can	Canada,
+	chl	Chile,
+	chn	China,
+	col	Colombia,
+	hrv	Croatia,
+	cze	Czech Republic,
+	dnk	Denmark,
+	est	Estonia,
+	fin	Finland,
+	fra	France,
+	ger	Germany,
+	grc	Greece,
+	hun	Hungary,
+	ind	India,
+	idn	Indonesia,
+	irl	Ireland,
+	ita	Italy,
+	jpn	Japan,
+	lva	Latvia,
+	ltu	Lithuania,
+	lux	Luxembourg,
+	mex	Mexico,
+	nld	Netherlands
+	nzl	New Zealand,
+	per	Peru,
+	phl	Philippines,
+	pol	Poland,
+	prt	Portugal,
+	rou	Romania,
+	rus	Russian Federation,
+	sgp	Singapore,
+	svk	Slovak Republic,
+	svn	Slovenia,
+	zaf	South Africa,
+	kor	South Korea,
+	esp	Spain,
+	swe	Sweden,
+	che	Switzerland,
+	tha	Thailand,
+	tur	Turkey,
+	gbr	United Kingdom,
+	usa	United States,
+	ury	Uruguay,
+	ven	Venezuela,
+	vnm	Viet Nam 
+
+	egy	"Egypt",
+	ecu	"Ecuador",
+	nga	"Nigeria",
+ 	eth	"Ethiopia",
+	sen	"Senegal",
+	uga	"Uganda",
+	arm	"Armenia",
+	aze	"Azerbaijan",
+	blr	"Belarus",
+	geo	"Georgia",
+	kaz	"Kazakhstan",
+	kgz	"Kyrgyzstan",
+	ukr	"Ukraine",
+	bol	"Bolivia",
+	nor	"Norway",
+	irn	"Iran",
+	khm	"Cambodia",
+	lao	"Laos",
+*.	mmr	"Myanmar", ! Removed in version 7.1
+	pak	"Pakistan" /;
+
+
+set	ii	Commodites in the aggregation /
+	PDR	"Paddy rice",
+	WHT	"Wheat",
+	GRO	"Cereal grains nec",
+	V_F	"Vegetables, fruit, nuts",
+	OSD	"Oil seeds",
+	C_B	"Sugar cane, sugar beet",
+	PFB	"Plant-based fibers",
+	OCR	"Crops nec",
+	CTL	"Bovine cattle, sheep and goats, horses",
+	OAP	"Animal products nec",
+	RMK	"Raw milk",
+	WOL	"Wool, silk-worm cocoons",
+	FRS	"Forestry",
+	FSH	"Fishing",
+	COL	"Coal",
+	CRU	"Crude Oil",
+	GAS	"Gas",
+	OMN	"Minerals nec",
+	CMT	"Bovine meat products",
+	OMT	"Meat products nec",
+	VOL	"Vegetable oils and fats",
+	MIL	"Dairy products",
+	PCR	"Processed rice",
+	SGR	"Sugar",
+	OFD	"Food products nec",
+	B_T	"Beverages and tobacco products",
+	TEX	"Textiles",
+	WAP	"Wearing apparel",
+	LEA	"Leather products",
+	LUM	"Wood products",
+	PPP	"Paper products, publishing",
+	OIL	"Petroleum, coal products",
+	CRP	"Chemical, rubber, plastic products",
+	NMM	"Mineral products nec",
+	I_S	"Ferrous metals",
+	NFM	"Metals nec",
+	FMP	"Metal products",
+	MVH	"Motor vehicles and parts",
+	OTN	"Transport equipment nec",
+	EEQ	"Electronic equipment",
+	OME	"Machinery and equipment nec",
+	OMF	"Manufactures nec",
+	ELE	"Electricity",
+	GDT	"Gas manufacture, distribution",
+	WTR	"Water",
+	CNS	"Construction",
+	TRD	"Trade",
+	OTP	"Transport nec",
+	WTP	"Water transport",
+	ATP	"Air transport",
+	CMN	"Communication",
+	OFI	"Financial services nec",
+	ISR	"Insurance",
+	OBS	"Business services nec",
+	ROS	"Recreational and other services",
+	OSG	"Public Administration, Defense, Education, Health",
+	DWE	"Dwellings" /;
+
+$eolcom !
+
+*	The only names changes here are those which conform to the
+*	GTAPinGAMS convensions for energy goods:
+
+*	OIL.CRU	! "Crude Oil",
+*	COA.COL	! "Coal",
+*	P_C.OIL	! "Petroleum, coal products",
+*	ELY.ELE	! "Electricity",
+*	ELE.EEQ	! "Electronic equipment",
+
+SET mapi(i,ii) Mapping of Sectors and Goods (from-to) /
+	PDR.PDR	! "Paddy rice",
+	WHT.WHT	! "Wheat",
+	GRO.GRO	! "Cereal grains nec",
+	V_F.V_F	! "Vegetables, fruit, nuts",
+	OSD.OSD	! "Oil seeds",
+	C_B.C_B	! "Sugar cane, sugar beet",
+	PFB.PFB	! "Plant-based fibers",
+	OCR.OCR	! "Crops nec",
+	CTL.CTL	! "Bovine cattle, sheep and goats, horses",
+	OAP.OAP	! "Animal products nec",
+	RMK.RMK	! "Raw milk",
+	WOL.WOL	! "Wool, silk-worm cocoons",
+	FRS.FRS	! "Forestry",
+	FSH.FSH	! "Fishing",
+	COA.COL	! "Coal",
+	OIL.CRU	! "Crude Oil",
+	GAS.GAS	! "Gas",
+	OMN.OMN	! "Minerals nec",
+	CMT.CMT	! "Bovine meat products",
+	OMT.OMT	! "Meat products nec",
+	VOL.VOL	! "Vegetable oils and fats",
+	MIL.MIL	! "Dairy products",
+	PCR.PCR	! "Processed rice",
+	SGR.SGR	! "Sugar",
+	OFD.OFD	! "Food products nec",
+	B_T.B_T	! "Beverages and tobacco products",
+	TEX.TEX	! "Textiles",
+	WAP.WAP	! "Wearing apparel",
+	LEA.LEA	! "Leather products",
+	LUM.LUM	! "Wood products",
+	PPP.PPP	! "Paper products, publishing",
+	P_C.OIL	! "Petroleum, coal products",
+	CRP.CRP	! "Chemical, rubber, plastic products",
+	NMM.NMM	! "Mineral products nec",
+	I_S.I_S	! "Ferrous metals",
+	NFM.NFM	! "Metals nec",
+	FMP.FMP	! "Metal products",
+	MVH.MVH	! "Motor vehicles and parts",
+	OTN.OTN	! "Transport equipment nec",
+	ELE.EEQ	! "Electronic equipment",
+	OME.OME	! "Machinery and equipment nec",
+	OMF.OMF	! "Manufactures nec",
+	ELY.ELE	! "Electricity",
+	GDT.GDT	! "Gas manufacture, distribution",
+	WTR.WTR	! "Water",
+	CNS.CNS	! "Construction",
+	TRD.TRD	! "Trade",
+	OTP.OTP	! "Transport nec",
+	WTP.WTP	! "Water transport",
+	ATP.ATP	! "Air transport",
+	CMN.CMN	! "Communication",
+	OFI.OFI	! "Financial services nec",
+	ISR.ISR	! "Insurance",
+	OBS.OBS	! "Business services nec",
+	ROS.ROS	! "Recreational and other services",
+	OSG.OSG	! "Public Administration, Defense, Education, Health",
+	DWE.DWE	! "Dwellings" 
+/;
+Set MapR(r,rr) Mapping of GTAP Regions (from-to);
+
+$label mapr
+Set MapR Mapping of GTAP Regions (from-to) /
+	aus.aus	 !	Australia
+	nzl.nzl	 !	New Zealand
+	chn.chn	 !	China
+	hkg.chn  !	Hong Kong
+	jpn.jpn  !	Japan
+	kor.kor	 !	Korea
+	idn.idn	 !	Indonesia
+	phl.phl	 !	Philippines
+	sgp.sgp	 !	Singapore
+	tha.tha	 !	Thailand
+	vnm.vnm	 !	Vietnam
+	bgd.bgd  ! 	Bangladesh
+	ind.ind	 !	India
+	can.can	 !	Canada
+	usa.usa	 !	United States
+	mex.mex	 !	Mexico
+	col.col	 !	Colombia
+	per.per	 !	Peru
+	ven.ven	 !	Venezuela
+	arg.arg	 !	Argentina
+	bra.bra	 !	Brazil
+	chl.chl	 !	Chile
+	ury.ury	 !	Uruguay
+	aut.aut	 !	Austria
+	bel.bel  !	Belgium
+	dnk.dnk	 !	Denmark
+	fin.fin	 !	Finland
+	fra.fra	 !	France
+	deu.ger	 !	Germany
+	gbr.gbr	 !	United Kingdom
+	grc.grc	 !	Greece
+	irl.irl	 !	Ireland
+	ita.ita	 !	Italy
+	lux.lux	 !	Luxembourg
+	nld.nld	 !	Netherlands
+	prt.prt	 !	Portugal
+	esp.esp	 !	Spain
+	swe.swe	 !	Sweden
+	che.che  !	Switzerland
+	xsu.rfsu !	Rest of Former Soviet Union
+	alb.alb  !	Albania
+	bgr.bgr  !	Bulgaria
+	hrv.hrv  !	Croatia
+	cze.cze  !	Czech Republic
+	hun.hun  !	Hungary
+	pol.pol  !	Poland
+	rou.rou  !	Romania
+	svk.svk  !	Slovakia
+	svn.svn  !	Slovenia
+	est.est  !	Estonia
+	lva.lva  !	Latvia
+	ltu.ltu  !	Lithuania
+	rus.rus  !	Russian Federation
+	tur.tur  !	Turkey
+	zaf.zaf  !	South Africa
+
+
+	xoc.rasi !	Rest of Oceania
+	twn.rasi !	Taiwan
+	xea.rasi !	Rest of East Asia
+	mys.rasi !	Malaysia
+	xse.rasi !	Rest of Southeast Asia
+	lka.rasi !	Sri Lanka
+	xsa.rasi !	Rest of South Asia
+
+	xws.rmid !	Rest of Western Asia (includes Saudi Arabia)
+
+	xna.rame !	Rest of North America
+	xsm.rame !	Rest of South America
+	xca.rame !	Central America
+	xcb.rame !	Rest of the Caribbean
+
+	pry.rame !	Paraguay
+	cri.rame !	Costa Rica
+	gtm.rame !	Guatemala
+	nic.rame !	Nicaragua
+	pan.rame !	Panama
+
+	xef.reur !	Rest of EFTA
+	xer.reur !	Rest of Europe
+	cyp.reur !	Cyprus
+	mlt.reur !	Malta
+	xee.reur !	Rest of Eastern Europe
+
+	mar.rafr !	Morocco
+	tun.rafr !	Tunisia
+	xnf.rafr !	Rest of North Africa
+	moz.rafr !	Mozambique
+	tza.rafr !	Tanzania
+	zmb.rafr !	Zambia
+	zwe.rafr !	Zimbabwe
+	mdg.rafr !	Madagascar
+	mwi.rafr !	Malawi
+	mus.rafr !	Mauritius
+	bwa.rafr !	Botswana
+	xec.rafr !	Rest of Eastern Africa
+	xwf.rafr !	Rest of Western Africa
+	xcf.rafr !	Rest of Central Africa
+	xac.rafr !	Rest of South Central Africa
+	xsc.rafr !	Rest of South African Customs Union 
+
+*	New GTAP7 regions:
+
+	EGY.EGY	"Egypt",
+	ECU.ECU	"Ecuador",
+	NGA.NGA	"Nigeria",
+ 	ETH.ETH	"Ethiopia",
+	SEN.SEN	"Senegal",
+	UGA.UGA	"Uganda",
+	ARM.ARM	"Armenia",
+	AZE.AZE	"Azerbaijan",
+	BLR.BLR	"Belarus",
+	GEO.GEO	"Georgia",
+	KAZ.KAZ	"Kazakhstan",
+	KGZ.KGZ	"Kyrgyzstan",
+	UKR.UKR	"Ukraine",
+	BOL.BOL	"Bolivia",
+	NOR.NOR	"Norway",
+	IRN.IRN	"Iran",
+	KHM.KHM	"Cambodia",
+	LAO.LAO	"Laos",
+*.	MMR.MMR	"Myanmar",	! Removed in version 7.1
+	PAK.PAK	"Pakistan" /;
+

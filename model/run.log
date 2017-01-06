@@ -1,0 +1,598 @@
+
+GAMS Rev 143  Copyright (C) 1987-2005 GAMS Development. All rights reserved
+Licensee: Thomas Rutherford - Personal Copy              G990406:1440AA-WIN
+          University of Colorado-Boulder, Dept of Economics          DC1282
+          License for teaching and research at degree granting institutions
+--- Starting compilation
+--- run.gms(49) 2 Mb
+--- Starting execution
+--- run.gms(5) 3 Mb
+--- run.gms(9) 3 Mb
+
+GAMS-F Function Preprocessor 12/04/98 11:07
+by Collin Starkweather and Thomas F. Rutherford
+-----------------------------------------------
+
+Reading input file . . .
+Parsing input file . . .
+
+        [79]    Function object P_PF compiled
+        [80]    Function object P_D compiled
+        [81]    Function object P_I compiled
+        [85]    Performing substitution of function P_PF
+        [85]    Function object CF compiled
+        [87]    Performing substitution of function P_D
+        [87]    Performing substitution of function P_I
+        [87]    Function object CI compiled
+        [91]    Performing substitution of function CF
+        [91]    Performing substitution of function CI
+        [91]    Function object CY compiled
+        [94]    Performing substitution of function CY
+        [129]   Function object P_DC compiled
+        [130]   Function object P_IC compiled
+        [135]   Performing substitution of function P_DC
+        [135]   Performing substitution of function P_IC
+        [135]   Function object P_C compiled
+        [137]   Performing substitution of function P_C
+        [161]   Function object P_DG compiled
+        [162]   Function object P_IG compiled
+        [167]   Performing substitution of function P_DG
+        [167]   Performing substitution of function P_IG
+        [167]   Function object P_G compiled
+        [171]   Performing substitution of function P_G
+        [184]   Function object PY_M compiled
+        [185]   Function object PT_M compiled
+        [202]   Performing substitution of function PY_M
+        [202]   Performing substitution of function PT_M
+        [202]   Function object PYT_M compiled
+        [206]   Performing substitution of function PYT_M
+        [206]   Function object CIM compiled
+        [208]   Performing substitution of function CIM
+        [222]   Function object PVFM compiled
+        [224]   Performing substitution of function PVFM
+        [232]   Performing substitution of function P_D
+        [232]   Performing substitution of function CI
+        [232]   Function object DDFM compiled
+        [233]   Performing substitution of function P_I
+        [233]   Performing substitution of function CI
+        [233]   Function object DIFM compiled
+        [234]   Performing substitution of function P_PF
+        [234]   Performing substitution of function CF
+        [234]   Function object DFM compiled
+        [235]   Function object DST compiled
+        [236]   Performing substitution of function P_DC
+        [236]   Performing substitution of function P_C
+        [236]   Performing substitution of function P_C
+        [236]   Function object DDPM compiled
+        [237]   Performing substitution of function P_IC
+        [237]   Performing substitution of function P_C
+        [237]   Performing substitution of function P_C
+        [237]   Function object DIPM compiled
+        [238]   Performing substitution of function P_DG
+        [238]   Performing substitution of function P_G
+        [238]   Function object DDGM compiled
+        [239]   Performing substitution of function P_IG
+        [239]   Performing substitution of function P_G
+        [239]   Function object DIGM compiled
+        [240]   Performing substitution of function PYT_M
+        [240]   Function object DXMD compiled
+        [241]   Performing substitution of function PYT_M
+        [241]   Function object DTWR compiled
+        [246]   Function object REVTO compiled
+        [247]   Performing substitution of function DDFM
+        [247]   Function object REVTFD compiled
+        [248]   Performing substitution of function DIFM
+        [248]   Function object REVTFI compiled
+        [249]   Performing substitution of function DFM
+        [249]   Function object REVTF compiled
+        [250]   Performing substitution of function DDPM
+        [250]   Function object REVTPD compiled
+        [251]   Performing substitution of function DIPM
+        [251]   Function object REVTPI compiled
+        [252]   Performing substitution of function DDGM
+        [252]   Function object REVTGD compiled
+        [253]   Performing substitution of function DIGM
+        [253]   Function object REVTGI compiled
+        [254]   Performing substitution of function DXMD
+        [254]   Function object REVTXS compiled
+        [256]   Performing substitution of function DXMD
+        [256]   Performing substitution of function DTWR
+        [256]   Function object REVTMS compiled
+        [274]   Performing substitution of function REVTO
+        [274]   Performing substitution of function REVTFD
+        [274]   Performing substitution of function REVTFI
+        [274]   Performing substitution of function REVTF
+        [274]   Performing substitution of function REVTPD
+        [274]   Performing substitution of function REVTPI
+        [274]   Performing substitution of function REVTGD
+        [274]   Performing substitution of function REVTGI
+        [274]   Performing substitution of function REVTXS
+        [274]   Performing substitution of function REVTMS
+        [299]   Performing substitution of function DDFM
+        [299]   Performing substitution of function DST
+        [299]   Performing substitution of function DDPM
+        [299]   Performing substitution of function DDGM
+        [299]   Performing substitution of function DXMD
+        [307]   Performing substitution of function DIFM
+        [307]   Performing substitution of function DIPM
+        [307]   Performing substitution of function DIGM
+        [313]   Performing substitution of function DTWR
+        [319]   Performing substitution of function DFM
+        [325]   Performing substitution of function DFM
+        [330]   Checking MODEL statement . . . 
+                No function complementarity found
+        [335]   Checking MODEL statement . . . 
+                No function complementarity found
+
+Writing output . . .
+
+GAMS-F terminating normally.
+
+--- run.gms(11) 3 Mb
+--- run.gms(15) 3 Mb
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(17) 3 Mb
+--- run.gms(21) 3 Mb
+
+GAMS-F Function Preprocessor 12/04/98 11:07
+by Collin Starkweather and Thomas F. Rutherford
+-----------------------------------------------
+
+Reading input file . . .
+Parsing input file . . .
+
+        [9]     Examining file gtap6data.gms . . .
+        [78]    Examining file gtap6.gen . . .
+        [144]   Function object P_PF compiled
+        [145]   Function object P_D compiled
+        [146]   Function object P_I compiled
+        [150]   Performing substitution of function P_PF
+        [150]   Function object CF compiled
+        [152]   Performing substitution of function P_D
+        [152]   Performing substitution of function P_I
+        [152]   Function object CI compiled
+        [156]   Performing substitution of function CF
+        [156]   Performing substitution of function CI
+        [156]   Function object CY compiled
+        [159]   Performing substitution of function CY
+        [194]   Function object P_DC compiled
+        [195]   Function object P_IC compiled
+        [200]   Performing substitution of function P_DC
+        [200]   Performing substitution of function P_IC
+        [200]   Function object P_C compiled
+        [202]   Performing substitution of function P_C
+        [226]   Function object P_DG compiled
+        [227]   Function object P_IG compiled
+        [232]   Performing substitution of function P_DG
+        [232]   Performing substitution of function P_IG
+        [232]   Function object P_G compiled
+        [236]   Performing substitution of function P_G
+        [249]   Function object PY_M compiled
+        [250]   Function object PT_M compiled
+        [267]   Performing substitution of function PY_M
+        [267]   Performing substitution of function PT_M
+        [267]   Function object PYT_M compiled
+        [271]   Performing substitution of function PYT_M
+        [271]   Function object CIM compiled
+        [273]   Performing substitution of function CIM
+        [287]   Function object PVFM compiled
+        [289]   Performing substitution of function PVFM
+        [297]   Performing substitution of function P_D
+        [297]   Performing substitution of function CI
+        [297]   Function object DDFM compiled
+        [298]   Performing substitution of function P_I
+        [298]   Performing substitution of function CI
+        [298]   Function object DIFM compiled
+        [299]   Performing substitution of function P_PF
+        [299]   Performing substitution of function CF
+        [299]   Function object DFM compiled
+        [300]   Function object DST compiled
+        [301]   Performing substitution of function P_DC
+        [301]   Performing substitution of function P_C
+        [301]   Performing substitution of function P_C
+        [301]   Function object DDPM compiled
+        [302]   Performing substitution of function P_IC
+        [302]   Performing substitution of function P_C
+        [302]   Performing substitution of function P_C
+        [302]   Function object DIPM compiled
+        [303]   Performing substitution of function P_DG
+        [303]   Performing substitution of function P_G
+        [303]   Function object DDGM compiled
+        [304]   Performing substitution of function P_IG
+        [304]   Performing substitution of function P_G
+        [304]   Function object DIGM compiled
+        [305]   Performing substitution of function PYT_M
+        [305]   Function object DXMD compiled
+        [306]   Performing substitution of function PYT_M
+        [306]   Function object DTWR compiled
+        [311]   Function object REVTO compiled
+        [312]   Performing substitution of function DDFM
+        [312]   Function object REVTFD compiled
+        [313]   Performing substitution of function DIFM
+        [313]   Function object REVTFI compiled
+        [314]   Performing substitution of function DFM
+        [314]   Function object REVTF compiled
+        [315]   Performing substitution of function DDPM
+        [315]   Function object REVTPD compiled
+        [316]   Performing substitution of function DIPM
+        [316]   Function object REVTPI compiled
+        [317]   Performing substitution of function DDGM
+        [317]   Function object REVTGD compiled
+        [318]   Performing substitution of function DIGM
+        [318]   Function object REVTGI compiled
+        [319]   Performing substitution of function DXMD
+        [319]   Function object REVTXS compiled
+        [321]   Performing substitution of function DXMD
+        [321]   Performing substitution of function DTWR
+        [321]   Function object REVTMS compiled
+        [339]   Performing substitution of function REVTO
+        [339]   Performing substitution of function REVTFD
+        [339]   Performing substitution of function REVTFI
+        [339]   Performing substitution of function REVTF
+        [339]   Performing substitution of function REVTPD
+        [339]   Performing substitution of function REVTPI
+        [339]   Performing substitution of function REVTGD
+        [339]   Performing substitution of function REVTGI
+        [339]   Performing substitution of function REVTXS
+        [339]   Performing substitution of function REVTMS
+        [364]   Performing substitution of function DDFM
+        [364]   Performing substitution of function DST
+        [364]   Performing substitution of function DDPM
+        [364]   Performing substitution of function DDGM
+        [364]   Performing substitution of function DXMD
+        [372]   Performing substitution of function DIFM
+        [372]   Performing substitution of function DIPM
+        [372]   Performing substitution of function DIGM
+        [378]   Performing substitution of function DTWR
+        [384]   Performing substitution of function DFM
+        [390]   Performing substitution of function DFM
+        [395]   Checking MODEL statement . . . 
+                No function complementarity found
+        [400]   Checking MODEL statement . . . 
+                No function complementarity found
+        [438]   Examining file gtap6.gen . . .
+
+Writing output . . .
+
+GAMS-F terminating normally.
+
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(23) 3 Mb
+--- run.gms(27) 3 Mb
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(29) 3 Mb
+--- run.gms(33) 3 Mb
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(35) 3 Mb
+--- run.gms(39) 3 Mb
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(41) 3 Mb
+--- run.gms(45) 3 Mb
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+ 
+ Reading the matrix.
+ Extracting Jacobian nonzero structure.
+--- run.gms(47) 3 Mb
+--- Putfile title_ g:\gtap\gtap6ingams\distrib\model\225a\title.cmd
+*** Status: Normal completion
