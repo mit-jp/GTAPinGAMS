@@ -1,4 +1,4 @@
-$title	GTAP8DATA.GMS	Read a GTAP 8 dataset
+$title	GAMS Code to Read a GTAP 9 Dataset
 
 $if not set nd $set nd 0
 
@@ -11,9 +11,8 @@ $if not set datadir $set datadir "..\data%yr%\"
 $setglobal datadir %datadir%
 
 set	g(*)	Goods plus C and G;
-
-$if exist %ds%.gdx $gdxin '%ds%.gdx'
-$if not exist %ds%.gdx $gdxin '%datadir%%ds%.gdx'
+$if exist     %ds%.gdx $gdxin "%ds%.gdx"
+$if not exist %ds%.gdx $gdxin "%datadir%%ds%.gdx"
 $load g
 
 set	i(g)	Goods
@@ -54,13 +53,19 @@ $if declared hs6	viws_hs6(i,hs6,r,s) = viws_hs6(i,hs6,r,s)$round(viws_hs6(i,hs6,
 );
 
 parameter
-	evd(i,g,r)		Volume of energy demand (mtoe),
-	evt(i,r,r)		Volume of energy trade (mtoe);
+	evt(i,r,r)	Volume of energy trade (mtoe),
+	evd(i,g,r)	Domestic energy use (mtoe),
+	evi(i,g,r)	Imported energy use (mtoe),
+	eco2d(i,g,r)	CO2 emissions in domestic fuels - Mt CO2",
+	eco2i(i,g,r)	CO2 emissions in foreign fuels - Mt CO2";
 
-$loaddc evd evt 
+$loaddc evd evi evt eco2d eco2i
 if (nd>0,
-	evd(i,g,r) = evd(i,g,r)$round(evd(i,g,r),   nd);
-	evt(i,r,s) = evt(i,r,s)$round(evt(i,r,s),   nd);
+	evt(i,r,s)  = evt(i,r,s)$round(evt(i,r,s), nd);
+	evd(i,g,r) = evd(i,g,r)$round(evd(i,g,r), nd);
+	evi(i,g,r) = evi(i,g,r)$round(evi(i,g,r), nd);
+	eco2d(i,g,r) = eco2d(i,g,r)$round(eco2d(i,g,r), nd);
+	eco2i(i,g,r) = eco2i(i,g,r)$round(eco2i(i,g,r), nd);
 );
 
 parameter
@@ -131,9 +136,9 @@ parameter
 	vb(*)		Current account balance;
 
 vtw(j) = sum(r, vst(j,r));
-vom("c",r) = sum(i, vdfm(i,"c",r)*(1+rtfd0(i,"c",r)) + vifm(i,"c",r)*(1+rtfi0(i,"c",r)));
-vom("g",r) = sum(i, vdfm(i,"g",r)*(1+rtfd0(i,"g",r)) + vifm(i,"g",r)*(1+rtfi0(i,"g",r)));
-vom("i",r) = sum(i, vdfm(i,"i",r)*(1+rtfd0(i,"i",r)) + vifm(i,"i",r)*(1+rtfi0(i,"i",r)));
+vom("c",r) = sum(i, vdfm(i,"c",r)*(1+rtfd0(i,"c",r)) + vifm(i,"c",r)*(1+rtfi0(i,"c",r)))/(1-rto("c",r));
+vom("g",r) = sum(i, vdfm(i,"g",r)*(1+rtfd0(i,"g",r)) + vifm(i,"g",r)*(1+rtfi0(i,"g",r)))/(1-rto("g",r));
+vom("i",r) = sum(i, vdfm(i,"i",r)*(1+rtfd0(i,"i",r)) + vifm(i,"i",r)*(1+rtfi0(i,"i",r)))/(1-rto("i",r));
 
 vdm("c",r) = vom("c",r);
 vdm("g",r) = vom("g",r);
@@ -141,7 +146,7 @@ vim(i,r) =  sum(g, vifm(i,g,r));
 evom(f,r) = sum(g, vfm(f,g,r));
 vb(r) = vom("c",r) + vom("g",r) + vom("i",r) 
 	- sum(f, evom(f,r))
-	- sum(j,  vom(j,r)*rto(j,r))
+	- sum(g,  vom(g,r)*rto(g,r))
 	- sum(g,  sum(i, vdfm(i,g,r)*rtfd(i,g,r) + vifm(i,g,r)*rtfi(i,g,r)))
 	- sum(g,  sum(f, vfm(f,g,r)*rtf(f,g,r)))
 	- sum((i,s), rtms(i,s,r) *  (vxmd(i,s,r) * (1-rtxs(i,s,r)) + sum(j,vtwr(j,i,s,r))))
@@ -163,9 +168,12 @@ mprofit(i,r) = vim(i,r) - sum(s, pvxmd(i,s,r)*vxmd(i,s,r)+sum(j, vtwr(j,i,s,r))*
 mprofit(i,r) = round(mprofit(i,r),5);
 display mprofit;
 
-yprofit(g,r) = vom(g,r)*(1-rto(g,r))-sum(i, vdfm(i,g,r)*(1+rtfd0(i,g,r))
-        + vifm(i,g,r)*(1+rtfi0(i,g,r))) - sum(f, vfm(f,g,r)*(1+rtf0(f,g,r)));
-yprofit(i,r) = round(yprofit(i,r),6)
+yprofit(g,r) = vom(g,r)*(1-rto(g,r))
+	- sum(i, vdfm(i,g,r)*(1+rtfd0(i,g,r))
+               + vifm(i,g,r)*(1+rtfi0(i,g,r))) 
+        - sum(f, vfm(f,g,r)*(1+rtf0(f,g,r)));
+
+yprofit(g,r) = round(yprofit(g,r),6)
 display yprofit;
 
 *	Define a numeraire region for denominating international
@@ -173,4 +181,60 @@ display yprofit;
 
 rnum(r) = yes$(vom("c",r)=smax(s,vom("c",s)));
 display rnum;
+
+$if not set energydata $exit
+
+*	Read the IEO energy statistics and baseline growth path:
+
+*.$if not defined ieoscn set ieoscn	IEO scenarios	 /ref,high_oil,low_oil,high_gdp,low_gdp/;
+
+set	t	Projected and historical time periods / 2004*2050, 2055,2060,2065,2070, 2075, 2080, 2085, 2090, 2095, 2100 /,
+
+	scn	IEO scenarios	 /
+		ref		Reference case,
+		high_oil	High oil price,
+		low_oil		Low oil price,
+		high_gdp	High GDP growth,
+		low_gdp		Low GDP growth /,
+
+*.	eg(i)	Final energy goods	/ele,col,oil,gdt,gas/,
+	eg(i)	Final energy goods	/ele,col,oil,gas/,
+
+	fd	Final demand sectors	/Residential, Commercial, Industrial, ElectricPower, Transportation/,
+
+	ieo_tec	IEO technologies /
+			capacity	Generating Capacity
+			oilcap		Liquids-Fired Generating Capacity
+			gascap		Natural-Gas-Fired Generating Capacity
+			colcap		Coal-Fired Generating Capacity
+			nuccap		Nuclear Generating Capacity
+			hydrocap	Hydroelectric Renewable Generating Capacity,
+			windcap		Wind-Powered Generating Capacity,
+			geocap		Geothermal Generating Capacity,
+			othrnwcap	Other Renewable Generating Capacity,
+			solcap		Solar Generating Capacity,
+			
+			generation	Net Electricity Generation,
+			oilgen		Net Liquids-Fired Electricity Generation,
+			gasgen		Net Natural-Gas-Fired Electricity Generation,
+			colgen		Net Coal-Fired Electricity Generation,
+			nucgen		Net Nuclear Electricity Generation,
+			hydrogen        Net Hydroelectric Generation,
+			windgen	        Net Wind-Powered Electricity Generation,
+			geogen	        Net Geothermal Electricity Generation,
+			othrnwgen	Net Other Renewable Electricity Generation, 
+			solgen		Net Solar Electricity Generation /;
+
+
+parameter	
+	ieocarbon(scn,*,r,t)		IEO carbon emissions by scenario (index -- %byr%=1),
+	ieogdp(scn,r,t)			IEO GDP by scenario (index -- %byr%=1),
+	ieocrude(scn,r,t)		IEO crude oil supply (index -- %byr%=1),
+	ieoelesup(scn,r,t)		IEO electricity supply (index -- %byr%=1),
+	ieoenergy(scn,i,g,r,t)		IEO energy use by sector (index -- %byr%=1),
+	ieoprice(scn,t)			IEO oil price (index -- %byr%=1), 
+	ieoele(scn,ieo_tec,r,t)		IEO electricity generation and capacity (index -- %byr%=1),
+	unpop(r,*)			UN population trajectories (in millions);
+
+$load ieocarbon ieogdp ieocrude ieoelesup ieoprice ieoenergy ieoele unpop
 

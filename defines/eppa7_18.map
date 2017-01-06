@@ -1,6 +1,3 @@
-* In this version, regional mappings are the same as the usual EPPA6, but sectors are reduced from 14 to 6, with only energy sectors details kept.
-* YHC: 20140904
-
 * Regional Mapping
 set rr  Regions in the aggregation /
 
@@ -37,12 +34,15 @@ AUS	.	anz	Australia
 AUT	.	eur	Austria
 AZE	.	roe	Azerbaijan
 BEL	.	eur	Belgium
+BEN	.	afr	Benin
+BFA	.	afr	Burkina Faso
 BGD	.	rea	Bangladesh
 BGR	.	eur	Bulgaria
 BHR	.	mes	Bahrain
 BLR	.	roe	Belarus
 BOL	.	lam	Plurinational Republic of Bolivia
 BRA	.	bra	Brazil
+BRN	.	rea	Brunei
 BWA	.	afr	Botswana
 CAN	.	can	Canada
 CHE	.	eur	Switzerland
@@ -56,6 +56,7 @@ CYP	.	eur	Cyprus
 CZE	.	eur	Czech Republic
 DEU	.	eur	Germany
 DNK	.	eur	Denmark
+DOM	.	lam	Dominican Republic
 ECU	.	lam	Ecuador
 EGY	.	afr	Egypt
 ESP	.	eur	Spain
@@ -66,6 +67,7 @@ FRA	.	eur	France
 GBR	.	eur	United Kingdom
 GEO	.	roe	Georgia
 GHA	.	afr	Ghana
+GIN	.	afr	Guinea
 GRC	.	eur	Greece
 GTM	.	lam	Guatemala
 HKG	.	chn	Hong Kong
@@ -78,6 +80,8 @@ IRL	.	eur	Ireland
 IRN	.	mes	Iran Islamic Republic of
 ISR	.	mes	Israel
 ITA	.	eur	Italy
+JAM	.	lam	Jamaica
+JOR	.	mes	Jordan
 JPN	.	jpn	Japan
 KAZ	.	roe	Kazakhstan
 KEN	.	afr	Kenya
@@ -112,11 +116,13 @@ PAN	.	lam	Panama
 PER	.	lam	Peru
 PHL	.	asi	Philippines
 POL	.	eur	Poland
+PRI	.	lam	Puerto Rico
 PRT	.	eur	Portugal
 PRY	.	lam	Paraguay
 QAT	.	mes	Qatar
 ROU	.	eur	Romania
 RUS	.	rus	Russian Federation
+RWA	.	afr	Rwanda
 SAU	.	mes	Saudi Arabia
 SEN	.	afr	Senegal
 SGP	.	asi	Singapore
@@ -124,7 +130,9 @@ SLV	.	lam	El Salvador
 SVK	.	eur	Slovakia
 SVN	.	eur	Slovenia
 SWE	.	eur	Sweden
+TGO	.	afr	Togo
 THA	.	asi	Thailand
+TTO	.	lam	Trinidad and Tobago
 TUN	.	afr	Tunisia
 TUR	.	roe	Turkey
 TWN	.	asi	Taiwan
@@ -168,65 +176,65 @@ ZWE	.	afr	Zimbabwe
 *mapi(i,i) = yes;
 
 set ii Sectors and goods in aggregate model /
-*crop	Agriculture - crops		
-*live	Agriculture - livestock		
-*fors	Agriculture - forestry		
-*food	Food products			
-coal	Coal				
-oil     Crude Oil			
-roil	Refined Oil			
-gas     Gas				
-elec	Electricity			
-*eint	Energy-intensive Industries	
-othr	Other Industries		
-*serv	Services			
-*tran	Transport                       
-*dwe     Ownership of dwellings
-
+	crop	Agriculture - crops		
+	live	Agriculture - livestock		
+	fors	Agriculture - forestry		
+	food	Food products			
+	coal	Coal				
+	oil     Crude Oil			
+	roil	Refined Oil			
+	gas     Gas				
+	elec	Electricity			
+	eint	Energy-intensive Industries	
+	othr	Other Industries		
+	serv	Services			
+	tran	Transport                       
+        dwe     Ownership of dwellings
+*	cgd	Savings Good 
 /;
 
 SET mapi(*,ii)  Mapping for sectors and goods /
 
-PDR.othr  paddy rice                                     	 
-WHT.othr  wheat                                          	 
-GRO.othr  cereal grains nec                              	 
-V_F.othr  vegetables - fruit - nuts                        	 
-OSD.othr  oil seeds                                      	 
-C_B.othr  sugar cane - sugar beet                         	 
-PFB.othr  plant-based fibers                             	 
-OCR.othr  crops nec                                      	 
-CTL.othr  bo horses         					 
-OAP.othr  animal products nec                            	 
-RMK.othr  raw milk                                       	 
-WOL.othr  wool - silk-worm cocoons                        	 
-FRS.othr  forestry                                       	 
-FSH.othr  fishing                                        	 
+PDR.crop  paddy rice                                     	 
+WHT.crop  wheat                                          	 
+GRO.crop  cereal grains nec                              	 
+V_F.crop  vegetables - fruit - nuts                        	 
+OSD.crop  oil seeds                                      	 
+C_B.crop  sugar cane - sugar beet                         	 
+PFB.crop  plant-based fibers                             	 
+OCR.crop  crops nec                                      	 
+CTL.live  bo horses         					 
+OAP.live  animal products nec                            	 
+RMK.live  raw milk                                       	 
+WOL.live  wool - silk-worm cocoons                        	 
+FRS.fors  forestry                                       	 
+FSH.live  fishing                                        	 
 COA.coal  coal                                           	 
 OIL.oil   oil                                            	 
 GAS.gas   gas                                            	 
 OMN.othr  minerals nec                                   	 
-CMT.othr  bo meat products    					 
-OMT.othr  meat products                                  	 
-VOL.othr  vegetable oils and fats                        	 
+CMT.food  bo meat products    					 
+OMT.food  meat products                                  	 
+VOL.food  vegetable oils and fats                        	 
 ** bio-diesel is included in VOL
-MIL.othr  dairy products                                 	 
-PCR.othr  processed rice                                 	 
-SGR.othr  sugar                                          	 
-OFD.othr  food products nec                              	 
+MIL.food  dairy products                                 	 
+PCR.food  processed rice                                 	 
+SGR.food  sugar                                          	 
+OFD.food  food products nec                              	 
 ** corn ethanol eth1 is included in OFD
-B_T.othr  beverages and tobacco products                 	 
+B_T.food  beverages and tobacco products                 	 
 TEX.othr  textiles                                       	 
 WAP.othr  wearing apparel                                	 
 LEA.othr  leather products                               	 
 LUM.othr  wood products                                  	 
-PPP.othr  paper products - publishing                     	 
+PPP.eint  paper products - publishing                     	 
 P_C.roil  petroleum - coal products                       	 
-CRP.othr  chemical - rubber - plastic products
+CRP.eint  chemical - rubber - plastic products
 ** sugarcane ethanol is included in CRP             	 
-NMM.othr  mineral products nec                           	 
-I_S.othr  ferrous metals                                 	 
-NFM.othr  metals nec                                     	 
-FMP.othr  metal products                                 	 
+NMM.eint  mineral products nec                           	 
+I_S.eint  ferrous metals                                 	 
+NFM.eint  metals nec                                     	 
+FMP.eint  metal products                                 	 
 MVH.othr  motor vehicles and parts                       	 
 OTN.othr  transport equipment nec                        	 
 ELE.othr  electronic equipment                           	 
@@ -236,17 +244,17 @@ ELY.elec  electricity
 GDT.gas   gas manufacture - distribution                  	 
 WTR.othr  water                                          	 
 CNS.othr  construction                                   	 
-TRD.othr  trade                                          	 
-OTP.othr  transport nec                                  	 
-WTP.othr  water transport                                	 
-ATP.othr  air transport                                  	 
-CMN.othr  communication                                  	 
-OFI.othr  financial services nec                         	 
-ISR.othr  insurance                                      	 
-OBS.othr  business services nec                          	 
-ROS.othr  recreational and other services                	 
-OSG.othr  public admin - and defence - education - health   	 
-DWE.othr   ownership of dwellings
+TRD.serv  trade                                          	 
+OTP.tran  transport nec                                  	 
+WTP.tran  water transport                                	 
+ATP.tran  air transport                                  	 
+CMN.serv  communication                                  	 
+OFI.serv  financial services nec                         	 
+ISR.serv  insurance                                      	 
+OBS.serv  business services nec                          	 
+ROS.serv  recreational and other services                	 
+OSG.serv  public admin - and defence - education - health   	 
+DWE.dwe   ownership of dwellings
 *DWE.othr  ownership of dwellings 				 
 *CGDS.cgd  Savings good                                          
 /;  
@@ -273,15 +281,44 @@ SET   ff   Factors of production
 	fix	Natural resources 
         /;
 
+*set ff  /
+*	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tec	Technicians technicians and associate professionals
+*	clk	Clerks
+*	srv	Service and market sales workers
+*	lab	Agricultural and unskilled workers (Major Groups 6-9)
+*	lnd     Land,    
+*	cap     Capital,    
+*	res     Natural resources /;
 
-SET	mapf(*,ff)   Factors of production 
-        /
-	Land.lnd	Land,
-	SkLab.lab	Skilled labor,
-	UnskLab.lab	Unskilled labor,
-	Capital.cap	Capital,
-	NatlRes.fix	Natural resources 
-        /;
+*SET	mapf(*,ff)   Factors of production 
+*        /
+*	Land.lnd	Land,
+*	SkLab.lab	Skilled labor,
+*	UnskLab.lab	Unskilled labor,
+*	Capital.cap	Capital,
+*	NatlRes.fix	Natural resources 
+*        /;
+
+*set mapf(*,*) /
+*	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tech_aspros.tec		Technicians technicians and associate professionals
+*	clerks.clk		Clerks
+*	service_shop.srv	Service and market sales workers,
+*	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+*	Land.lnd		Land,    
+*	Capital.cap		Capital,    
+*	NatlRes.res		Natural resources/;
+
+set mapf(*,*) /
+	off_mgr_pros.lab	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.lab		Technicians technicians and associate professionals
+	clerks.lab		Clerks
+	service_shop.lab	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.fix		Natural resources/;
 
 SET eec energy commodities
         /

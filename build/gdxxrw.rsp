@@ -1,0 +1,18 @@
+set=i  rng=commodities!a1 rdim=1 values=string
+set=f  rng=factors!a1 rdim=1 values=string
+set=r  rng=regions!a1 rdim=1 values=string
+par=vdfm rng=vdfm!a1 cdim=1
+par=vifm rng=vifm!a1 cdim=1
+par=vfm rng=vfm!a1 cdim=1
+par=rtfd rng=rtfd!a1 cdim=1
+par=rtfi rng=rtfi!a1 cdim=1
+par=rtf rng=rtf!a1 cdim=1
+par=vxmd_m rng=vxmd_m!a1 cdim=1
+par=vxmd_e rng=vxmd_e!a1 cdim=1
+par=vtwr_m rng=vtwr_m!a1 cdim=1
+par=vtwr_e rng=vtwr_e!a1 cdim=1
+par=rtms_m rng=rtms_m!a1 cdim=1
+par=rtms_e rng=rtms_e!a1 cdim=1
+par=rtxs_m rng=rtxs_m!a1 cdim=1
+par=rtxs_e rng=rtxs_e!a1 cdim=1
+par=other rng=other!a1 cdim=1

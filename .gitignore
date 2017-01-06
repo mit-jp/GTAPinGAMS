@@ -6,3 +6,5 @@
 *.lst
 *.gdx
 *.har
+*.log
+*.gen

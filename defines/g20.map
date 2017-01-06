@@ -184,15 +184,103 @@ $eolcom !
 	CIV.MIC		!	Cote d'Ivoire
 	GHA.MIC		!	Ghana
 	NAM.MIC		!	Namibia
+
 	XTW.MIC		!	Rest of the World 
+
+	BRN.MIC		!	Brunei Darussalam
+	DOM.MIC		!	Dominican Republic
+	JAM.MIC		!	Jamaica
+	PRI.MIC		!	Puerto Rico
+	TTO.LIC		!	Trinidad and Tobago
+	JOR.LIC		!	Jordan
+	BEN.LIC		!	Benin
+	BFA.LIC		!	Burkina Faso
+	GIN.LIC		!	Guinea
+	TGO.LIC		!	Togo
+	RWA.LIC		!	Rwanda
 
 	/;
 
 
-alias (i,ii);
-SET mapi(i,ii)  Mapping for sectors and goods;
-mapi(i,i) = yes;
+set ii /
+	PDR	"Paddy rice",
+	WHT	"Wheat",
+	GRO	"Cereal grains nec",
+	V_F	"Vegetables, fruit, nuts",
+	OSD	"Oil seeds",
+	C_B	"Sugar cane, sugar beet",
+	PFB	"Plant-based fibers",
+	OCR	"Crops nec",
+	CTL	"Bovine cattle, sheep and goats, horses",
+	OAP	"Animal products nec",
+	RMK	"Raw milk",
+	WOL	"Wool, silk-worm cocoons",
+	FRS	"Forestry",
+	FSH	"Fishing",
+	COL	"Coal",
+	CRU	"Crude Oil",
+	GAS	"Gas",
+	OMN	"Minerals nec",
+	CMT	"Bovine meat products",
+	OMT	"Meat products nec",
+	VOL	"Vegetable oils and fats",
+	MIL	"Dairy products",
+	PCR	"Processed rice",
+	SGR	"Sugar",
+	OFD	"Food products nec",
+	B_T	"Beverages and tobacco products",
+	TEX	"Textiles",
+	WAP	"Wearing apparel",
+	LEA	"Leather products",
+	LUM	"Wood products",
+	PPP	"Paper products, publishing",
+	OIL	"Petroleum, coal products",
+	CRP	"Chemical, rubber, plastic products",
+	NMM	"Mineral products nec",
+	I_S	"Ferrous metals",
+	NFM	"Metals nec",
+	FMP	"Metal products",
+	MVH	"Motor vehicles and parts",
+	OTN	"Transport equipment nec",
+	EEQ	"Electronic equipment",
+	OME	"Machinery and equipment nec",
+	OMF	"Manufactures nec",
+	ELE	"Electricity",
+	GDT	"Gas manufacture, distribution",
+	WTR	"Water",
+	CNS	"Construction",
+	TRD	"Trade",
+	OTP	"Transport nec",
+	WTP	"Water transport",
+	ATP	"Air transport",
+	CMN	"Communication",
+	OFI	"Financial services nec",
+	ISR	"Insurance",
+	OBS	"Business services nec",
+	ROS	"Recreational and other services",
+	OSG	"Public Administration, Defense, Education, Health",
+	DWE	"Dwellings" /;
 
-alias (f,ff);
-SET mapf(f,ff)	Mapping of factors;
-mapf(f,f) = yes;
+SET mapi(i,ii)  Mapping for sectors and goods;
+mapi(i,ii) = yes$sameas(i,ii);
+abort$(card(i)<>card(ii))	"Error: card(i)<>card(ii).";
+abort$(card(mapi)<>card(i))	"Error: card(mapi)<>card(i).";
+
+set ff /
+	skl	Skilled workers,
+	lab	Agricultural and unskilled workers,
+	lnd     Land,    
+	cap     Capital,    
+	res     Natural resources /;
+
+set mapf(f,ff) /
+	mgr.skl	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tec.skl	Technicians technicians and associate professionals
+	clk.skl	Clerks
+	srv.lab	Service and market sales workers
+	lab.lab	Agricultural and unskilled workers (Major Groups 6-9)
+	lnd.lnd Land,    
+	cap.cap Capital,    
+	res.res Natural resources /;
+
+abort$(card(mapf)<>card(f))	"Error: card(mapf)<>card(f).";

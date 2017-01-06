@@ -16,7 +16,11 @@ set rr  Regions in the aggregation /
 	REA	Rest of East Asia    		     
 	ANZ	Australia and Oceania		     
         MES	Middle East
-        AFR	Africa
+        AFE	Eastern Africa
+        AFW	Western Africa
+        AFS	Southern Africa
+        AFN	Northern Africa
+        AFC	Central Africa        
         KOR     South Korea
         IDZ     Indonesia
 
@@ -26,135 +30,146 @@ SET mapr(r,rr) Mapping of GTAP Regions (from-to)
 
 /
 
-ALB	.	roe	Albania
-ARE	.	mes	United Arab Emirates
-ARG	.	lam	Argentina
-ARM	.	roe	Armenia
+BEN	.	afw	Benin
+BFA	.	afw	Burkina Faso
+BWA	.	afs	Botswana
+CIV	.	afw	Cote d'Ivoire
+CMR	.	afc	Cameroon
+EGY	.	afn	Egypt
+ETH	.	afe	Ethiopia
+GHA	.	afw	Ghana
+GIN	.	afw	Guinea
+KEN	.	afe	Kenya
+MAR	.	afn	Morocco
+MDG	.	afe	Madagascar
+MOZ	.	afs	Mozambique
+MUS	.	afs	Mauritius
+MWI	.	afs	Malawi
+NAM	.	afs	Namibia
+NGA	.	afw	Nigeria
+RWA	.	afe	Rwanda
+SEN	.	afw	Senegal
+TGO	.	afw	Togo
+TUN	.	afn	Tunisia
+TZA	.	afe	Tanzania United Republic of
+UGA	.	afe	Uganda
+XAC	.	afs	South Central Africa
+XCF	.	afc	Central Africa
+XEC	.	afe	Rest of Eastern Africa
+XNF	.	afn	Rest of North Africa
+XSC	.	afs	Rest of South African Customs Union
+XWF	.	afw	Rest of Western Africa
+ZAF	.	afs	South Africa
+ZMB	.	afs	Zambia
+ZWE	.	afs	Zimbabwe
 AUS	.	anz	Australia
-AUT	.	eur	Austria
-AZE	.	roe	Azerbaijan
-BEL	.	eur	Belgium
-BGD	.	rea	Bangladesh
-BGR	.	eur	Bulgaria
-BHR	.	mes	Bahrain
-BLR	.	roe	Belarus
-BOL	.	lam	Plurinational Republic of Bolivia
+NZL	.	anz	New Zealand
+XOC	.	anz	Rest of Oceania
+XTW	.	anz	Rest of the World
+MYS	.	asi	Malaysia
+PHL	.	asi	Philippines
+SGP	.	asi	Singapore
+THA	.	asi	Thailand
+TWN	.	asi	Taiwan
 BRA	.	bra	Brazil
-BWA	.	afr	Botswana
 CAN	.	can	Canada
-CHE	.	eur	Switzerland
-CHL	.	lam	Chile
 CHN	.	chn	China
-CIV	.	afr	Cote d'Ivoire
-CMR	.	afr	Cameroon
-COL	.	lam	Colombia
-CRI	.	lam	Costa Rica
+HKG	.	chn	Hong Kong
+AUT	.	eur	Austria
+BEL	.	eur	Belgium
+BGR	.	eur	Bulgaria
+CHE	.	eur	Switzerland
 CYP	.	eur	Cyprus
 CZE	.	eur	Czech Republic
 DEU	.	eur	Germany
 DNK	.	eur	Denmark
-ECU	.	lam	Ecuador
-EGY	.	afr	Egypt
 ESP	.	eur	Spain
 EST	.	eur	Estonia
-ETH	.	afr	Ethiopia
 FIN	.	eur	Finland
 FRA	.	eur	France
 GBR	.	eur	United Kingdom
-GEO	.	roe	Georgia
-GHA	.	afr	Ghana
 GRC	.	eur	Greece
-GTM	.	lam	Guatemala
-HKG	.	chn	Hong Kong
-HND	.	lam	Honduras
 HRV	.	eur	Croatia
 HUN	.	eur	Hungary
-IDN	.	idz	Indonesia
-IND	.	ind	India
 IRL	.	eur	Ireland
-IRN	.	mes	Iran Islamic Republic of
-ISR	.	mes	Israel
 ITA	.	eur	Italy
-JPN	.	jpn	Japan
-KAZ	.	roe	Kazakhstan
-KEN	.	afr	Kenya
-KGZ	.	roe	Kyrgyzstan
-KHM	.	rea	Cambodia
-KOR	.	kor	Korea Republic of
-KWT	.	mes	Kuwait
-LAO	.	rea	Lao People's Democratic Republic
-LKA	.	rea	Sri Lanka
 LTU	.	eur	Lithuania
 LUX	.	eur	Luxembourg
 LVA	.	eur	Latvia
-MAR	.	afr	Morocco
-MDG	.	afr	Madagascar
-MEX	.	mex	Mexico
 MLT	.	eur	Malta
-MNG	.	rea	Mongolia
-MOZ	.	afr	Mozambique
-MUS	.	afr	Mauritius
-MWI	.	afr	Malawi
-MYS	.	asi	Malaysia
-NAM	.	afr	Namibia
-NGA	.	afr	Nigeria
-NIC	.	lam	Nicaragua
 NLD	.	eur	Netherlands
 NOR	.	eur	Norway
-NPL	.	rea	Nepal
-NZL	.	anz	New Zealand
-OMN	.	mes	Oman
-PAK	.	rea	Pakistan
-PAN	.	lam	Panama
-PER	.	lam	Peru
-PHL	.	asi	Philippines
 POL	.	eur	Poland
 PRT	.	eur	Portugal
-PRY	.	lam	Paraguay
-QAT	.	mes	Qatar
 ROU	.	eur	Romania
-RUS	.	rus	Russian Federation
-SAU	.	mes	Saudi Arabia
-SEN	.	afr	Senegal
-SGP	.	asi	Singapore
-SLV	.	lam	El Salvador
 SVK	.	eur	Slovakia
 SVN	.	eur	Slovenia
 SWE	.	eur	Sweden
-THA	.	asi	Thailand
-TUN	.	afr	Tunisia
-TUR	.	roe	Turkey
-TWN	.	asi	Taiwan
-TZA	.	afr	Tanzania United Republic of
-UGA	.	afr	Uganda
-UKR	.	roe	Ukraine
+XEF	.	eur	Rest of EFTA
+IDN	.	idz	Indonesia
+IND	.	ind	India
+JPN	.	jpn	Japan
+KOR	.	kor	Korea Republic of
+ARG	.	lam	Argentina
+BOL	.	lam	Plurinational Republic of Bolivia
+CHL	.	lam	Chile
+COL	.	lam	Colombia
+CRI	.	lam	Costa Rica
+DOM	.	lam	Dominican Republic
+ECU	.	lam	Ecuador
+GTM	.	lam	Guatemala
+HND	.	lam	Honduras
+JAM	.	lam	Jamaica
+NIC	.	lam	Nicaragua
+PAN	.	lam	Panama
+PER	.	lam	Peru
+PRI	.	lam	Puerto Rico
+PRY	.	lam	Paraguay
+SLV	.	lam	El Salvador
+TTO	.	lam	Trinidad and Tobago
 URY	.	lam	Uruguay
-USA	.	usa	United States of America
 VEN	.	lam	Venezuela
-VNM	.	rea	Viet Nam
-XAC	.	afr	South Central Africa
 XCA	.	lam	Rest of Central America
 XCB	.	lam	Caribbean
-XCF	.	afr	Central Africa
-XEA	.	rea	Rest of East Asia
-XEC	.	afr	Rest of Eastern Africa
-XEE	.	roe	Rest of Eastern Europe
-XEF	.	eur	Rest of EFTA
-XER	.	roe	Rest of Europe
 XNA	.	lam	Rest of North America
-XNF	.	afr	Rest of North Africa
-XOC	.	anz	Rest of Oceania
-XSA	.	rea	Rest of South Asia
-XSC	.	afr	Rest of South African Customs Union
-XSE	.	rea	Rest of Southeast Asia
 XSM	.	lam	Rest of South America
-XSU	.	roe	Rest of Former Soviet Union
-XTW	.	anz	Rest of the World
-XWF	.	afr	Rest of Western Africa
+ARE	.	mes	United Arab Emirates
+BHR	.	mes	Bahrain
+IRN	.	mes	Iran Islamic Republic of
+ISR	.	mes	Israel
+JOR	.	mes	Jordan
+KWT	.	mes	Kuwait
+OMN	.	mes	Oman
+QAT	.	mes	Qatar
+SAU	.	mes	Saudi Arabia
 XWS	.	mes	Rest of Western Asia
-ZAF	.	afr	South Africa
-ZMB	.	afr	Zambia
-ZWE	.	afr	Zimbabwe
+MEX	.	mex	Mexico
+BGD	.	rea	Bangladesh
+BRN	.	rea	Brunei
+KHM	.	rea	Cambodia
+LAO	.	rea	Lao People's Democratic Republic
+LKA	.	rea	Sri Lanka
+MNG	.	rea	Mongolia
+NPL	.	rea	Nepal
+PAK	.	rea	Pakistan
+VNM	.	rea	Viet Nam
+XEA	.	rea	Rest of East Asia
+XSA	.	rea	Rest of South Asia
+XSE	.	rea	Rest of Southeast Asia
+ALB	.	roe	Albania
+ARM	.	roe	Armenia
+AZE	.	roe	Azerbaijan
+BLR	.	roe	Belarus
+GEO	.	roe	Georgia
+KAZ	.	roe	Kazakhstan
+KGZ	.	roe	Kyrgyzstan
+TUR	.	roe	Turkey
+UKR	.	roe	Ukraine
+XEE	.	roe	Rest of Eastern Europe
+XER	.	roe	Rest of Europe
+XSU	.	roe	Rest of Former Soviet Union
+RUS	.	rus	Russian Federation
+USA	.	usa	United States of America
 
 /;
 
@@ -177,10 +192,7 @@ set ii Sectors and goods in aggregate model /
 	eint	Energy-intensive Industries	
 	othr	Other Industries		
 	serv	Services			
-	tranl	Transport - land    
-*        tran    Transport - other
-        trana   Transport - air
-        tranw   Transport - water                
+	tran	Transport                       
         dwe     Ownership of dwellings
 *	cgd	Savings Good 
 /;
@@ -237,9 +249,9 @@ GDT.gas   gas manufacture - distribution
 WTR.othr  water                                          	 
 CNS.othr  construction                                   	 
 TRD.serv  trade                                          	 
-OTP.tranl transport nec                                  	 
-WTP.tranw water transport                                	 
-ATP.trana air transport                                  	 
+OTP.tran  transport nec                                  	 
+WTP.tran  water transport                                	 
+ATP.tran  air transport                                  	 
 CMN.serv  communication                                  	 
 OFI.serv  financial services nec                         	 
 ISR.serv  insurance                                      	 
@@ -273,15 +285,44 @@ SET   ff   Factors of production
 	fix	Natural resources 
         /;
 
+*set ff  /
+*	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tec	Technicians technicians and associate professionals
+*	clk	Clerks
+*	srv	Service and market sales workers
+*	lab	Agricultural and unskilled workers (Major Groups 6-9)
+*	lnd     Land,    
+*	cap     Capital,    
+*	res     Natural resources /;
 
-SET	mapf(*,ff)   Factors of production 
-        /
-	Land.lnd	Land,
-	SkLab.lab	Skilled labor,
-	UnskLab.lab	Unskilled labor,
-	Capital.cap	Capital,
-	NatlRes.fix	Natural resources 
-        /;
+*SET	mapf(*,ff)   Factors of production 
+*        /
+*	Land.lnd	Land,
+*	SkLab.lab	Skilled labor,
+*	UnskLab.lab	Unskilled labor,
+*	Capital.cap	Capital,
+*	NatlRes.fix	Natural resources 
+*        /;
+
+*set mapf(*,*) /
+*	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tech_aspros.tec		Technicians technicians and associate professionals
+*	clerks.clk		Clerks
+*	service_shop.srv	Service and market sales workers,
+*	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+*	Land.lnd		Land,    
+*	Capital.cap		Capital,    
+*	NatlRes.res		Natural resources/;
+
+set mapf(*,*) /
+	off_mgr_pros.lab	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.lab		Technicians technicians and associate professionals
+	clerks.lab		Clerks
+	service_shop.lab	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.fix		Natural resources/;
 
 SET eec energy commodities
         /

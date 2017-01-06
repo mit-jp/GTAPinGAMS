@@ -1,34 +1,40 @@
-$title	Aggregation Program for the GTAP7 Database
+$title	Aggregation Program for the GTAP9 Database
 
-$if not set source $set source gtap8ingams
-$if not set target $set target gtap8iea
+$if not set source $abort	Need to specify a source on command line: --source=xxx
+$if not set target $abort	Need to specify a target on command line: --target=yyy
 $if not set output $set output %target%
 
-*.$set energydata
 $set ds %source%
-$include gtap8data
+$include gtap9data
 $include ..\defines\%target%.map
 
 alias (ii,jj), (rr,ss);
 
-set	gg(*)	All goods in aggregate model plus C - G - I /c,g,i/;
-gg(ii) = yes;
+set	gg(*)	All goods in aggregate model plus C - G - I /
+		c	Household,
+		g	Government consumption,
+		i	Investment/;
+alias (u,*);
+gg(u)$ii(u) = ii(u);
 abort$sum(ii$(sameas(ii,"c") or sameas(ii,"g") or sameas(ii,"i")),1) "Invalid identifier: C, G and I are reserved.";
 
 parameters
 	vom_(*,rr)	Aggretate output
-	vfm_(ff,jj,rr)	Endowments - Firms' purchases at market prices,
+	vfm_(ff,*,rr)	Endowments - Firms' purchases at market prices,
 	vdfm_(ii,*,rr)	Intermediates - firms' domestic purchases at market prices,
 	vifm_(ii,*,rr)	Intermediates - firms' imports at market prices,
 	vxmd_(ii,rr,ss)	Trade - bilateral exports at market prices,
 	vst_(ii,rr)	Trade - exports for international transportation
 	vtwr_(ii,jj,rr,ss)	Trade - Margins for international transportation at world prices,
 
-	evd_(ii,*,rr)	Volume of energy purchases (mtoe),
-	evt_(ii,rr,ss)	Volume of energy trade (mtoe),
+	evt_(ii,rr,rr)	Volume of energy trade (mtoe),
+	evd_(ii,*,rr)	Domestic energy use (mtoe),
+	evi_(ii,*,rr)	Imported energy use (mtoe),
+	eco2d_(ii,*,rr)	CO2 emissions in domestic fuels - Mt CO2",
+	eco2i_(ii,*,rr)	CO2 emissions in foreign fuels - Mt CO2",
 
-	rto_(ii,rr)	Output (or income) subsidy rates
-	rtf_(ff,jj,rr)	Primary factor and commodity rates taxes 
+	rto_(*,rr)	Output (or income) subsidy rates
+	rtf_(ff,*,rr)	Primary factor and commodity rates taxes 
 	rtfd_(ii,*,rr)	Firms domestic tax rates
 	rtfi_(ii,*,rr)	Firms' import tax rates
 	rtxs_(ii,rr,ss)	Export subsidy rates
@@ -65,15 +71,20 @@ put_utility 'title' /"Aggregating vxmd.";
 $batinclude aggr vxmd i r s vxmd_
 put_utility 'title' /"Aggregating evd.";
 $batinclude aggr evd  i g r evd_
+put_utility 'title' /"Aggregating evi.";
+$batinclude aggr evi  i g r evi_
 put_utility 'title' /"Aggregating evt.";
 $batinclude aggr evt  i r s evt_
+put_utility 'title' /"Aggregating eco2d.";
+$batinclude aggr eco2d  i g r eco2d_
+put_utility 'title' /"Aggregating eco2i.";
+$batinclude aggr eco2i  i g r eco2i_
 put_utility 'title' /"Aggregating vtwr.";
 $batinclude aggr vtwr i j r s vtwr_
 
-
 *	First, convert tax rates into tax payments:
 
-rto(i,r)    = rto(i,r)*vom(i,r);
+rto(g,r)    = rto(g,r)*vom(g,r);
 rtf(f,j,r)  = rtf(f,j,r) * vfm(f,j,r);
 rtfd(i,g,r) = rtfd(i,g,r) * vdfm(i,g,r);
 rtfi(i,g,r) = rtfi(i,g,r) * vifm(i,g,r);
@@ -84,7 +95,7 @@ rtxs(i,r,s) = rtxs(i,r,s) * vxmd(i,r,s);
 *	Aggregate:
 
 put_utility 'title' /"Aggregating rto.";
-$batinclude aggr rto i r   rto_
+$batinclude aggr rto g r   rto_
 put_utility 'title' /"Aggregating rtf.";
 $batinclude aggr rtf f j r rtf_
 put_utility 'title' /"Aggregating rtfd.";
@@ -101,16 +112,16 @@ profit(gg,rr) = vom_(gg,rr)
 		- sum(ii, vdfm_(ii,gg,rr) + rtfd_(ii,gg,rr))
 		- sum(ii, vifm_(ii,gg,rr) + rtfi_(ii,gg,rr));
 
-profit(jj,rr) = vom_(jj,rr) - rto_(jj,rr) 
-		- sum(ii, vdfm_(ii,jj,rr) + rtfd_(ii,jj,rr))
-		- sum(ii, vifm_(ii,jj,rr) + rtfi_(ii,jj,rr))
-		- sum(ff, vfm_(ff,jj,rr)  + rtf_(ff,jj,rr));
+profit(gg,rr) = vom_(gg,rr) - rto_(gg,rr) 
+		- sum(ii, vdfm_(ii,gg,rr) + rtfd_(ii,gg,rr))
+		- sum(ii, vifm_(ii,gg,rr) + rtfi_(ii,gg,rr))
+		- sum(ff, vfm_(ff,gg,rr)  + rtf_(ff,gg,rr));
 display profit;
 
 
 *	Convert back to rates:
 
-rto_(ii,rr)$vom_(ii,rr) = rto_(ii,rr)/vom_(ii,rr);
+rto_(gg,rr)$vom_(gg,rr) = rto_(gg,rr)/vom_(gg,rr);
 rtf_(ff,jj,rr)$vfm_(ff,jj,rr)  = rtf_(ff,jj,rr) / vfm_(ff,jj,rr);
 rtfd_(ii,gg,rr)$ vdfm_(ii,gg,rr) = rtfd_(ii,gg,rr) / vdfm_(ii,gg,rr);
 rtfi_(ii,gg,rr)$ vifm_(ii,gg,rr) = rtfi_(ii,gg,rr) / vifm_(ii,gg,rr);
@@ -143,9 +154,94 @@ epsilon_(ii,rr)$sum((mapr(r,rr),mapi(i,ii)),vp(i,r))
 
 loop(mapf(mf,ff), etrae_(ff) = +inf;);
 
+$if set energydata $goto energydata
+
+put_utility 'title' /"Unloading dataset.";
 execute_unload '%datadir%%output%.gdx', 
 	gg=g, rr=r, ff=f, ii=i, 
 	vfm_=vfm, vdfm_=vdfm, vifm_=vifm,vxmd_=vxmd, vst_=vst, vtwr_=vtwr, 
 	rto_=rto, rtf_=rtf, rtfd_=rtfd, rtfi_=rtfi, rtxs_=rtxs, rtms_=rtms, 
-	evd_=evd, evt_=evt, 
+	evd_=evd, evi_=evi, evt_=evt, eco2d_=eco2d, eco2i_=eco2i, 
 	esubd_=esubd, esubva_=esubva, esubm_=esubm, etrae_=etrae, eta_=eta, epsilon_=epsilon;
+put_utility 'title' /"All done with aggregation.";
+$exit
+
+$label energydata
+put_utility 'title' /"Unloading dataset.";
+
+parameter
+	ieocarbon_(scn,ii,rr,t)		IEO carbon emissions (Mt of CO2)
+	ieogdp_(scn,rr,t)		IEO gross domestic product (billion USD)
+	ieoenergy_(scn,ii,*,rr,t)	IEO energy use by sector (mtoe)
+	ieoele_(scn,ieo_tec, rr,t)	Power production by aggregate generaton technology
+	ieocrude_(scn,rr,t)		IEO crude oil supply (mtoe)
+	ieoelesup_(scn,rr,t)		IEO electricity generation and capacity (mtoe),
+	unpop_(rr,t)			UN population trajectories (millions)
+
+	tmp1(r)				Temporary array for aggregating one-dimensional data,
+	tmp2(rr)			Temporary array for aggregating one-dimensional data,
+
+	tmp3(i,r)			Temporary array for aggregating two-dimensional data,
+	tmp4(ii,rr)			Temporary array for aggregating two-dimensional data,
+
+	tmp5(i,g,r)			Temporary array for aggregating three-dimensional data,
+	tmp6(ii,*,rr)			Temporary array for aggregating three-dimensional data;
+
+loop(t,
+	tmp1(r)	= unpop(r,t);
+$batinclude aggr tmp1 r  tmp2
+	unpop_(rr,t) = tmp2(rr);
+);
+tmp1(r) = 0; tmp2(rr) = 0;
+
+*.$setglobal debug yes
+
+$log Aggregating IEO Energy Projections...
+
+loop((scn,t,ieo_tec), 
+	tmp1(r) = ieoele(scn,ieo_tec,r,t);
+$batinclude aggr tmp1 r      tmp2
+	ieoele_(scn,ieo_tec,rr,t) = tmp2(rr);
+	tmp1(r) = 0; tmp2(rr) = 0;
+); 
+
+
+
+loop((scn,t),
+	tmp1(r) = ieogdp(scn,r,t);
+$batinclude aggr tmp1 r      tmp2
+	ieogdp_(scn,rr,t) = tmp2(rr);
+	tmp1(r) = 0; tmp2(rr) = 0;
+
+	tmp1(r) = ieocrude(scn,r,t);
+$batinclude aggr tmp1 r      tmp2
+	ieocrude_(scn,rr,t) = tmp2(rr);
+	tmp1(r) = 0; tmp2(rr) = 0;
+
+	tmp1(r) = ieoelesup(scn,r,t);
+$batinclude aggr tmp1 r      tmp2
+	ieoelesup_(scn,rr,t) = tmp2(rr);
+	tmp1(r) = 0; tmp2(rr) = 0;
+
+	tmp3(i,r) = ieocarbon(scn,i,r,t);
+$batinclude aggr tmp3 i r      tmp4
+	ieocarbon_(scn,ii,rr,t) = tmp4(ii,rr);
+	tmp3(i,r) = 0; tmp4(ii,rr) = 0;
+
+	tmp5(i,g,r) = ieoenergy(scn,i,g,r,t);
+$batinclude aggr tmp5 i g r     tmp6
+	ieoenergy_(scn,ii,gg,rr,t) = tmp6(ii,gg,rr);
+	tmp5(i,g,r) = 0; tmp6(ii,gg,rr) = 0;
+);
+
+execute_unload '%datadir%%output%.gdx', 
+	gg=g, rr=r, ff=f, ii=i, 
+	vfm_=vfm, vdfm_=vdfm, vifm_=vifm,vxmd_=vxmd, vst_=vst, vtwr_=vtwr, 
+	rto_=rto, rtf_=rtf, rtfd_=rtfd, rtfi_=rtfi, rtxs_=rtxs, rtms_=rtms, 
+	evd_=evd, evi_=evi, evt_=evt, eco2d_=eco2d, eco2i_=eco2i, 
+	esubd_=esubd, esubva_=esubva, esubm_=esubm, etrae_=etrae, eta_=eta, epsilon_=epsilon,
+	ieogdp_=ieogdp, ieoenergy_=ieoenergy, ieocrude_=ieocrude, ieoprice, ieocarbon_=ieocarbon, ieoelesup_=ieoelesup, ieoele_=ieoele, 
+	unpop_=unpop;
+
+
+put_utility 'title' /"All done with aggregation.";

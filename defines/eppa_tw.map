@@ -19,7 +19,7 @@ set rr  Regions in the aggregation /
         AFR	Africa
         KOR     South Korea
         IDZ     Indonesia
-
+	TWN	Taiwan
 /;
 
 SET mapr(r,rr) Mapping of GTAP Regions (from-to) 
@@ -34,12 +34,15 @@ AUS	.	anz	Australia
 AUT	.	eur	Austria
 AZE	.	roe	Azerbaijan
 BEL	.	eur	Belgium
+BEN	.	afr	Benin
+BFA	.	afr	Burkina Faso
 BGD	.	rea	Bangladesh
 BGR	.	eur	Bulgaria
 BHR	.	mes	Bahrain
 BLR	.	roe	Belarus
 BOL	.	lam	Plurinational Republic of Bolivia
 BRA	.	bra	Brazil
+BRN	.	rea	Brunei
 BWA	.	afr	Botswana
 CAN	.	can	Canada
 CHE	.	eur	Switzerland
@@ -53,6 +56,7 @@ CYP	.	eur	Cyprus
 CZE	.	eur	Czech Republic
 DEU	.	eur	Germany
 DNK	.	eur	Denmark
+DOM	.	lam	Dominican Republic
 ECU	.	lam	Ecuador
 EGY	.	afr	Egypt
 ESP	.	eur	Spain
@@ -63,6 +67,7 @@ FRA	.	eur	France
 GBR	.	eur	United Kingdom
 GEO	.	roe	Georgia
 GHA	.	afr	Ghana
+GIN	.	afr	Guinea
 GRC	.	eur	Greece
 GTM	.	lam	Guatemala
 HKG	.	chn	Hong Kong
@@ -75,6 +80,8 @@ IRL	.	eur	Ireland
 IRN	.	mes	Iran Islamic Republic of
 ISR	.	mes	Israel
 ITA	.	eur	Italy
+JAM	.	lam	Jamaica
+JOR	.	mes	Jordan
 JPN	.	jpn	Japan
 KAZ	.	roe	Kazakhstan
 KEN	.	afr	Kenya
@@ -109,11 +116,13 @@ PAN	.	lam	Panama
 PER	.	lam	Peru
 PHL	.	asi	Philippines
 POL	.	eur	Poland
+PRI	.	lam	Puerto Rico
 PRT	.	eur	Portugal
 PRY	.	lam	Paraguay
 QAT	.	mes	Qatar
 ROU	.	eur	Romania
 RUS	.	rus	Russian Federation
+RWA	.	afr	Rwanda
 SAU	.	mes	Saudi Arabia
 SEN	.	afr	Senegal
 SGP	.	asi	Singapore
@@ -121,10 +130,12 @@ SLV	.	lam	El Salvador
 SVK	.	eur	Slovakia
 SVN	.	eur	Slovenia
 SWE	.	eur	Sweden
+TGO	.	afr	Togo
 THA	.	asi	Thailand
+TTO	.	lam	Trinidad and Tobago
 TUN	.	afr	Tunisia
 TUR	.	roe	Turkey
-TWN	.	asi	Taiwan
+TWN	.	twn	Taiwan
 TZA	.	afr	Tanzania United Republic of
 UGA	.	afr	Uganda
 UKR	.	roe	Ukraine
@@ -160,95 +171,40 @@ ZWE	.	afr	Zimbabwe
 
 * Sectoral Mapping
 
-$ontext
-
-*	Based on Niven's proposal (email: 8/26/2016)
-"	Disaggregate the Crops sector into:
-
-1	PDR	Paddy rice
-2	WHT	Wheat
-3	GRO	Cereal grains nec
-4	V_F	Vegetables, fruit, nuts
-5	OSD	Oil seeds
-6	C_B	Sugar cane, sugar beet
-7	PFB	Plant-based fibers
-8	OCR	Crops nec
-
-"	Disaggregate the Livestock sector into:
-
-9	CTL	Bovine cattle, sheep and goats, horses
-10	OAP	Animal products nec
-
-"	Disaggregate LUM (Wood products) from the Other sector
-
-"	Disaggregate (separately) the following sectors from the Energy Intensive Industries sector:
-
-34	nmm	Non-Metallic Minerals: cement, plaster, lime, gravel, concrete				     
-35	i_s	Iron & Steel: basic production and casting						     
-36	nfm	Non-Ferrous Metals: production and casting of copper, aluminium, zinc, lead, gold, and silver
-
-"	Disaggregate CNS (Construction) from the Services Sectors
-
-$offtext
-
-
 *alias (i,ii);
 *SET mapi(i,ii)  Mapping for sectors and goods;
 *mapi(i,i) = yes;
 
 set ii Sectors and goods in aggregate model /
-
-PDR  paddy rice                                     	 
-WHT  wheat                                          	 
-GRO  cereal grains nec                              	 
-V_F  vegetables - fruit - nuts                        	 
-OSD  oil seeds                                      	 
-C_B  sugar cane - sugar beet                         	 
-PFB  plant-based fibers                             	 
-OCR  crops nec			                                      	 
-
-live	Agriculture - livestock		
-
-CTL	Bovine cattle sheep and goats horses
-OAP	Animal products nec
-
-fors	Agriculture - forestry		
-LUM	Wood products
-
-food	Food products			
-coal	Coal				
-oil     Crude Oil			
-roil	Refined Oil			
-gas     Gas				
-elec	Electricity			
-
-nmm	Non-Metallic Minerals cement plaster lime gravel concrete				     
-i_s	Iron & Steel basic production and casting						     
-nfm	Non-Ferrous Metals production and casting of copper aluminium zinc lead gold and silver
-
-eint	Energy-intensive Industries	
-othr	Other Industries		
-
-CNS	Construction
-
-serv	Services			
-tran	Transport                       
-dwe     Ownership of dwellings
-*cgd	Savings Good 
+	crop	Agriculture - crops		
+	live	Agriculture - livestock		
+	fors	Agriculture - forestry		
+	food	Food products			
+	coal	Coal				
+	oil     Crude Oil			
+	roil	Refined Oil			
+	gas     Gas				
+	elec	Electricity			
+	eint	Energy-intensive Industries	
+	othr	Other Industries		
+	serv	Services			
+	tran	Transport                       
+        dwe     Ownership of dwellings
+*	cgd	Savings Good 
 /;
 
 SET mapi(*,ii)  Mapping for sectors and goods /
 
-PDR.PDR  paddy rice                                     	 
-WHT.WHT  wheat                                          	 
-GRO.GRO  cereal grains nec                              	 
-V_F.V_F  vegetables - fruit - nuts                        	 
-OSD.OSD  oil seeds                                      	 
-C_B.C_B  sugar cane - sugar beet                         	 
-PFB.PFB  plant-based fibers                             	 
-OCR.OCR  crops nec			                                      	 
-CTL.CTL  bo horses         					 
-OAP.OAP  animal products nec                            	 
+PDR.crop  paddy rice                                     	 
+WHT.crop  wheat                                          	 
+GRO.crop  cereal grains nec                              	 
+V_F.crop  vegetables - fruit - nuts                        	 
+OSD.crop  oil seeds                                      	 
+C_B.crop  sugar cane - sugar beet                         	 
+PFB.crop  plant-based fibers                             	 
+OCR.crop  crops nec                                      	 
+CTL.live  bo horses         					 
+OAP.live  animal products nec                            	 
 RMK.live  raw milk                                       	 
 WOL.live  wool - silk-worm cocoons                        	 
 FRS.fors  forestry                                       	 
@@ -270,14 +226,14 @@ B_T.food  beverages and tobacco products
 TEX.othr  textiles                                       	 
 WAP.othr  wearing apparel                                	 
 LEA.othr  leather products                               	 
-LUM.LUM  wood products                                  	 
+LUM.othr  wood products                                  	 
 PPP.eint  paper products - publishing                     	 
 P_C.roil  petroleum - coal products                       	 
 CRP.eint  chemical - rubber - plastic products
 ** sugarcane ethanol is included in CRP             	 
-NMM.NMM  mineral products nec                           	 
-I_S.I_S  ferrous metals                                 	 
-NFM.NFM  metals nec                                     	 
+NMM.eint  mineral products nec                           	 
+I_S.eint  ferrous metals                                 	 
+NFM.eint  metals nec                                     	 
 FMP.eint  metal products                                 	 
 MVH.othr  motor vehicles and parts                       	 
 OTN.othr  transport equipment nec                        	 
@@ -287,7 +243,7 @@ OMF.othr  manufactures nec
 ELY.elec  electricity                                    	 
 GDT.gas   gas manufacture - distribution                  	 
 WTR.othr  water                                          	 
-CNS.CNS  construction                                   	 
+CNS.othr  construction                                   	 
 TRD.serv  trade                                          	 
 OTP.tran  transport nec                                  	 
 WTP.tran  water transport                                	 
@@ -325,15 +281,44 @@ SET   ff   Factors of production
 	fix	Natural resources 
         /;
 
+*set ff  /
+*	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tec	Technicians technicians and associate professionals
+*	clk	Clerks
+*	srv	Service and market sales workers
+*	lab	Agricultural and unskilled workers (Major Groups 6-9)
+*	lnd     Land,    
+*	cap     Capital,    
+*	res     Natural resources /;
 
-SET	mapf(*,ff)   Factors of production 
-        /
-	Land.lnd	Land,
-	SkLab.lab	Skilled labor,
-	UnskLab.lab	Unskilled labor,
-	Capital.cap	Capital,
-	NatlRes.fix	Natural resources 
-        /;
+*SET	mapf(*,ff)   Factors of production 
+*        /
+*	Land.lnd	Land,
+*	SkLab.lab	Skilled labor,
+*	UnskLab.lab	Unskilled labor,
+*	Capital.cap	Capital,
+*	NatlRes.fix	Natural resources 
+*        /;
+
+*set mapf(*,*) /
+*	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tech_aspros.tec		Technicians technicians and associate professionals
+*	clerks.clk		Clerks
+*	service_shop.srv	Service and market sales workers,
+*	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+*	Land.lnd		Land,    
+*	Capital.cap		Capital,    
+*	NatlRes.res		Natural resources/;
+
+set mapf(*,*) /
+	off_mgr_pros.lab	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.lab		Technicians technicians and associate professionals
+	clerks.lab		Clerks
+	service_shop.lab	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.fix		Natural resources/;
 
 SET eec energy commodities
         /

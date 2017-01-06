@@ -1,0 +1,305 @@
+* Regional Mapping
+set rr  Regions in the aggregation /
+
+	TWN	Taiwan
+	ROW	Rest of world
+/;
+
+SET mapr(r,rr) Mapping of GTAP Regions (from-to) 
+
+/
+
+ALB	.	row	Albania
+ARE	.	row	United Arab Emirates
+ARG	.	row	Argentina
+ARM	.	row	Armenia
+AUS	.	row	Australia
+AUT	.	row	Austria
+AZE	.	row	Azerbaijan
+BEL	.	row	Belgium
+BEN	.	row	Benin
+BFA	.	row	Burkina Faso
+BGD	.	row	Bangladesh
+BGR	.	row	Bulgaria
+BHR	.	row	Bahrain
+BLR	.	row	Belarus
+BOL	.	row	Plurinational Republic of Bolivia
+BRA	.	row	Brazil
+BRN	.	row	Brunei
+BWA	.	row	Botswana
+CAN	.	row	Canada
+CHE	.	row	Switzerland
+CHL	.	row	Chile
+CHN	.	row	China
+CIV	.	row	Cote d'Ivoire
+CMR	.	row	Cameroon
+COL	.	row	Colombia
+CRI	.	row	Costa Rica
+CYP	.	row	Cyprus
+CZE	.	row	Czech Republic
+DEU	.	row	Germany
+DNK	.	row	Denmark
+DOM	.	row	Dominican Republic
+ECU	.	row	Ecuador
+EGY	.	row	Egypt
+ESP	.	row	Spain
+EST	.	row	Estonia
+ETH	.	row	Ethiopia
+FIN	.	row	Finland
+FRA	.	row	France
+GBR	.	row	United Kingdom
+GEO	.	row	Georgia
+GHA	.	row	Ghana
+GIN	.	row	Guinea
+GRC	.	row	Greece
+GTM	.	row	Guatemala
+HKG	.	row	Hong Kong
+HND	.	row	Honduras
+HRV	.	row	Croatia
+HUN	.	row	Hungary
+IDN	.	row	Indonesia
+IND	.	row	India
+IRL	.	row	Ireland
+IRN	.	row	Iran Islamic Republic of
+ISR	.	row	Israel
+ITA	.	row	Italy
+JAM	.	row	Jamaica
+JOR	.	row	Jordan
+JPN	.	row	Japan
+KAZ	.	row	Kazakhstan
+KEN	.	row	Kenya
+KGZ	.	row	Kyrgyzstan
+KHM	.	row	Cambodia
+KOR	.	row	Korea Republic of
+KWT	.	row	Kuwait
+LAO	.	row	Lao People's Democratic Republic
+LKA	.	row	Sri Lanka
+LTU	.	row	Lithuania
+LUX	.	row	Luxembourg
+LVA	.	row	Latvia
+MAR	.	row	Morocco
+MDG	.	row	Madagascar
+MEX	.	row	Mexico
+MLT	.	row	Malta
+MNG	.	row	Mongolia
+MOZ	.	row	Mozambique
+MUS	.	row	Mauritius
+MWI	.	row	Malawi
+MYS	.	row	Malaysia
+NAM	.	row	Namibia
+NGA	.	row	Nigeria
+NIC	.	row	Nicaragua
+NLD	.	row	Netherlands
+NOR	.	row	Norway
+NPL	.	row	Nepal
+NZL	.	row	New Zealand
+OMN	.	row	Oman
+PAK	.	row	Pakistan
+PAN	.	row	Panama
+PER	.	row	Peru
+PHL	.	row	Philippines
+POL	.	row	Poland
+PRI	.	row	Puerto Rico
+PRT	.	row	Portugal
+PRY	.	row	Paraguay
+QAT	.	row	Qatar
+ROU	.	row	Romania
+RUS	.	row	Russian Federation
+RWA	.	row	Rwanda
+SAU	.	row	Saudi Arabia
+SEN	.	row	Senegal
+SGP	.	row	Singapore
+SLV	.	row	El Salvador
+SVK	.	row	Slovakia
+SVN	.	row	Slovenia
+SWE	.	row	Sweden
+TGO	.	row	Togo
+THA	.	row	Thailand
+TTO	.	row	Trinidad and Tobago
+TUN	.	row	Tunisia
+TUR	.	row	Turkey
+TWN	.	twn	Taiwan
+TZA	.	row	Tanzania United Republic of
+UGA	.	row	Uganda
+UKR	.	row	Ukraine
+URY	.	row	Uruguay
+USA	.	row	United States of America
+VEN	.	row	Venezuela
+VNM	.	row	Viet Nam
+XAC	.	row	South Central Africa
+XCA	.	row	Rest of Central America
+XCB	.	row	Caribbean
+XCF	.	row	Central Africa
+XEA	.	row	Rest of East Asia
+XEC	.	row	Rest of Eastern Africa
+XEE	.	row	Rest of Eastern Europe
+XEF	.	row	Rest of EFTA
+XER	.	row	Rest of Europe
+XNA	.	row	Rest of North America
+XNF	.	row	Rest of North Africa
+XOC	.	row	Rest of Oceania
+XSA	.	row	Rest of South Asia
+XSC	.	row	Rest of South African Customs Union
+XSE	.	row	Rest of Southeast Asia
+XSM	.	row	Rest of South America
+XSU	.	row	Rest of Former Soviet Union
+XTW	.	row	Rest of the World
+XWF	.	row	Rest of Western Africa
+XWS	.	row	Rest of Western Asia
+ZAF	.	row	South Africa
+ZMB	.	row	Zambia
+ZWE	.	row	Zimbabwe
+
+/;
+
+* Sectoral Mapping
+
+*alias (i,ii);
+*SET mapi(i,ii)  Mapping for sectors and goods;
+*mapi(i,i) = yes;
+
+set ii Sectors and goods in aggregate model /
+
+	othr	Non services			
+	serv	Services			
+/;
+
+SET mapi(*,ii)  Mapping for sectors and goods /
+
+PDR.othr  paddy rice                                     	 
+WHT.othr  wheat                                          	 
+GRO.othr  cereal grains nec                              	 
+V_F.othr  vegetables - fruit - nuts                        	 
+OSD.othr  oil seeds                                      	 
+C_B.othr  sugar cane - sugar beet                         	 
+PFB.othr  plant-based fibers                             	 
+OCR.othr  crops nec                                      	 
+CTL.othr  bo horses         					 
+OAP.othr  animal products nec                            	 
+RMK.othr  raw milk                                       	 
+WOL.othr  wool - silk-worm cocoons                        	 
+FRS.othr  forestry                                       	 
+FSH.othr  fishing                                        	 
+COA.othr  coal                                           	 
+OIL.othr  oil                                            	 
+GAS.othr  gas                                            	 
+OMN.othr  minerals nec                                   	 
+CMT.othr  bo meat products    					 
+OMT.othr  meat products                                  	 
+VOL.othr  vegetable oils and fats                        	 
+MIL.othr  dairy products                                 	 
+PCR.othr  processed rice                                 	 
+SGR.othr  sugar                                          	 
+OFD.othr  food products nec                              	 
+B_T.othr  beverages and tobacco products                 	 
+TEX.othr  textiles                                       	 
+WAP.othr  wearing apparel                                	 
+LEA.othr  leather products                               	 
+LUM.othr  wood products                                  	 
+PPP.othr  paper products - publishing                     	 
+P_C.othr  petroleum - coal products                       	 
+CRP.othr  chemical - rubber - plastic products
+NMM.othr  mineral products nec                           	 
+I_S.othr  ferrous metals                                 	 
+NFM.othr  metals nec                                     	 
+FMP.othr  metal products                                 	 
+MVH.othr  motor vehicles and parts                       	 
+OTN.othr  transport equipment nec                        	 
+ELE.othr  electronic equipment                           	 
+OME.othr  machinery and equipment nec                    	 
+OMF.othr  manufactures nec                               	 
+ELY.othr  electricity                                    	 
+GDT.othr  gas manufacture - distribution                  	 
+WTR.othr  water                                          	 
+CNS.othr  construction                                   	 
+TRD.serv  trade                                          	 
+OTP.othr  transport nec                                  	 
+WTP.othr  water transport                                	 
+ATP.othr  air transport                                  	 
+CMN.serv  communication                                  	 
+OFI.serv  financial services nec                         	 
+ISR.serv  insurance                                      	 
+OBS.serv  business services nec                          	 
+ROS.serv  recreational and other services                	 
+OSG.serv  public admin - and defence - education - health   	 
+DWE.othr   ownership of dwellings
+/;  
+
+* Note: (YHC: 20131121)
+* VOL.food  vegetable oils and fats                        	 
+** bio-diesel is included in VOL
+
+* OFD.food  food products nec                              	 
+** corn ethanol eth1 is included in OFD
+
+* CRP.eint  chemical - rubber - plastic products
+** sugarcane ethanol is included in CRP  
+
+*alias (f,ff);
+*SET mapf(f,ff)	Mapping of factors;
+*mapf(f,f) = yes;
+
+SET   ff   Factors of production 
+        /
+	lnd	Land,
+	lab	Labor,
+	cap	Capital,
+	fix	Natural resources 
+        /;
+
+*set ff  /
+*	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tec	Technicians technicians and associate professionals
+*	clk	Clerks
+*	srv	Service and market sales workers
+*	lab	Agricultural and unskilled workers (Major Groups 6-9)
+*	lnd     Land,    
+*	cap     Capital,    
+*	res     Natural resources /;
+
+*SET	mapf(*,ff)   Factors of production 
+*        /
+*	Land.lnd	Land,
+*	SkLab.lab	Skilled labor,
+*	UnskLab.lab	Unskilled labor,
+*	Capital.cap	Capital,
+*	NatlRes.fix	Natural resources 
+*        /;
+
+*set mapf(*,*) /
+*	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tech_aspros.tec		Technicians technicians and associate professionals
+*	clerks.clk		Clerks
+*	service_shop.srv	Service and market sales workers,
+*	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+*	Land.lnd		Land,    
+*	Capital.cap		Capital,    
+*	NatlRes.res		Natural resources/;
+
+set mapf(*,*) /
+	off_mgr_pros.lab	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.lab		Technicians technicians and associate professionals
+	clerks.lab		Clerks
+	service_shop.lab	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.fix		Natural resources/;
+
+SET eec energy commodities
+        /
+	coal	Coal
+	oil	Crude oil
+	gas	Natural gas,
+	roil	Refined oil products,
+	elec	Electricity 
+        /;
+
+SET	mape(*,eec) 
+        /
+	ecoa.coal	Coal,
+	eoil.oil	Crude oil,
+	(egas,egdt).gas	Natural gas,
+	ep_c.roil	Refined oil products,
+	eely.elec	Electricity
+        /;

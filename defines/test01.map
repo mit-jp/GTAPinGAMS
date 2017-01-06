@@ -1,0 +1,307 @@
+$TITLE   GTAP Mapping which Relabels to Match GAMS Identifiers
+
+*	See GTAP resource 7088.pdf by Walmsley and Carrico for a description of
+*	labor categories.
+
+set ff  /
+	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tec	Technicians technicians and associate professionals
+	clk	Clerks
+	srv	Service and market sales workers
+	lab	Agricultural and unskilled workers (Major Groups 6-9)
+	lnd     Land,    
+	cap     Capital,    
+	res     Natural resources /;
+
+set mapf(*,*) /
+	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.tec		Technicians technicians and associate professionals
+	clerks.clk		Clerks
+	service_shop.srv	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.res		Natural resources/;
+
+set	ii	Commodites in the aggregation /
+	PDR	"Paddy rice",
+	WHT	"Wheat",
+	GRO	"Cereal grains nec",
+	V_F	"Vegetables, fruit, nuts",
+	OSD	"Oil seeds",
+	C_B	"Sugar cane, sugar beet",
+	PFB	"Plant-based fibers",
+	OCR	"Crops nec",
+	CTL	"Bovine cattle, sheep and goats, horses",
+	OAP	"Animal products nec",
+	RMK	"Raw milk",
+	WOL	"Wool, silk-worm cocoons",
+	FRS	"Forestry",
+	FSH	"Fishing",
+	COL	"Coal",
+	CRU	"Crude Oil",
+	GAS	"Gas",
+	OMN	"Minerals nec",
+	CMT	"Bovine meat products",
+	OMT	"Meat products nec",
+	VOL	"Vegetable oils and fats",
+	MIL	"Dairy products",
+	PCR	"Processed rice",
+	SGR	"Sugar",
+	OFD	"Food products nec",
+	B_T	"Beverages and tobacco products",
+	TEX	"Textiles",
+	WAP	"Wearing apparel",
+	LEA	"Leather products",
+	LUM	"Wood products",
+	PPP	"Paper products, publishing",
+	OIL	"Petroleum, coal products",
+	CRP	"Chemical, rubber, plastic products",
+	NMM	"Mineral products nec",
+	I_S	"Ferrous metals",
+	NFM	"Metals nec",
+	FMP	"Metal products",
+	MVH	"Motor vehicles and parts",
+	OTN	"Transport equipment nec",
+	EEQ	"Electronic equipment",
+	OME	"Machinery and equipment nec",
+	OMF	"Manufactures nec",
+	ELE	"Electricity",
+	GDT	"Gas manufacture, distribution",
+	WTR	"Water",
+	CNS	"Construction",
+	TRD	"Trade",
+	OTP	"Transport nec",
+	WTP	"Water transport",
+	ATP	"Air transport",
+	CMN	"Communication",
+	OFI	"Financial services nec",
+	ISR	"Insurance",
+	OBS	"Business services nec",
+	ROS	"Recreational and other services",
+	OSG	"Public Administration, Defense, Education, Health",
+	DWE	"Dwellings" /;
+
+$eolcom !
+
+*	The only names changes here are those which conform to the
+*	GTAPinGAMS conventions for energy goods:
+
+*	OIL.CRU	! "Crude Oil",
+*	COA.COL	! "Coal",
+*	P_C.OIL	! "Petroleum, coal products",
+*	ELY.ELE	! "Electricity",
+*	ELE.EEQ	! "Electronic equipment",
+
+SET mapi(i,ii) Mapping of Sectors and Goods (from-to) /
+	PDR.PDR	! "Paddy rice",
+	WHT.WHT	! "Wheat",
+	GRO.GRO	! "Cereal grains nec",
+	V_F.V_F	! "Vegetables, fruit, nuts",
+	OSD.OSD	! "Oil seeds",
+	C_B.C_B	! "Sugar cane, sugar beet",
+	PFB.PFB	! "Plant-based fibers",
+	OCR.OCR	! "Crops nec",
+	CTL.CTL	! "Bovine cattle, sheep and goats, horses",
+	OAP.OAP	! "Animal products nec",
+	RMK.RMK	! "Raw milk",
+	WOL.WOL	! "Wool, silk-worm cocoons",
+	FRS.FRS	! "Forestry",
+	FSH.FSH	! "Fishing",
+	COA.COL	! "Coal",
+	OIL.CRU	! "Crude Oil",
+	GAS.GAS	! "Gas",
+	OMN.OMN	! "Minerals nec",
+	CMT.CMT	! "Bovine meat products",
+	OMT.OMT	! "Meat products nec",
+	VOL.VOL	! "Vegetable oils and fats",
+	MIL.MIL	! "Dairy products",
+	PCR.PCR	! "Processed rice",
+	SGR.SGR	! "Sugar",
+	OFD.OFD	! "Food products nec",
+	B_T.B_T	! "Beverages and tobacco products",
+	TEX.TEX	! "Textiles",
+	WAP.WAP	! "Wearing apparel",
+	LEA.LEA	! "Leather products",
+	LUM.LUM	! "Wood products",
+	PPP.PPP	! "Paper products, publishing",
+	P_C.OIL	! "Petroleum, coal products",
+	CRP.CRP	! "Chemical, rubber, plastic products",
+	NMM.NMM	! "Mineral products nec",
+	I_S.I_S	! "Ferrous metals",
+	NFM.NFM	! "Metals nec",
+	FMP.FMP	! "Metal products",
+	MVH.MVH	! "Motor vehicles and parts",
+	OTN.OTN	! "Transport equipment nec",
+	ELE.EEQ	! "Electronic equipment",
+	OME.OME	! "Machinery and equipment nec",
+	OMF.OMF	! "Manufactures nec",
+	ELY.ELE	! "Electricity",
+	GDT.GDT	! "Gas manufacture, distribution",
+	WTR.WTR	! "Water",
+	CNS.CNS	! "Construction",
+	TRD.TRD	! "Trade",
+	OTP.OTP	! "Transport nec",
+	WTP.WTP	! "Water transport",
+	ATP.ATP	! "Air transport",
+	CMN.CMN	! "Communication",
+	OFI.OFI	! "Financial services nec",
+	ISR.ISR	! "Insurance",
+	OBS.OBS	! "Business services nec",
+	ROS.ROS	! "Recreational and other services",
+	OSG.OSG	! "Public Administration, Defense, Education, Health",
+	DWE.DWE	! "Dwellings"
+/;
+
+set	rr	Regions (with explicit descriptions) /
+
+        USA     USA
+        ROW     Rest of world
+
+	/;
+
+Set MapR(r,rr) Mapping of GTAP Regions (from-to)
+
+/
+
+AUS	.	ROW
+NZL	.	ROW
+XOC	.	ROW
+CHN	.	ROW
+HKG	.	ROW
+JPN	.	ROW
+KOR	.	ROW
+MNG	.	ROW
+TWN	.	ROW
+XEA	.	ROW
+BRN	.	ROW
+KHM	.	ROW
+IDN	.	ROW
+LAO	.	ROW
+MYS	.	ROW
+PHL	.	ROW
+SGP	.	ROW
+THA	.	ROW
+VNM	.	ROW
+XSE	.	ROW
+BGD	.	ROW
+IND	.	ROW
+NPL	.	ROW
+PAK	.	ROW
+LKA	.	ROW
+XSA	.	ROW
+CAN	.	ROW
+USA	.	USA
+MEX	.	ROW
+XNA	.	ROW
+ARG	.	ROW
+BOL	.	ROW
+BRA	.	ROW
+CHL	.	ROW
+COL	.	ROW
+ECU	.	ROW
+PRY	.	ROW
+PER	.	ROW
+URY	.	ROW
+VEN	.	ROW
+XSM	.	ROW
+CRI	.	ROW
+GTM	.	ROW
+HND	.	ROW
+NIC	.	ROW
+PAN	.	ROW
+SLV	.	ROW
+XCA	.	ROW
+DOM	.	ROW
+JAM	.	ROW
+PRI	.	ROW
+TTO	.	ROW
+XCB	.	ROW
+AUT	.	ROW
+BEL	.	ROW
+CYP	.	ROW
+CZE	.	ROW
+DNK	.	ROW
+EST	.	ROW
+FIN	.	ROW
+FRA	.	ROW
+DEU	.	ROW
+GRC	.	ROW
+HUN	.	ROW
+IRL	.	ROW
+ITA	.	ROW
+LVA	.	ROW
+LTU	.	ROW
+LUX	.	ROW
+MLT	.	ROW
+NLD	.	ROW
+POL	.	ROW
+PRT	.	ROW
+SVK	.	ROW
+SVN	.	ROW
+ESP	.	ROW
+SWE	.	ROW
+GBR	.	ROW
+CHE	.	ROW
+NOR	.	ROW
+XEF	.	ROW
+ALB	.	ROW
+BGR	.	ROW
+BLR	.	ROW
+HRV	.	ROW
+ROU	.	ROW
+RUS	.	ROW
+UKR	.	ROW
+XEE	.	ROW
+XER	.	ROW
+KAZ	.	ROW
+KGZ	.	ROW
+XSU	.	ROW
+ARM	.	ROW
+AZE	.	ROW
+GEO	.	ROW
+BHR	.	ROW
+IRN	.	ROW
+ISR	.	ROW
+JOR	.	ROW
+KWT	.	ROW
+OMN	.	ROW
+QAT	.	ROW
+SAU	.	ROW
+TUR	.	ROW
+ARE	.	ROW
+XWS	.	ROW
+EGY	.	ROW
+MAR	.	ROW
+TUN	.	ROW
+XNF	.	ROW
+BEN	.	ROW
+BFA	.	ROW
+CMR	.	ROW
+CIV	.	ROW
+GHA	.	ROW
+GIN	.	ROW
+NGA	.	ROW
+SEN	.	ROW
+TGO	.	ROW
+XWF	.	ROW
+XCF	.	ROW
+XAC	.	ROW
+ETH	.	ROW
+KEN	.	ROW
+MDG	.	ROW
+MWI	.	ROW
+MUS	.	ROW
+MOZ	.	ROW
+RWA	.	ROW
+TZA	.	ROW
+UGA	.	ROW
+ZMB	.	ROW
+ZWE	.	ROW
+XEC	.	ROW
+BWA	.	ROW
+NAM	.	ROW
+ZAF	.	ROW
+XSC	.	ROW
+XTW	.	ROW
+/;

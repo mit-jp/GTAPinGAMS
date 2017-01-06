@@ -1,0 +1,2 @@
+prox_pert 0.01
+convergence_tolerance 1e-4

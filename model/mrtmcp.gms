@@ -1,10 +1,8 @@
-$title	GTAP8inGAMS Model in GAMS/MCP Algebraic Format
+$title	 Replicate the GTAP9 Benchmark in MPSGE
 
-*$if not set ds $set ds iea_001
-*$include ..\build\gtap8data
-
-$if not set ds $set ds eppa6_18
-$include ..\build\gtap8data
+$if not set yr $set yr 04
+$if not set ds $set ds g20
+$include ..\build\gtap9data
 
 parameter	esub(g)		Top-level elasticity indemand /C 1/;
 
@@ -268,12 +266,12 @@ mkt_pf(f,r)$evom(f,r)..	evom(f,r) =e= sum(j, DFM(f,j,r))$mf(f) + (evom(f,r)*FT(f
 mkt_ps(sf,j,r)$vfm(sf,j,r)..	
 	vfm(sf,j,r) * (PS(sf,j,r)/PF(sf,r))**etrae(sf) * FT(sf,r) =e= DFM(sf,j,r);	
 
-model gtap8mcp /
+model gtap9mcp /
 	prf_y.Y,prf_m.M,prf_yt.YT,prf_ft.FT,
 	mkt_p.P,mkt_pm.PM,mkt_pt.PT,mkt_pf.PF,mkt_ps.PS,
 	inc_ra.RA/;
 
-model gtap8cns /
+model gtap9cns /
 	prf_y,prf_m,prf_yt,prf_ft,
 	mkt_p,mkt_pm,mkt_pt,mkt_pf,mkt_ps,
 	inc_ra/;
@@ -308,17 +306,17 @@ FT.FX(f,r)$((not sf(f)) or (evom(f,r)=0)) = 1;
 
 RA.FX(rnum) = RA.L(rnum);
 
-gtap8mcp.iterlim = 0;
-solve gtap8mcp using mcp;
-gtap8mcp.iterlim = 10000;
+gtap9mcp.iterlim = 0;
+solve gtap9mcp using mcp;
+gtap9mcp.iterlim = 10000;
 
 $exit
 
 *	Verify benchmark consistency with both MCP and CNS models:
 
-gtap8cns.iterlim = 0;
-solve gtap8cns using cns;
-gtap8cns.iterlim = 10000;
+gtap9cns.iterlim = 0;
+solve gtap9cns using cns;
+gtap9cns.iterlim = 10000;
 
 *	Run a GFT scenario using the MCP model;
 
@@ -326,8 +324,8 @@ rtxs(i,r,s) = 0;
 rtms(i,r,s) = 0;
 
 *	Solve with CNS (does not work):
-*	solve gtap8cns using cns;
+*	solve gtap9cns using cns;
 
 *	Solve the MCP model:
 
-solve gtap8mcp using mcp;
+solve gtap9mcp using mcp;

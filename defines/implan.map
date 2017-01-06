@@ -1,0 +1,81 @@
+*	A mapping to the maximum set of commodities consistent with IMPLAN.
+
+alias (r,rr);
+set	mapr(r,rr)	Regions;
+mapr(r,r) = yes;
+
+alias (f,ff);
+SET	mapf(f,ff)	Factors;
+mapf(f,f) = yes;
+
+set	ii	Commodites in the aggregation /
+	GRN	Grains
+	APN	Animal products (nec)
+
+*.GRN	PDR	"Paddy rice",
+*.GRN	WHT	"Wheat",
+*.GRN	GRO	"Cereal grains nec",
+	V_F	"Vegetables, fruit, nuts",
+	OSD	"Oil seeds",
+	C_B	"Sugar cane, sugar beet",
+	PFB	"Plant-based fibers",
+	OCR	"Crops nec",
+	CTL	"Bovine cattle, sheep and goats, horses",
+*.APN	OAP	"Animal products nec",
+	RMK	"Raw milk",
+*.APN	WOL	"Wool, silk-worm cocoons",
+	FRS	"Forestry",
+	FSH	"Fishing",
+	COL	"Coal",
+	CRU	"Crude Oil",
+	GAS	"Gas",
+	OMN	"Minerals nec",
+	CMT	"Bovine meat products",
+	OMT	"Meat products nec",
+	VOL	"Vegetable oils and fats",
+	MIL	"Dairy products",
+*.GRN	PCR	"Processed rice",
+	SGR	"Sugar",
+	OFD	"Food products nec",
+	B_T	"Beverages and tobacco products",
+	TEX	"Textiles",
+	WAP	"Wearing apparel",
+	LEA	"Leather products",
+	LUM	"Wood products",
+	PPP	"Paper products, publishing",
+	OIL	"Petroleum, coal products",
+	CRP	"Chemical, rubber, plastic products",
+	NMM	"Mineral products nec",
+	I_S	"Ferrous metals",
+	NFM	"Metals nec",
+	FMP	"Metal products",
+	MVH	"Motor vehicles and parts",
+	OTN	"Transport equipment nec",
+	EEQ	"Electronic equipment",
+	OME	"Machinery and equipment nec",
+	OMF	"Manufactures nec",
+	ELE	"Electricity",
+	GDT	"Gas manufacture, distribution",
+	WTR	"Water",
+	CNS	"Construction",
+	TRD	"Trade",
+	OTP	"Transport nec",
+	WTP	"Water transport",
+	ATP	"Air transport",
+	CMN	"Communication",
+	OFI	"Financial services nec",
+	ISR	"Insurance",
+	OBS	"Business services nec",
+	ROS	"Recreational and other services",
+	OSG	"Public Administration, Defense, Education, Health",
+	DWE	"Dwellings" /;
+
+SET mapi(i,ii)  Mapping for sectors and goods /
+	PDR.GRN		"Paddy rice",
+	WHT.GRN		"Wheat",
+	GRO.GRN		"Cereal grains nec",
+	OAP.APN		"Animal products nec",
+	WOL.APN		"Wool, silk-worm cocoons",
+	PCR.GRN		"Processed rice"/;
+
+mapi(i,ii)$sameas(i,ii) = yes;

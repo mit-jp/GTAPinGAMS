@@ -1,35 +1,40 @@
 $title	FLEX2GDX.GMS	Read the FLEXAGG dataset gsddat.har and generate gsd.gdx
 
-
 $if not set yr $set yr 04
 $if not set nd $set nd 0
 
 scalar nd	Number of decimals /%nd%/;
 abort$(nd<>round(nd)) "Number of decimals must be an integer";
 
+*	Directory in which to store the GDX file:
+
 $if not set datadir $set datadir "..\data%yr%\"
-$if not set gtapdatadir $set gtapdatadir "..\gtapdata%yr%\"
 
-* "if exist... $goto start" below is de-activated so har-to-gdx conversions will be executed even if they have been done before.
-* It doesn't take too much time to execute those conversions.  Further, de-activating that line can ensure that when adding
-* a new har-to-gdx conversion, that new conversion will always be done.  YHC: 20120628.
+*	Directory in which to retrieve the GTAP HAR files:
 
-* $if exist %datadir%gsddat.gdx $goto start
+*.$if not set gtapdatadir $set gtapdatadir "..\gtapdistrib\sourcedata\flexagg81Y%yr%\"
+$if not set gtapdatadir $set gtapdatadir "..\gtapdata\20%yr%\"
+
+
+$if exist %datadir%gsddat.gdx $goto start
 
 *	Translate HAR files into GDX:
 
 $label har2gdx
 
-$if not exist %gtapdatadir%gsdset.har  $goto missingharfiles
-$if not exist %gtapdatadir%gsddat.har  $goto missingharfiles
-$if not exist %gtapdatadir%gsdpar.har  $goto missingharfiles
-$if not exist %gtapdatadir%gsdvole.har $goto missingharfiles
+$if not exist %gtapdatadir%gsdset.har   $goto missingharfiles
+$if not exist %gtapdatadir%gsddat.har   $goto missingharfiles
+$if not exist %gtapdatadir%gsdpar.har   $goto missingharfiles
+$if not exist %gtapdatadir%gsdvole.har  $goto missingharfiles
+$if not exist %gtapdatadir%gsdemiss.har $goto missingharfiles
+$if not exist %gtapdatadir%gsdtax.har   $goto missingharfiles
 
-$call 'har2gdx %gtapdatadir%gsdset.har %datadir%gsdset.gdx'
-$call 'har2gdx %gtapdatadir%gsddat.har %datadir%gsddat.gdx'
-$call 'har2gdx %gtapdatadir%gsdpar.har %datadir%gsdpar.gdx'
-$call 'har2gdx %gtapdatadir%gsdvole.har %datadir%gsdvole.gdx'
+$call 'har2gdx %gtapdatadir%gsdset.har   %datadir%gsdset.gdx'
+$call 'har2gdx %gtapdatadir%gsddat.har   %datadir%gsddat.gdx'
+$call 'har2gdx %gtapdatadir%gsdpar.har   %datadir%gsdpar.gdx'
+$call 'har2gdx %gtapdatadir%gsdvole.har  %datadir%gsdvole.gdx'
 $call 'har2gdx %gtapdatadir%gsdemiss.har %datadir%gsdemiss.gdx'
+$call 'har2gdx %gtapdatadir%gsdtax.har   %datadir%gsdtax.gdx'
 
 $label start
 
@@ -37,7 +42,7 @@ $if not exist %datadir%gsdset.gdx $goto missinggdxfiles
 $if not exist %datadir%gsddat.gdx $goto missinggdxfiles
 $if not exist %datadir%gsdpar.gdx $goto missinggdxfiles
 $if not exist %datadir%gsdvole.gdx $goto missinggdxfiles
-*$if not exist %datadir%gsdemiss.gdx $goto missinggdxfiles
+$if not exist %datadir%gsdemiss.gdx $goto missinggdxfiles
 
 $onecho >setx.gms
 $gdxin '%datadir%gsdset.gdx'
@@ -55,275 +60,274 @@ $gdxin
 $call del /q setx.*
 
 set	r	Regions  /
-
-	AUS	Australia
-*		- Australia
-*		- Christmas Island
-*		- Cocos (Keeling) Islands
-*		- Heard Island and McDonald Islands
-*		- Norfolk Island
-	NZL	New Zealand
-	XOC	Rest of Oceania
-*		- American Samoa
-*		- Cook Islands
-*		- Fiji
-*		- French Polynesia
-*		- Guam
-*		- Kiribati
-*		- Marshall Islands
-*		- Micronesia Federated States of
-*		- Nauru
-*		- New Caledonia
-*		- Niue
-*		- Northern Mariana Islands
-*		- Palau
-*		- Papua New Guinea
-*		- Pitcairn
-*		- Samoa
-*		- Solomon Islands
-*		- Tokelau
-*		- Tonga
-*		- Tuvalu
-*		- United States Minor Outlying Islands
-*		- Vanuatu
-*		- Wallis and Futuna
-	CHN	China
-	HKG	Hong Kong
-	JPN	Japan
-	KOR	Korea Republic of
-	MNG	Mongolia
-	TWN	Taiwan
-	XEA	Rest of East Asia
-*		- Korea Democratic Peoples Republic of
-*		- Macao
-	KHM	Cambodia
-	IDN	Indonesia
-	LAO	Lao People's Democratic Republic
-	MYS	Malaysia
-	PHL	Philippines
-	SGP	Singapore
-	THA	Thailand
-	VNM	Viet Nam
-	XSE	Rest of Southeast Asia
-*		- Brunei Darussalam
-*		- Myanmar
-*		- Timor Leste
-	BGD	Bangladesh
-	IND	India
-	NPL	Nepal
-	PAK	Pakistan
-	LKA	Sri Lanka
-	XSA	Rest of South Asia
-*		- Afghanistan
-*		- Bhutan
-*		- Maldives
-	CAN	Canada
-	USA	United States of America
-	MEX	Mexico
-	XNA	Rest of North America
-*		- Bermuda
-*		- Greenland
-*		- Saint Pierre and Miquelon
-	ARG	Argentina
-	BOL	Plurinational Republic of Bolivia
-	BRA	Brazil
-	CHL	Chile
-	COL	Colombia
-	ECU	Ecuador
-	PRY	Paraguay
-	PER	Peru
-	URY	Uruguay
-	VEN	Venezuela
-	XSM	Rest of South America
-*		- Falkland Islands (Malvinas)
-*		- French Guiana
-*		- Guyana
-*		- South Georgia and the South Sandwich Islands
-*		- Suriname
-	CRI	Costa Rica
-	GTM	Guatemala
-	HND	Honduras
-	NIC	Nicaragua
-	PAN	Panama
-	SLV	El Salvador
-	XCA	Rest of Central America
-*		- Belize
-	XCB	Caribbean
-*		- Anguilla
-*		- Antigua & Barbuda
-*		- Aruba
-*		- Bahamas
-*		- Barbados
-*		- Cayman Islands
-*		- Cuba
-*		- Dominica
-*		- Dominican Republic
-*		- Grenada
-*		- Haiti
-*		- Jamaica
-*		- Montserrat
-*		- Netherlands Antilles
-*		- Puerto Rico
-*		- Saint Kitts and Nevis
-*		- Saint Lucia
-*		- Saint Vincent and the Grenadines
-*		- Trinidad and Tobago
-*		- Turks and Caicos Islands
-*		- Virgin Islands British
-*		- Virgin Islands U.S.
-	AUT	Austria
-	BEL	Belgium
-	CYP	Cyprus
-	CZE	Czech Republic
-	DNK	Denmark
-	EST	Estonia
-	FIN	Finland
-*		- Aland Islands
-*		- Finland
-	FRA	France
-*		- France
-*		- Guadeloupe
-*		- Martinique
-*		- Reunion
-	DEU	Germany
-	GRC	Greece
-	HUN	Hungary
-	IRL	Ireland
-	ITA	Italy
-	LVA	Latvia
-	LTU	Lithuania
-	LUX	Luxembourg
-	MLT	Malta
-	NLD	Netherlands
-	POL	Poland
-	PRT	Portugal
-	SVK	Slovakia
-	SVN	Slovenia
-	ESP	Spain
-	SWE	Sweden
-	GBR	United Kingdom
-	CHE	Switzerland
-	NOR	Norway
-*		- Norway
-*		- Svalbard and Jan Mayen
-	XEF	Rest of EFTA
-*		- Iceland
-*		- Liechtenstein
-	ALB	Albania
-	BGR	Bulgaria
-	BLR	Belarus
-	HRV	Croatia
-	ROU	Romania
-	RUS	Russian Federation
-	UKR	Ukraine
-	XEE	Rest of Eastern Europe
-*		- Moldova Republic of
-	XER	Rest of Europe
-*		- Andorra
-*		- Bosnia and Herzegovina
-*		- Faroe Islands
-*		- Gibraltar
-*		- Guernsey
-*		- Holy See (Vatican City State)
-*		- Isle of Man
-*		- Jersey
-*		- Macedonia the former Yugoslav Republic of
-*		- Monaco
-*		- Montenegro
-*		- San Marino
-*		- Serbia
-	KAZ	Kazakhstan
-	KGZ	Kyrgyzstan
-	XSU	Rest of Former Soviet Union
-*		- Tajikistan
-*		- Turkmenistan
-*		- Uzbekistan
-	ARM	Armenia
-	AZE	Azerbaijan
-	GEO	Georgia
-	BHR	Bahrain
-	IRN	Iran Islamic Republic of
-	ISR	Israel
-	KWT	Kuwait
-	OMN	Oman
-	QAT	Qatar
-	SAU	Saudi Arabia
-	TUR	Turkey
-	ARE	United Arab Emirates
-	XWS	Rest of Western Asia
-*		- Iraq
-*		- Jordan
-*		- Lebanon
-*		- Palestinian Territory Occupied
-*		- Syrian Arab Republic
-*		- Yemen
-	EGY	Egypt
-	MAR	Morocco
-	TUN	Tunisia
-	XNF	Rest of North Africa
-*		- Algeria
-*		- Libyan Arab Jamahiriya
-*		- Western Sahara
-	CMR	Cameroon
-	CIV	Cote d'Ivoire
-	GHA	Ghana
-	NGA	Nigeria
-	SEN	Senegal
-	XWF	Rest of Western Africa
-*		- Benin
-*		- Burkina Faso
-*		- Cape Verde
-*		- Gambia
-*		- Guinea
-*		- Guinea-Bissau
-*		- Liberia
-*		- Mali
-*		- Mauritania
-*		- Niger
-*		- Saint Helena, Ascension and Tristan Da Cunha
-*		- Sierra Leone
-*		- Togo
-	XCF	Central Africa
-*		- Central African Republic
-*		- Chad
-*		- Congo
-*		- Equatorial Guinea
-*		- Gabon
-*		- Sao Tome and Principe
-	XAC	South Central Africa
-*		- Angola
-*		- Congo the Democratic Republic of the
-	ETH	Ethiopia
-	KEN	Kenya
-	MDG	Madagascar
-	MWI	Malawi
-	MUS	Mauritius
-	MOZ	Mozambique
-	TZA	Tanzania United Republic of
-	UGA	Uganda
-	ZMB	Zambia
-	ZWE	Zimbabwe
-	XEC	Rest of Eastern Africa
-*		- Burundi
-*		- Comoros
-*		- Djibouti
-*		- Eritrea
-*		- Mayotte
-*		- Rwanda
-*		- Seychelles
-*		- Somalia
-*		- Sudan
-	BWA	Botswana
-	NAM	Namibia
-	ZAF	South Africa
-	XSC	Rest of South African Customs Union
-*		- Lesotho
-*		- Swaziland
-	XTW	Rest of the World 
-*		- Antarctica
-*		- Bouvet Island
-*		- British Indian Ocean Territory
-*		- French Southern Territories
+AUS	Australia
+*	 Australia
+*	 Christmas Island
+*	 Cocos (Keeling) Islands
+*	 Heard Island and McDonald Islands
+*	 Norfolk Island
+NZL	New Zealand
+XOC	Rest of Oceania
+*	 American Samoa
+*	 Cook Islands
+*	 Fiji
+*	 French Polynesia
+*	 Guam
+*	 Kiribati
+*	 Marshall Islands
+*	 Micronesia Federated States of
+*	 Nauru
+*	 New Caledonia
+*	 Niue
+*	 Northern Mariana Islands
+*	 Palau
+*	 Papua New Guinea
+*	 Pitcairn
+*	 Samoa
+*	 Solomon Islands
+*	 Tokelau
+*	 Tonga
+*	 Tuvalu
+*	 United States Minor Outlying Islands
+*	 Vanuatu
+*	 Wallis and Futuna
+CHN	China
+HKG	Hong Kong
+JPN	Japan
+KOR	Korea Republic of
+MNG	Mongolia
+TWN	Taiwan
+XEA	Rest of East Asia
+*	 Korea Democratic Peoples Republic of
+*	 Macao
+BRN	Brunei Darussalam
+KHM	Cambodia
+IDN	Indonesia
+LAO	Lao People's Democratic Republic
+MYS	Malaysia
+PHL	Philippines
+SGP	Singapore
+THA	Thailand
+VNM	Viet Nam
+XSE	Rest of Southeast Asia
+*	 Myanmar
+*	 Timor Leste
+BGD	Bangladesh
+IND	India
+NPL	Nepal
+PAK	Pakistan
+LKA	Sri Lanka
+XSA	Rest of South Asia
+*	 Afghanistan
+*	 Bhutan
+*	 Maldives
+CAN	Canada
+USA	United States of America
+MEX	Mexico
+XNA	Rest of North America
+*	 Bermuda
+*	 Greenland
+*	 Saint Pierre and Miquelon
+ARG	Argentina
+BOL	Bolivia
+BRA	Brazil
+CHL	Chile
+COL	Colombia
+ECU	Ecuador
+PRY	Paraguay
+PER	Peru
+URY	Uruguay
+VEN	Venezuela
+XSM	Rest of South America
+*	 Falkland Islands (Malvinas)
+*	 French Guiana
+*	 Guyana
+*	 South Georgia and the South Sandwich Islands
+*	 Suriname
+CRI	Costa Rica
+GTM	Guatemala
+HND	Honduras
+NIC	Nicaragua
+PAN	Panama
+SLV	El Salvador
+XCA	Rest of Central America
+*	 Belize
+DOM	Dominican Republic
+JAM	Jamaica
+PRI	Puerto Rico
+TTO	Trinidad and Tobago
+XCB	Caribbean
+*	 Anguilla
+*	 Antigua & Barbuda
+*	 Aruba
+*	 Bahamas
+*	 Barbados
+*	 Cayman Islands
+*	 Cuba
+*	 Dominica
+*	 Grenada
+*	 Haiti
+*	 Montserrat
+*	 Netherlands Antilles
+*	 Saint Kitts and Nevis
+*	 Saint Lucia
+*	 Saint Vincent and the Grenadines
+*	 Turks and Caicos Islands
+*	 Virgin Islands British 
+*	 Virgin Islands U.S.
+AUT	Austria
+BEL	Belgium
+CYP	Cyprus
+CZE	Czech Republic
+DNK	Denmark
+EST	Estonia
+FIN	Finland
+*	 Aland Islands
+*	 Finland
+FRA	France
+*	 France
+*	 Guadeloupe
+*	 Martinique
+*	 Reunion
+DEU	Germany
+GRC	Greece
+HUN	Hungary
+IRL	Ireland
+ITA	Italy
+LVA	Latvia
+LTU	Lithuania
+LUX	Luxembourg
+MLT	Malta
+NLD	Netherlands
+POL	Poland
+PRT	Portugal
+SVK	Slovakia
+SVN	Slovenia
+ESP	Spain
+SWE	Sweden
+GBR	United Kingdom
+CHE	Switzerland
+NOR	Norway
+*	 Norway
+*	 Svalbard and Jan Mayen
+XEF	Rest of EFTA
+*	 Iceland
+*	 Liechtenstein
+ALB	Albania
+BGR	Bulgaria
+BLR	Belarus
+HRV	Croatia
+ROU	Romania
+RUS	Russian Federation
+UKR	Ukraine
+XEE	Rest of Eastern Europe
+*	 Moldova Republic of
+XER	Rest of Europe
+*	 Andorra
+*	 Bosnia and Herzegovina
+*	 Faroe Islands
+*	 Gibraltar
+*	 Guernsey 
+*	 Holy See (Vatican City State)
+*	 Isle of Man
+*	 Jersey
+*	 Macedonia the former Yugoslav Republic of
+*	 Monaco
+*	 Montenegro
+*	 San Marino
+*	 Serbia
+KAZ	Kazakhstan
+KGZ	Kyrgyzstan
+XSU	Rest of Former Soviet Union
+*	 Tajikistan
+*	 Turkmenistan
+*	 Uzbekistan
+ARM	Armenia
+AZE	Azerbaijan
+GEO	Georgia
+BHR	Bahrain
+IRN	Iran Islamic Republic of
+ISR	Israel
+JOR	Jordan
+KWT	Kuwait
+OMN	Oman
+QAT	Qatar
+SAU	Saudi Arabia
+TUR	Turkey
+ARE	United Arab Emirates
+XWS	Rest of Western Asia
+*	 Iraq
+*	 Lebanon
+*	 Palestinian Territory Occupied 
+*	 Syrian Arab Republic
+*	 Yemen
+EGY	Egypt
+MAR	Morocco
+TUN	Tunisia
+XNF	Rest of North Africa
+*	 Algeria
+*	 Libyan Arab Jamahiriya
+*	 Western Sahara
+BEN	Benin
+BFA	Burkina Faso
+CMR	Cameroon
+CIV	Cote d'Ivoire
+GHA	Ghana
+GIN	Guinea
+NGA	Nigeria
+SEN	Senegal
+TGO	Togo
+XWF	Rest of Western Africa
+*	 Cape Verde
+*	 Gambia
+*	 Guinea-Bissau
+*	 Liberia
+*	 Mali
+*	 Mauritania
+*	 Niger
+*	 Saint Helena, ASCENSION AND TRISTAN DA CUNHA
+*	 Sierra Leone
+XCF	Central Africa
+*	 Central African Republic
+*	 Chad
+*	 Congo
+*	 Equatorial Guinea
+*	 Gabon
+*	 Sao Tome and Principe
+XAC	South Central Africa
+*	 Angola
+*	 Congo the Democratic Republic of the
+ETH	Ethiopia
+KEN	Kenya
+MDG	Madagascar
+MWI	Malawi
+MUS	Mauritius
+MOZ	Mozambique
+RWA	Rwanda
+TZA	Tanzania United Republic of
+UGA	Uganda
+ZMB	Zambia
+ZWE	Zimbabwe
+XEC	Rest of Eastern Africa
+*	 Burundi
+*	 Comoros
+*	 Djibouti
+*	 Eritrea
+*	 Mayotte
+*	 Seychelles
+*	 Somalia
+*	 Sudan
+BWA	Botswana
+NAM	Namibia
+ZAF	South Africa
+XSC	Rest of South African Customs Union
+*	 Lesotho
+*	 Swaziland
+XTW	Rest of the World
+*	 Antarctica
+*	 Bouvet Island
+*	 British Indian Ocean Territory
+*	 French Southern Territories
 	/;
 
 set	g(x) 	All goods plus C - G - i /c,g,i/,
@@ -338,13 +342,12 @@ set	src	Sources /domestic, imported/,
 	rnum(r)	Numeraire region,
 	sf(f)	Sluggish primary factors (sector-specific)
 	mf(f)	Mobile primary factors
-
 	ec	Energy goods /
 		ecoa	Coal,
 		eoil	Crude oil,
 		egas	Natural gas,
 		ep_c	Refined oil products,
-		eely	Electricity,
+		eely	Electricity
 		egdt	Gas distribution /;
 
 alias (r,s), (i,j,jj), (f,ff);
@@ -373,6 +376,9 @@ parameters
 	vtwr(i,j,r,s)	Trade - Margins for international transportation at world prices
 	ftrv(f,j,r)	Taxes - factor employment tax revenue,
 
+	vkb(r)		Capital Stock,
+	vdep(*)		Capital depreciation,
+
 	fbep(f,j,r)	Protection - factor-based subsidies,
 	isep(i,j,r,src) Protection - intermediate input subsidies,
 	osep(i,r)	Protection - ordinary output subsidies,
@@ -383,11 +389,11 @@ parameters
 	mfrv(i,r,s)	Protection - MFA export tax equivalent
 	xtrv(i,r,s)	Protection - ordinary export tax;
 
-* Read the GTAP data set gsddat.gdx converted from gsddat.har
 $gdxin '%datadir%gsddat.gdx'
 $load vdga viga vdgm vigm vdpa vipa vdpm vipm evoa evfa vfm vdfa 
 $load vifa vdfm vifm vims viws vxmd vxwd vst vtwr=vtwrini ftrv fbep isep 
 $load osep adrv=adrev tfrv=tarifrev purv=purev vrrv=verrev mfrv=mfarev xtrv=xtrev
+$load vkb vdep
 $gdxin
 
 parameter
@@ -400,6 +406,17 @@ parameter
 
 $gdxin '%datadir%gsdpar.gdx'
 $load esubd esubva esubm etrae incpar subpar
+$gdxin
+
+parameter mdf(i,i,r)	"Emissions in domestic production Mt CO2",
+	  mdg(i,r)	"Emissions in domestic public demand, Mt CO2",
+	  mdp(i,r)	"Emissions in domestic private demand, Mt CO2",
+	  mif(i,i,r)	"Emissions in foreign production Mt CO2",
+	  mig(i,r)	"Emissions in foreign public demand, Mt CO2",
+	  mip(i,r)	"Emissions in foreign private demand, Mt CO2";
+
+$gdxin '%datadir%gsdemiss.gdx'
+$load mdf mdg mdp mif mig mip
 $gdxin
 
 *	Determine which factors are sector-specific 
@@ -485,51 +502,34 @@ if (nd>0,
 	vrrv(i,r,s) = vrrv(i,r,s)$round(vrrv(i,r,s),nd);
 	mfrv(i,r,s) = mfrv(i,r,s)$round(mfrv(i,r,s),nd);
 	xtrv(i,r,s) = xtrv(i,r,s)$round(xtrv(i,r,s),nd);
+	mdf(i,j,r) = mdf(i,j,r)$round(mdf(i,j,r),nd);
+	mdg(i,r) = mdg(i,r)$round(mdg(i,r),nd);
+	mdp(i,r) = mdp(i,r)$round(mdp(i,r),nd);
+	mif(i,j,r) = mif(i,j,r)$round(mif(i,j,r),nd);
+	mig(i,r) = mig(i,r)$round(mig(i,r),nd);
+	mip(i,r) = mip(i,r)$round(mip(i,r),nd);
+
 );
+
 
 parameter
 
-$ontext
-	evf_(ec,i,r)	Volume of input purchases by firms (mtoe)
-	evh_(ec,r)	Volume of purchases by households (mtoe)
-	evt_(ec,r,r)	Volume of bilateral trade (mtoe);
-$offtext
-
-* Redefine evf_, evh_, and evt_ so the first dimension is set j (alias of i) or i rather than ec.
-* This is because in the gsdvole.gdx, there is no set called ec.
-* It is infeasible to read, for example, edf(ec,i,r) from gsdvole.gdx
-* YHC (20120628)
-
-	evf_(j,i,r)	Volume of input purchases by firms (mtoe)
-	evh_(i,r)	Volume of purchases by households (mtoe)
-        evg_(i,r)       Volume of purchases by government (mtoe)
- 	evt_(i,r,r)	Volume of bilateral trade (mtoe)
+	evt(i,r,r)	Volume of energy trade (mtoe),
 
 
-* Newly declared parameters to read edf, eif, edp, eip, and exidag in gsdvole.gdx
-* YHC (20120628)
+	eip(i,r)        Volume of imported purchases by households (mtoe)
+	eig(i,r)        Volume of imported purchases by government (mtoe)
+	eif(i,i,r)      Volume of imported purchases by firms (mtoe)
 
-        edf_(i,i,r)    usage of domestic product by firms (mtoe)
-        eif_(i,i,r)    usage of imported product by firms (mtoe)
-        edp_(i,r)      private consumption of domestic product (mtoe)
-        eip_(i,r)      private consumption of imported product (mtoe)
-        edg_(i,r)      government consumption of domestic product (mtoe)
-        eig_(i,r)      government consumption of imported product (mtoe)
-        exidag_(i,r,r) volume of trade (mtoe)
-        ;
+	edp(i,r)        Volume of domestic purchases by households (mtoe)
+	edg(i,r)        Volume of domestic purchases by government (mtoe)
+	edf(i,i,r)      Volume of domestic purchases by firms (mtoe)
 
-* Read edf, eif, edp, eip, edg, eig, exidag from gsdvole.gdx; YHC (20120628)
 $gdxin '%datadir%gsdvole.gdx'
-*$load evf_=evf evh_=evh evt_=evt
-$load edf_=edf eif_=eif edp_=edp eip_=eip edg_=edg eig_=eig exidag_=exidag
+$load evt=exidag eip eig eif edp edg edf  
 $gdxin
 
-* Assign values for evf_, evh_, and evt_; YHC (20120614)
 
-       evf_(i,j,r) = edf_(i,j,r)+eif_(i,j,r);
-       evh_(i,r) = edp_(i,r)+eip_(i,r);
-       evg_(i,r) = edg_(i,r)+eig_(i,r);
-       evt_(i,r,s) = exidag_(i,r,s);
 
 
 *	Declare some intermediate arrays which are required to 
@@ -657,37 +657,44 @@ vb("chksum") = sum(r, vb(r));
 display vb;
 
 parameter
-	evd(i,*,r)		Volume of energy purchases (mtoe),
-	evt(i,r,r)		Volume of energy exports (mtoe);
+	evd(i,*,r)	Domestic energy use (mtoe),
+	evi(i,*,r)	Imported energy use (mtoe),
+	eco2d(i,*,r)	CO2 emissions in domestic fuels - Mt CO2",
+	eco2i(i,*,r)	CO2 emissions in foreign fuels - Mt CO2";
+	
 
-set ffmap(i,ec)/ely.eely,coa.ecoa,oil.eoil,gas.egas,p_c.ep_c,gdt.egdt/;
+evd(i,j,r) = edf(i,j,r);
+evd(i,"c",r) = edp(i,r);
+evd(i,"g",r) = edg(i,r);
 
-loop(ffmap(i,ec),
+evi(i,j,r) = eif(i,j,r);
+evi(i,"c",r) = eip(i,r);
+evi(i,"g",r) = eig(i,r);
 
-$ontext
-	evd(i,j,r) = evf_(ec,j,r);
-	evd(i,"c",r) = evh_(ec,r);
-	evt(i,r,s) = evt_(ec,r,s);
-$offtext
+eco2d(i,j,r) = mdf(i,j,r);
+eco2d(i,"g",r) = mdg(i,r);
+eco2d(i,"c",r) = mdp(i,r);
 
-* using newly defined parameters; (YHC: 20120604)
+eco2i(i,j,r) = mif(i,j,r);
+eco2i(i,"g",r) = mig(i,r);
+eco2i(i,"c",r) = mip(i,r);
 
-	evd(i,j,r) = evf_(i,j,r);
-	evd(i,"c",r) = evh_(i,r);
-	evt(i,r,s) = evt_(i,r,s);
-
-
-);
 if (nd>0,
 	evt(i,r,s)  = evt(i,r,s)$round(evt(i,r,s), nd);
-	evd(i,g,r)  = evd(i,g,r)$round(evd(i,g,r), nd);
+	evd(i,g,r) = evd(i,g,r)$round(evd(i,g,r), nd);
+	evi(i,g,r) = evi(i,g,r)$round(evi(i,g,r), nd);
+	eco2d(i,g,r) = eco2d(i,g,r)$round(eco2d(i,g,r), nd);
+	eco2i(i,g,r) = eco2i(i,g,r)$round(eco2i(i,g,r), nd);
+
 );
+
+
 if (nd>0,
 	execute_unload '%datadir%gsd_%nd%.gdx', r, f, g, i, vfm, vdfm, vifm, vxmd, vst, vtwr, 
-		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt;
+		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evi, evt, eco2d, eco2i;
 else
 	execute_unload '%datadir%gsd.gdx',      r, f, g, i, vfm, vdfm, vifm, vxmd, vst, vtwr, 
-		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt;
+		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evi, evt, eco2d, eco2i;
 );
 
 parameter	eprice		Implicit energy prices
@@ -717,8 +724,10 @@ $log		%gtapdatadir%gsdset.har
 $log		%gtapdatadir%gsddat.har 
 $log		%gtapdatadir%gsdpar.har 
 $log		%gtapdatadir%gsdvole.har 
+$log		%gtapdatadir%gsdemiss.har 
+$log		%gtapdatadir%gsdtax.har 
 $log	
-$log	These files are part of the flexagg distribution from GTAP8.
+$log	These files are part of the flexagg distribution from GTAP9.
 $log
 $exit
 
@@ -731,8 +740,10 @@ $log		har2gdx %gtapdatadir%gsdset.har gsdset.gdx
 $log		har2gdx %gtapdatadir%gsddat.har gsddat.gdx
 $log		har2gdx %gtapdatadir%gsdpar.har gsdpar.gdx
 $log		har2gdx %gtapdatadir%gsdvole.har gsdvole.gdx
+$log		har2gdx %gtapdatadir%gsdemiss.har gsdemiss.gdx
+$log		har2gdx %gtapdatadir%gsdtax.har gsdtax.gdx
 $log	
-$log	These files are part of the flexagg distribution from GTAP8.
+$log	These files are part of the flexagg distribution from GTAP9.
 $log
 $exit
 

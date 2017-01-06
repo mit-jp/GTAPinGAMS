@@ -8,7 +8,7 @@ scalar tol	Tolerance parameter for filtering data /0.%tol%/;
 
 $if not set ds $set ds gsd
 
-$include gtap8data
+$include gtap9data
 
 
 alias (i,ii), (g,gg), (r,rr);
@@ -203,8 +203,8 @@ objbal..        obj =e= sum((r,i)$rb(r),
 profit(g,r)$(rb(r) and (vdm_.up(g,r)+vxm(g,r)>0)).. (vdm_(g,r)+vxm(g,r))*(1-rto(g,r)) =e=
       sum(i, vifm_(i,g,r)*(1+rtfi(i,g,r)) + vdfm_(i,g,r)*(1+rtfd(i,g,r))) + sum(f, vfm_(f,g,r)*(1+rtf(f,g,r)));
 
-dommkt(i,r)$(rb(r) and vdm_.up(i,r)>0)..     vdm_(i,r) =e= sum(g, vdfm_(i,g,r));
-impmkt(i,r)$(rb(r) and vim(i,r)>0)..     vim(i,r)  =e= sum(g, vifm_(i,g,r));
+dommkt(i,r)$(rb(r) and vdm_.up(i,r)>0)..   vdm_(i,r) =e= sum(g, vdfm_(i,g,r));
+impmkt(i,r)$(rb(r) and vim(i,r)>0)..	   vim(i,r)  =e= sum(g, vifm_(i,g,r));
 model calib /all/;
 
 vdm_.l(g,r)    = vdm(g,r);
@@ -324,6 +324,15 @@ $if not set holdfixed $set holdfixed yes
 put_utility 'title' / 'Balancing complete'/;
 
 
+*	Adjust energy and carbon flows account for missing coefficients:
+
+eco2d(i,g,r)$(vdfm(i,g,r)=0) = 0;
+eco2i(i,g,r)$(vifm(i,g,r)=0) = 0;
+evd(i,g,r)$(vdfm(i,g,r)=0) = 0;
+evi(i,g,r)$(vifm(i,g,r)=0) = 0;
+evt(i,r,s)$(vxmd(i,r,s)=0) = 0;
+
+
 *	Adjust income and price elasticities:
 
 eta(i,r)$(    vdfm(i,"c",r)*(1+rtfd0(i,"c",r))+vifm(i,"c",r)*(1+rtfi0(i,"c",r)) = 0) = 0;
@@ -333,7 +342,8 @@ execute_unload '%datadir%%ds%_%tol%.gdx', r, f, g, i,
 		vfm,
 		vdfm,vifm,vxmd,vst,vtwr,
 		rto,rtf,rtfd,rtfi,rtxs,rtms,
-		esubd,esubva,esubm,etrae,eta,epsilon, evd, evt;
+		esubd,esubva,esubm,etrae,eta,epsilon, 
+		evd,evi,evt,eco2d,eco2i;
 
 regtotals(r,"vom1") = sum(i$vom(i,r),1);
 regtotals(r,"vxm1") = sum(i$vxm(i,r),1);
@@ -374,6 +384,8 @@ sectrade(i,"vxmd3")$sectrade(i,"vxmd3") = 100 * (sum((r,s), vxmd(i,s,r)) / sectr
 
 *.display regtotals,regtrade,sectotals,sectrade;
 
+$exit
+
 execute_unload 'filter.gdx',regtotals,regtrade,sectotals,sectrade,r,i;
 
 $onecho >filterlog.rsp
@@ -387,5 +399,5 @@ par=regtrade  cdim=1 clear EpsOut="0" rng=RegionalTrade!a5
 par=sectrade  cdim=1 clear EpsOut="0" rng=SectoralTrade!a5
 $offecho
 
-*.execute 'copy filterlog.xls filterlog%tol%.xls';
-*.execute 'gdxxrw i=filter.gdx o=filterlog%tol%.xls @filterlog.rsp';
+execute 'copy filterlog.xls filterlog%tol%.xls';
+execute 'gdxxrw i=filter.gdx o=filterlog%tol%.xls @filterlog.rsp';

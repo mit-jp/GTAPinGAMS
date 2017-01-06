@@ -74,10 +74,10 @@ $label dimenok
 *       aggregation:
 
 aggrerror(%ii%)  = yes$(sum(%i%, 1$%map%(%ii%,%i%)) - 1);
-abort$card(aggrerror) "Element of source set %ii% not uniquely assigned:",aggrerror,%map%;
+abort$card(aggrerror) "Element of source set %ii% not uniquely assigned:",aggrerror,%map%,%i%,%ii%;
 
 aggrerror(%i%)  = yes$(not sum(%ii%, 1$%map%(%ii%,%i%)));
-abort$card(aggrerror) "Element of target set %i% has no assignments:",aggrerror,%map%;
+abort$card(aggrerror) "Element of target set %i% has no assignments:",aggrerror,%map%,%i%,%ii%;
 
 $exit
 
