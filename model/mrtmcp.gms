@@ -1,49 +1,32 @@
-*	Invoke the function preprocessor to help with equations:
+$title	GTAP7inGAMS Model in GAMS/MCP Algebraic Format
 
-*	Initial creation data: 2 August 2005 (tfr)
+$if not set ds $set ds emfagg
+$include ..\build\gtap7data
 
-*	Updates:
+parameter	esub(g)		Top-level elasticity indemand /C 1/;
 
-*	3 August 2005 - Introduced sector-specific factors, associated CET 
-*	allocation activity, ft(sf,r) and sector-specific factor prices, 
-*	ps(f,j,r).
+alias (j,jj), (g,gg), (f,ff);
 
-$sysinclude gams-f
+nonnegative variables
+	Y(g,r)		Supply
+	M(i,r)		Imports
+	YT(j)		Transportation services
+	FT(f,r)		Specific factor transformation
 
-$set ds asa7x5
-$batinclude gtap6data
-
-alias (j,jj);
-
-positive variables
-	c(r)		Consumption
-	g(r)		Government demand
-	y(i,r)		Supply
-	m(i,r)		Imports
-	yt(j)		Transportation services
-	ft(f,r)		Specific factor transformation
-
-	pc(r)		Private consumption price index
-	pg(r)		Public consumption price index
-	py(j,r)		Domestic output price
-	pm(j,r)		Import price
-	pt(j)		Transportation services
-	pf(f,r)		Primary factors
-	ps(f,j,r)	Sector-specific primary factors
-
-	ra(r)		Representative agent;
+	P(g,r)		Domestic output price
+	PM(j,r)		Import price
+	PT(j)		Transportation services
+	PF(f,r)		Primary factors rent
+	PS(f,g,r)	Sector-specific primary factors
+	RA(r)		Representative agent;
 
 equations
-	prf_c(r)		Consumption
-	prf_g(r)		Government demand
-	prf_y(i,r)		Supply
+	prf_y(g,r)		Supply
 	prf_m(i,r)		Imports
 	prf_yt(j)		Transportation services
 	prf_ft(f,r)		Factor transformation
 
-	mkt_pc(r)		Private consumption price index
-	mkt_pg(r)		Public consumption price index
-	mkt_py(j,r)		Domestic output price
+	mkt_p(g,r)		Domestic output price
 	mkt_pm(j,r)		Import price
 	mkt_pt(j)		Transportation services
 	mkt_pf(f,r)		Primary factors
@@ -52,341 +35,296 @@ equations
 	inc_ra(r)		Representative agent;
 
 *	-----------------------------------------------------------------------------
-*	Profit function for firms:
 
-*	Value shares for firm inputs of factors and goods:
+*	Define some macros which diagnose the functional form:
 
-parameter	thetaf(f,j,r)	Factor share of value added,
-		thetad(i,j,r)	Domestic share of intermediate input,
-		thetai(i,j,r)	Import share of intermediate input,
-		theta_f(j,r)	Value added share of sectoral output;
+$macro	Leontief(sigma)		(yes$(round(sigma,2)=0))
+$macro	CobbDouglas(sigma)	(yes$(round(sigma-1,2)=0))
+$macro	CES(sigma)		(yes$(round(sigma-1,2)<>0 and round(sigma,2)<>0))
 
-alias (f,ff);
-thetaf(f,j,r)$sum(ff,vfm(ff,j,r)*(1+rtf0(ff,j,r)))
-	= vfm(f,j,r)*(1+rtf0(f,j,r)) / sum(ff,vfm(ff,j,r)*(1+rtf0(ff,j,r)));
-thetad(i,j,r)$(vdfm(i,j,r)*(1+rtfd0(i,j,r)) + vifm(i,j,r)*(1+rtfi0(i,j,r)))
-	= vdfm(i,j,r)*(1+rtfd0(i,j,r)) / 
-		 (vdfm(i,j,r)*(1+rtfd0(i,j,r)) + vifm(i,j,r)*(1+rtfi0(i,j,r)));
+*	-------------------------------------------------------------------------------
+*	Profit function for production and consumption activities:
 
-thetai(i,j,r)$vom(j,r)
-	= (vdfm(i,j,r)*(1+rtfd0(i,j,r)) + vifm(i,j,r)*(1+rtfi0(i,j,r))) / vom(j,r);
+* $prod:Y(g,r)$vom(g,r)	s:esub(g)    i.tl:esubd(i)  va:esubva(g)
+* 	o:P(g,r)	q:vom(g,r)	a:RA(r)  t:rto(g,r)
+* 	i:P(i,r)	q:vdfm(i,g,r)	p:(1+rtfd0(i,g,r)) i.tl:  a:RA(r) t:rtfd(i,g,r)
+* 	i:PM(i,r)	q:vifm(i,g,r)	p:(1+rtfi0(i,g,r)) i.tl:  a:RA(r) t:rtfi(i,g,r)
+* 	i:PS(sf,g,r)	q:vfm(sf,g,r)	p:(1+rtf0(sf,g,r))  va:   a:RA(r) t:rtf(sf,g,r)
+* 	i:PF(mf,r)	q:vfm(mf,g,r)	p:(1+rtf0(mf,g,r))  va:   a:RA(r) t:rtf(mf,g,r)
 
-theta_f(j,r)$vom(j,r) = sum(ff,vfm(ff,j,r)*(1+rtf0(ff,j,r))) / vom(j,r);
+
+*	Benchmark value shares:
+
+parameter	thetaf(f,g,r)	Factor share of value added,
+		thetad(i,g,r)	Domestic share of intermediate input,
+		thetai(i,g,r)	Import share of intermediate input,
+		theta_f(g,r)	Value added share of sectoral output;
+
+thetaf(f,g,r) = 1;
+thetaf(f,g,r)$sum(ff,vfm(ff,g,r)*(1+rtf0(ff,g,r)))
+	= vfm(f,g,r)*(1+rtf0(f,g,r)) / sum(ff,vfm(ff,g,r)*(1+rtf0(ff,g,r)));
+
+thetad(i,g,r) = 1;
+thetad(i,g,r)$(vdfm(i,g,r)*(1+rtfd0(i,g,r)) + vifm(i,g,r)*(1+rtfi0(i,g,r)))
+	= vdfm(i,g,r)*(1+rtfd0(i,g,r)) / 
+		 (vdfm(i,g,r)*(1+rtfd0(i,g,r)) + vifm(i,g,r)*(1+rtfi0(i,g,r)));
+thetai(i,g,r) = 1;
+thetai(i,g,r)$vom(g,r)
+	= (vdfm(i,g,r)*(1+rtfd0(i,g,r)) + vifm(i,g,r)*(1+rtfi0(i,g,r))) / vom(g,r);
+
+theta_f(g,r) = 1;
+theta_f(g,r)$vom(g,r) = sum(ff,vfm(ff,g,r)*(1+rtf0(ff,g,r))) / vom(g,r);
 
 *	User cost indices for factors, domestic and imported
 *	intermediate inputs:
 
-p_pf(f,j,r) == (pf(f,r)$mf(f)+ps(f,j,r)$sf(f))*(1+rtf(f,j,r))/(1+rtf0(f,j,r));
-p_d(i,j,r) == py(i,r)*(1+rtfd(i,j,r))/(1+rtfd0(i,j,r));
-p_i(i,j,r) == pm(i,r)*(1+rtfi(i,j,r))/(1+rtfi0(i,j,r));
+$macro P_PF(f,g,r) (((PF(f,r)$mf(f)+PS(f,g,r)$sf(f))*(1+rtf(f,g,r)) \
+		/ (1+rtf0(f,g,r)))$thetaf(f,g,r)  + 1$(thetaf(f,g,r) = 0))
+$macro P_D(i,g,r)  ((P(i,r)*(1+rtfd(i,g,r)) \
+		/ (1+rtfd0(i,g,r)))$thetad(i,g,r) + 1$(thetad(i,g,r)=0))
+$macro P_I(i,g,r)  ((PM(i,r)*(1+rtfi(i,g,r)) \
+		/ (1+rtfi0(i,g,r)))$(1-thetad(i,g,r)) + 1$(thetad(i,g,r)=1))
 
-*	Compensated (CES) cost functions:
-
-cf(j,r) == sum(f$thetaf(f,j,r), thetaf(f,j,r) * p_pf(f,j,r)**(1-esubva(j)))**(1/(1-esubva(j)));
-ci(i,j,r) == ( (thetad(i,j,r) * p_d(i,j,r)**(1-esubd(i)) +
-	     (1-thetad(i,j,r)) * p_i(i,j,r)**(1-esubd(i)) )**(1/(1-esubd(i))) )$thetai(i,j,r);
-
-*	Leontief cost function:
-
-cy(j,r) == sum(i$thetai(i,j,r), thetai(i,j,r) * ci(i,j,r)) + (theta_f(j,r)*cf(j,r))$theta_f(j,r);
+*	Compensated cost functions:
 
 
-prf_y(j,r)$vom(j,r)..		cy(j,r) =e= py(j,r) * (1-rto(j,r));
+$if defined f_ $abort "The CF(g,r) macro requires a uniquely defined alias for f."
+alias (f,f_);
+$macro CF(g,r) ( \ 
+	(sum(f_, thetaf(f_,g,r)*P_PF(f_,g,r)))$Leontief(esubva(g)) + \
+	(prod(f_, P_PF(f_,g,r)**thetaf(f_,g,r)))$CobbDouglas(esubva(g)) + \
+	(sum(f_, thetaf(f_,g,r)*P_PF(f_,g,r)**(1-esubva(g)))**(1/(1-esubva(g))))$CES(esubva(g)))
 
-*	$prod:y(j,r)$vom(j,r)	s:0    i.tl:esubd(i)  va:esubva(j)
-*		o:py(j,r)	q:vom(j,r)	a:ra(r)  t:rto(j,r)
-*		i:py(i,r)	q:vdfm(i,j,r)	p:(1+rtfd0(i,j,r)) i.tl:  a:ra(r) t:rtfd(i,j,r)
-*		i:pm(i,r)	q:vifm(i,j,r)	p:(1+rtfi0(i,j,r)) i.tl:  a:ra(r) t:rtfi(i,j,r)
-*		i:pf(f,r)	q:vfm(f,j,r)	p:(1+rtf0(f,j,r))  va:    a:ra(r) t:rtf(f,j,r)
+$macro CI(i,g,r) ( \
+	(thetad(i,g,r)*P_D(i,g,r) + (1-thetad(i,g,r))*P_I(i,g,r))$Leontief(esubd(i)) + \
+	(P_D(i,g,r)**thetad(i,g,r) * P_I(i,g,r)**(1-thetad(i,g,r)))$CobbDouglas(esubd(i)) + \
+	( (thetad(i,g,r) *P_D(i,g,r)**(1-esubd(i)) + \
+	(1-thetad(i,g,r))*P_I(i,g,r)**(1-esubd(i)))**(1/(1-esubd(i))))$CES(esubd(i)))
+
+*	Cost function:
+
+$if defined i_ $abort "The CY(g,r) macro requires a uniquely defined alias for i."
+alias (i,i_);
+$macro CY(g,r) ( \
+  ( sum(i_, thetai(i_,g,r)*CI(i_,g,r)) + theta_f(g,r)*CF(g,r))$Leontief(esub(g)) + \
+  (prod(i_, CI(i_,g,r)**thetai(i_,g,r))*CF(g,r)**theta_f(g,r))$CobbDouglas(esub(g)) + \
+  ((sum(i_, thetai(i_,g,r)*CI(i_,g,r)**(1-esub(g))) + \
+            theta_f(g,r)*CF(g,r)**(1-esub(g)))**(1/(1-esub(g))))$CES(esub(g)) )
+
+prf_y(g,r)$vom(g,r)..		CY(g,r) =e= P(g,r) * (1-rto(g,r));
+
+*	Demand functions:
+
+$macro DDFM(i,g,r) (vdfm(i,g,r) * Y(g,r) * \
+			(CY(g,r)/CI(i,g,r))**esub(g) * \
+			(CI(i,g,r)/P_D(i,g,r))**esubd(i))$vdfm(i,g,r)
+$macro DIFM(i,g,r) (vifm(i,g,r) * Y(g,r) * \
+			(CY(g,r)/CI(i,g,r))**esub(g) * \
+			(CI(i,g,r)/P_I(i,g,r))**esubd(i))$vifm(i,g,r)
+$macro DFM(f,g,r)  (vfm(f,g,r)  * Y(g,r) * \
+			(CY(g,r)/CF(g,r))**esub(g) * \
+			(CF(g,r)/P_PF(f,g,r))**esubva(g))$vfm(f,g,r)
+
+*	Associated tax revenue flows:
+
+$macro REVTO(r)	 (sum(g$vom(g,r),        rto(g,r)   * P(g,r)  * vom(g,r)*Y(g,r)))
+$macro REVTFD(r) (sum((i,g)$vdfm(i,g,r), rtfd(i,g,r)* P(i,r)  * DDFM(i,g,r)))
+$macro REVTFI(r) (sum((i,g)$vifm(i,g,r), rtfi(i,g,r)* PM(i,r) * DIFM(i,g,r)))
+$macro REVTF(r)	 (sum((f,g)$vfm(f,g,r),  rtf(f,g,r) * PF(f,r) * DFM(f,g,r)))
+
 *	-----------------------------------------------------------------------------
 *	Profit function for international transportation services:
 
+*	$prod:YT(j)$vtw(j)  s:1
+*		o:PT(j)		q:vtw(j)
+*		i:P(j,r)	q:vst(j,r)
+
 prf_yt(j)$vtw(j)..
-	prod(r, py(j,r)**(vst(j,r)/vtw(j))) =e= pt(j);
+	prod(r, P(j,r)**(vst(j,r)/vtw(j))) =e= PT(j);
 
+*	Demand Function:
 
-*	$prod:yt(j)$vtw(j)  s:1
-*		o:pt(j)		q:vtw(j)
-*		i:py(j,r)	q:vst(j,r)
-*	-----------------------------------------------------------------------------
-*	Profit function for private consumption (Cobb-Douglas):
-
-parameter	thetadpm(i,r)	Domestic share of private demand
-		thetaipm(i,r)	Import share of private demand
-		thetapm(i,r)	Value share of good in in private demand;
-
-thetadpm(i,r)$(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)))
-	= vdpm(i,r)*(1+rtpd0(i,r)) / 
-		(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)));
-thetaipm(i,r)$(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)))
-	= vipm(i,r)*(1+rtpi0(i,r)) /
-		(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)));
-thetapm(i,r) = (vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r))) / vpm(r);
-
-
-*	User cost price indicies:
-
-p_dc(i,r) == py(i,r) * (1+rtpd(i,r)) / (1+rtpd0(i,r));
-p_ic(i,r) == pm(i,r) * (1+rtpi(i,r)) / (1+rtpi0(i,r));
-
-*	Unit cost functions (CES):
-
-p_c(i,r) == (thetadpm(i,r)*p_dc(i,r)**(1-esubd(i)) +
-	     thetaipm(i,r)*P_ic(i,r)**(1-esubd(i)))**(1/(1-esubd(i)));
-
-prf_c(r)..	prod(i$thetapm(i,r), p_c(i,r)**thetapm(i,r)) =e= pc(r);
-
-
-*	$prod:c(r)  s:1  i.tl:esubd(i)
-*		o:pc(r)		q:vpm(r)
-*		i:py(i,r)	q:vdpm(i,r)	i.tl: p:(1+rtpd0(i,r)) a:ra(r) t:rtpd(i,r)
-*		i:pm(i,r)	q:vipm(i,r)	i.tl: p:(1+rtpi0(i,r)) a:ra(r) t:rtpi(i,r)
-*	-----------------------------------------------------------------------------
-*	Profit function for public consumption (Leontief):
-
-parameter	thetadgm(i,r)	Domestic value share in government demand
-		thetaigm(i,r)	Import value share in government demand
-		thetagm(i,r)	Aggregate value share in government demand;
-
-thetadgm(i,r)$(vdgm(i,r)*(1+rtgd0(i,r))+vigm(i,r)*(1+rtgi0(i,r)))
-	= vdgm(i,r)*(1+rtgd0(i,r)) / 
-		(vdgm(i,r)*(1+rtgd0(i,r))+vigm(i,r)*(1+rtgi0(i,r)));
-thetaigm(i,r)$(vdgm(i,r)*(1+rtgd0(i,r))+vigm(i,r)*(1+rtgi0(i,r)))
-	= vigm(i,r)*(1+rtgi0(i,r)) /
-		(vdgm(i,r)*(1+rtgd0(i,r))+vigm(i,r)*(1+rtgi0(i,r)));
-thetagm(i,r) = (vdgm(i,r)*(1+rtgd0(i,r))+vigm(i,r)*(1+rtgi0(i,r))) / vgm(r);
-
-*	User cost price indices:
-
-p_dg(i,r) == py(i,r) * (1+rtgd(i,r)) / (1+rtgd0(i,r));
-p_ig(i,r) == pm(i,r) * (1+rtgi(i,r)) / (1+rtgi0(i,r));
-
-*	Unit cost functions (CES):
-
-p_g(i,r) == (thetadgm(i,r)*p_dg(i,r)**(1-esubd(i)) +
-	     thetaigm(i,r)*p_ig(i,r)**(1-esubd(i)))**(1/(1-esubd(i)));
-
-*	Leontief unit cost function:
-
-prf_g(r)..	sum(i,	thetagm(i,r) * p_g(i,r) ) =e= pg(r);
-
-
-*	$prod:g(r)  s:0  i.tl:esubd(i)
-*		o:pg(r)		q:vgm(r)
-*		i:py(i,r)	q:vdgm(i,r)	i.tl: p:(1+rtgd0(i,r)) a:ra(r) t:rtgd(i,r)
-*		i:pm(i,r)	q:vigm(i,r)	i.tl: p:(1+rtgi0(i,r)) a:ra(r) t:rtgi(i,r)
+$macro DST(j,r)    (vst(j,r)*YT(j)*PT(j)/P(j,r))$vst(j,r)
 
 *	-----------------------------------------------------------------------------
 *	Profit function for bilateral trade aggregation:
 
+* $prod:M(i,r)$vim(i,r)	s:esubm(i)  s.tl:0
+*	o:PM(i,r)	q:vim(i,r)
+*	i:P(i,s)	q:vxmd(i,s,r)	p:pvxmd(i,s,r) s.tl: a:RA(s) t:(-rtxs(i,s,r)) a:ra(r) t:(rtms(i,s,r)*(1-rtxs(i,s,r)))
+*	i:PT(j)#(s)	q:vtwr(j,i,s,r) p:pvtwr(i,s,r) s.tl: a:RA(r) t:rtms(i,s,r)
+
 *	User cost indices:
 
-py_m(i,s,r) == py(i,s) * (1-rtxs(i,s,r))*(1+rtms(i,s,r)) / pvxmd(i,s,r);
-pt_m(j,i,s,r) == pt(j) * (1+rtms(i,s,r)) / pvtwr(i,s,r);
+$macro P_M(i,s,r) ((P(i,s)*(1-rtxs(i,s,r))*(1+rtms(i,s,r))/pvxmd(i,s,r))$vxmd(i,s,r) + 1$(vxmd(i,s,r)=0))
+$macro P_T(j,i,s,r) (PT(j)*(1+rtms(i,s,r))/pvtwr(i,s,r))$vtwr(j,i,s,r)
 
 parameter	thetavxmd(i,s,r)	Value share of goods in imports,
 		thetavtwr(j,i,s,r)	Value share of transportation services,
-		thetam(i,s,r)		Bilateral import value share;
+		thetam(i,s,r)		Bilateral import value share
+		vxmt(i,s,r)		Value of imports gross transport cost;
 
-thetavxmd(i,s,r)$(vxmd(i,s,r)*pvxmd(i,s,r) + sum(j,vtwr(j,i,s,r)*pvtwr(i,s,r)))
-	= vxmd(i,s,r)*pvxmd(i,s,r) / 
-		(vxmd(i,s,r)*pvxmd(i,s,r) + sum(j,vtwr(j,i,s,r)*pvtwr(i,s,r)));
-thetavtwr(j,i,s,r)$(vxmd(i,s,r)*pvxmd(i,s,r) + sum(jj,vtwr(jj,i,s,r)*pvtwr(i,s,r)))
-	= vtwr(j,i,s,r)*pvtwr(i,s,r) /
-		(vxmd(i,s,r)*pvxmd(i,s,r) + sum(jj,vtwr(jj,i,s,r)*pvtwr(i,s,r)));
-thetam(i,s,r)$vim(i,r) 
-	= (vxmd(i,s,r)*pvxmd(i,s,r) + sum(j,vtwr(j,i,s,r)*pvtwr(i,s,r)))/vim(i,r);
+vxmt(i,s,r)			= vxmd(i,s,r)*pvxmd(i,s,r) + sum(j,vtwr(j,i,s,r)*pvtwr(i,s,r));
+thetavxmd(i,s,r)$vxmt(i,s,r)	= vxmd(i,s,r)*pvxmd(i,s,r) / vxmt(i,s,r);
+thetavtwr(j,i,s,r)$vxmt(i,s,r)	= vtwr(j,i,s,r)*pvtwr(i,s,r) / vxmt(i,s,r);
+thetam(i,s,r)$vim(i,r)		= vxmt(i,s,r)/vim(i,r);
 
 *	Price index of bilateral imports (Leontief cost function):
 
-pyt_m(i,s,r) == py_m(i,s,r)*thetavxmd(i,s,r) + sum(j, pt_m(j,i,s,r)*thetavtwr(j,i,s,r));
+$if defined j1 $abort "The PT_M(i,s,r) macro requires a uniquely defined alias for j."
+alias (j,j1);
+$macro PT_M(i,s,r) (P_M(i,s,r)*thetavxmd(i,s,r) + sum(j1, P_T(j1,i,s,r)*thetavtwr(j1,i,s,r)))
 
 *	Unit cost function for imports (CES):
 
-cim(i,r) == sum(s$thetam(i,s,r), thetam(i,s,r) * pyt_m(i,s,r)**(1-esubm(i)))**(1/(1-esubm(i)));
+$if defined s_ $abort "The CIM(i,r) macro requires a uniquely defined alias for s."
+alias (s,s_);
+$macro CIM(i,r) ( \
+   sum(s_, thetam(i,s_,r) * PT_M(i,s_,r) )$Leontief(esubm(i)) + \
+   prod(s_, PT_M(i,s_,r)**thetam(i,s_,r) )$CobbDouglas(esubm(i)) + \
+  (sum(s_, thetam(i,s_,r) * PT_M(i,s_,r)**(1-esubm(i)))**(1/(1-esubm(i))))$CES(esubm(i)) )
 
-prf_m(i,r)$vim(i,r)..	cim(i,r) =e= pm(i,r);
+prf_m(i,r)$vim(i,r)..	CIM(i,r) =e= PM(i,r);
 
+*	Demand function:
 
-*	$prod:m(i,r)$vim(i,r)	s:esubm(i)  s.tl:0
-*		o:pm(i,r)	q:vim(i,r)
-*		i:py(i,s)	q:vxmd(i,s,r)	p:pvxmd(i,s,r) s.tl:
-*	+		a:ra(s) t:(-rtxs(i,s,r))
-*	+		a:ra(r) t:(rtms(i,s,r)*(1-rtxs(i,s,r)))
-*		i:pt(j)#(s)	q:vtwr(j,i,s,r) p:pvtwr(i,s,r) s.tl:
-*	+		a:ra(r) t:rtms(i,s,r)
+$macro DXMD(i,s,r)   ((vxmd(i,s,r)   * M(i,r) * (PM(i,r)/PT_M(i,s,r))**esubm(i))$vxmd(i,s,r))
+$macro DTWR(j,i,s,r) ((vtwr(j,i,s,r) * M(i,r) * (PM(i,r)/PT_M(i,s,r))**esubm(i))$vtwr(j,i,s,r))
+
+*	Associated tax revenue:
+
+$macro REVTXS(r) (sum((i,s)$vxmd(i,r,s), -rtxs(i,r,s) * P(i,r) * dxmd(i,r,s)))
+
+$if defined j2 $abort "The REVTMS(r) macro requires a uniquely defined alias for j."
+alias (j,j2);
+$macro REVTMS(r) (sum((i,s)$vxmd(i,s,r), rtms(i,s,r) * \
+	(P(i,s)*(1-rtxs(i,s,r))*DXMD(i,s,r) + sum(j2, PT(j2)*DTWR(j2,i,s,r)))))
+
 *	-----------------------------------------------------------------------------
+*	Transforamtion sector for sluggish factors:
+
+*	$prod:FT(sf,r)$evom(sf,r)  t:etrae(sf)
+*		o:PS(sf,j,r)	q:vfm(sf,j,r)
+*		i:PF(sf,r)	q:evom(sf,r)
+
+
 parameter	thetavfm(f,j,r)	Value shares of specific factors;
 thetavfm(sf,j,r) = vfm(sf,j,r)/evom(sf,r);
 
-pvfm(sf,j,r) == sum(j, thetavfm(sf,j,r) * ps(sf,j,r)**(1+etrae(sf)))**(1/(1+etrae(sf)));
+$if defined j3 $abort "The PVFM(sf,r) macro requires a uniquely defined alias for j."
+alias (j,j3);
+$macro PVFM(sf,r) (sum(j3,thetavfm(sf,j3,r)*PS(sf,j3,r)**(1+etrae(sf)))**(1/(1+etrae(sf))))
 
-prf_ft(sf,r)$evom(sf,r)..	pf(sf,r) =e= pvfm(sf,j,r);
-
-*	$prod:ft(sf,r)$evom(sf,r)  t:etrae(sf)
-*		o:ps(sf,j,r)	q:vfm(sf,j,r)
-*		i:pf(sf,r)	q:evom(sf,r)
-*	-----------------------------------------------------------------------------
-*	Demand functions:
-*
-ddfm(i,j,r) == (vdfm(i,j,r)*y(j,r)*(ci(i,j,r)/p_d(i,j,r))**esubd(i))$vdfm(i,j,r);
-difm(i,j,r) == (vifm(i,j,r)*y(j,r)*(ci(i,j,r)/p_i(i,j,r))**esubd(i))$vifm(i,j,r);
-dfm(f,j,r)  == (vfm(f,j,r)*y(j,r)*(cf(j,r)/p_pf(f,j,r))**esubva(j))$vfm(f,j,r);
-dst(j,r)    == (vst(j,r)*yt(j)*pt(j)/py(j,r))$vst(j,r);
-ddpm(i,r)   == (vdpm(i,r)*c(r)*(p_c(i,r)/p_dc(i,r))**esubd(i)*(pc(r)/p_c(i,r)))$vdpm(i,r);
-dipm(i,r)   == (vipm(i,r)*c(r)*(p_c(i,r)/p_ic(i,r))**esubd(i)*(pc(r)/p_c(i,r)))$vipm(i,r);
-ddgm(i,r)   == (vdgm(i,r)*g(r)*(p_g(i,r)/p_dg(i,r))**esubd(i))$vdgm(i,r);
-digm(i,r)   == (vigm(i,r)*g(r)*(p_g(i,r)/p_ig(i,r))**esubd(i))$vigm(i,r);
-dxmd(i,s,r) == (vxmd(i,s,r)*m(i,r)*(pm(i,r)/pyt_m(i,s,r))**esubm(i))$vxmd(i,s,r);
-dtwr(j,i,s,r) == (vtwr(j,i,s,r)*m(i,r)*(pm(i,r)/pyt_m(i,s,r))**esubm(i))$vtwr(j,i,s,r);
-
-*	-----------------------------------------------------------------------------
-*	Regional tax revenue by tax instrument:
-
-revto(r) == sum(j$vom(j,r), rto(j,r) * vom(j,r) * py(j,r) * y(j,r));
-revtfd(r) == sum((i,j)$vdfm(i,j,r), rtfd(i,j,r)*py(i,r)*ddfm(i,j,r));
-revtfi(r) == sum((i,j)$vifm(i,j,r), rtfi(i,j,r)*pm(i,r)*difm(i,j,r));
-revtf(r) == sum((f,j)$vfm(f,j,r), rtf(f,j,r)*pf(f,r)*dfm(f,j,r));
-revtpd(r) == sum(i$vdpm(i,r), rtpd(i,r) * py(i,r) * ddpm(i,r));
-revtpi(r) == sum(i$vipm(i,r), rtpi(i,r) * pm(i,r) * dipm(i,r));
-revtgd(r) == sum(i$vdgm(i,r), rtgd(i,r) * py(i,r) * ddgm(i,r));
-revtgi(r) == sum(i$vigm(i,r), rtgi(i,r) * pm(i,r) * digm(i,r));
-revtxs(r) == sum((i,s)$vxmd(i,r,s), -rtxs(i,r,s) * py(i,r) * dxmd(i,r,s));
-revtms(r) == sum((i,s)$thetam(i,s,r), rtms(i,s,r) * 
-	(py(i,s)*(1-rtxs(i,s,r))*dxmd(i,s,r) + sum(j, pt(j) * dtwr(j,i,s,r))));
+prf_ft(sf,r)$evom(sf,r)..	PF(sf,r) =e= PVFM(sf,r);
 
 *	-----------------------------------------------------------------------------
 *	Income balance consition:
 
+*	$demand:RA(r)
+*	d:P("c",r)	q:vom("c",r)
+*	e:P("c",rnum)	q:vb(r)
+*	e:P("g",r)	q:(-vom("g",r))
+*	e:P("i",r)	q:(-vom("i",r))
+*	e:PF(f,r)	q:evom(f,r)
+
 inc_ra(r)$(ra.lo(r) < ra.up(r))..	
-	ra(r) =e= sum(rnum, pc(rnum)*vb(r)) - pg(r)*vgm(r) 
-			- sum(i, py(i,r) * vdim(i,r))
-			+ sum(f, pf(f,r)*evom(f,r))
-			+ revto(r) 
-			+ revtfd(r)
-			+ revtfi(r)
-			+ revtf(r)
-			+ revtpd(r)
-			+ revtpi(r)
-			+ revtgd(r)
-			+ revtgi(r)
-			+ revtxs(r)
-			+ revtms(r);
-
-*	$demand:ra(r)
-*		d:pc(r)		q:vpm(r)
-*		e:pc(rnum)	q:vb(r)
-*		e:pg(r)		q:(-vgm(r))
-*		e:py(i,r)	q:(-vdim(i,r))
-*		e:pf(f,r)	q:evom(f,r)
-
-*	-----------------------------------------------------------------------------
-*	Market clearance associated with private consumption:
-
-mkt_pc(r)..		c(r) * vpm(r) * pc(r) =e= ra(r);
-
-*	-----------------------------------------------------------------------------
-*	Market clearance associated with public consumption:
-
-mkt_pg(r)..		g(r) =e= 1;
+	RA(r) =e= sum(rnum, P("c",rnum)*vb(r)) 
+			- P("g",r)*vom("g",r) 
+			- P("i",r)*vom("i",r) 
+			+ sum(f, PF(f,r)*evom(f,r))
+			+ REVTO(r) + REVTFD(r) + REVTFI(r) 
+			+ REVTF(r) + REVTXS(r) + REVTMS(r);
 
 *	-----------------------------------------------------------------------------
 *	Market clearance associated with firm output:
 
-mkt_py(i,r)$vom(i,r)..	
+mkt_p(g,r)$vom(g,r)..	
 
-	y(i,r) * vom(i,r) =e= sum(j, ddfm(i,j,r)) 
-		+ ddpm(i,r) + ddgm(i,r) + sum(s, dxmd(i,r,s)) + dst(i,r) + vdim(i,r);
+	Y(g,r) * vom(g,r) =e= (RA(r)/P(g,r))$sameas(g,"C") + 
+		vom(g,r)$(sameas(g,"G") or sameas(g,"I")) +
+		sum(i$sameas(i,g),  sum(gg,DDFM(i,gg,r)) + sum(s,DXMD(i,r,s)) + DST(i,r));
 
 *	-----------------------------------------------------------------------------
 *	Market clearance associated with imports:
 
-mkt_pm(i,r)$vim(i,r)..	m(i,r) * vim(i,r) =e= 
-			sum(j, difm(i,j,r)) 
-			+ dipm(i,r)
-			+ digm(i,r);
-
+mkt_pm(i,r)$vim(i,r)..	M(i,r) * vim(i,r) =e= sum(g, DIFM(i,g,r));
 
 *	-----------------------------------------------------------------------------
 *	Market clearance associated with transport services:
 
-mkt_pt(j)$vtw(j)..	yt(j) * vtw(j) =e= sum((i,s,r), dtwr(j,i,s,r));
-
+mkt_pt(j)$vtw(j)..	YT(j) * vtw(j) =e= sum((i,s,r), DTWR(j,i,s,r));
 
 *	-----------------------------------------------------------------------------
 *	Market clearance associated with primary factors:
 
-mkt_pf(f,r)$evom(f,r)..	evom(f,r) =e= sum(j, dfm(f,j,r))$mf(f) + (evom(f,r)*ft(f,r))$sf(f);
+mkt_pf(f,r)$evom(f,r)..	evom(f,r) =e= sum(j, DFM(f,j,r))$mf(f) + (evom(f,r)*FT(f,r))$sf(f);
 
 *	-----------------------------------------------------------------------------
 *	Market clearance associated with specific factors:
 
 mkt_ps(sf,j,r)$vfm(sf,j,r)..	
-	vfm(sf,j,r) * (ps(sf,j,r)/pf(sf,r))**etrae(sf) =e= dfm(sf,j,r);	
+	vfm(sf,j,r) * (PS(sf,j,r)/PF(sf,r))**etrae(sf) * FT(sf,r) =e= DFM(sf,j,r);	
 
-model gtap6mcp /
-	prf_c.c,prf_g.g,prf_y.y,prf_m.m,prf_yt.yt,prf_ft.ft,
-	mkt_pc.pc,mkt_pg.pg,mkt_py.py,mkt_pm.pm,mkt_pt.pt,mkt_pf.pf,mkt_ps.ps,
-	inc_ra.ra/;
+model gtap7mcp /
+	prf_y.Y,prf_m.M,prf_yt.YT,prf_ft.FT,
+	mkt_p.P,mkt_pm.PM,mkt_pt.PT,mkt_pf.PF,mkt_ps.PS,
+	inc_ra.RA/;
 
-model gtap6cns /
-	prf_c.c,prf_g.g,prf_y.y,prf_m.m,prf_yt.yt,prf_ft.ft,
-	mkt_pc.pc,mkt_pg.pg,mkt_py.py,mkt_pm.pm,mkt_pt.pt,mkt_pf.pf,mkt_ps.ps,
-	inc_ra.ra/;
+model gtap7cns /
+	prf_y,prf_m,prf_yt,prf_ft,
+	mkt_p,mkt_pm,mkt_pt,mkt_pf,mkt_ps,
+	inc_ra/;
 
 *	Assign default values:
 
-c.l(r) = 1;
-g.l(r) = 1;
-y.l(i,r) = 1;
-m.l(i,r) = 1;
-yt.l(j) = 1;
-ft.l(sf,r) = 1;
-pc.l(r) = 1;
-pg.l(r) = 1;
-py.l(j,r) = 1;
-pm.l(j,r) = 1;
-pt.l(j) = 1;
-pf.l(f,r) = 1;
-ps.l(sf,j,r) = 1;
-ra.l(r) = vpm(r);
-
+Y.L(g,r) = 1;
+M.L(i,r) = 1;
+YT.L(j) = 1;
+FT.L(sf,r) = 1;
+P.L(g,r) = 1;
+PM.L(j,r) = 1;
+PT.L(j) = 1;
+PF.L(f,r) = 1;
+PS.L(sf,j,r) = 1;
+RA.L(r) = vom("c",r);
 
 *	Fix variables which should not enter the model:
 
-y.fx(i,r)$(vom(i,r)=0) = 1;
-m.fx(i,r)$(vim(i,r)=0) = 1;
-yt.fx(j)$(vtw(j)=0) = 1;
-py.fx(j,r)$(vom(j,r)=0) = 1;
-pm.fx(j,r)$(vim(j,r)=0) = 1;
-pt.fx(j)$(vtw(j)=0) = 1;
-pf.fx(f,r)$(evom(f,r)=0) = 1;
-ps.fx(f,j,r)$((not sf(f)) or (vfm(f,j,r)=0)) = 1;
-ft.fx(f,r)$((not sf(f)) or (evom(f,r)=0)) = 1;
+Y.FX(g,r)$(vom(g,r)=0) = 1;
+M.FX(i,r)$(vim(i,r)=0) = 1;
+YT.FX(j)$(vtw(j)=0) = 1;
+P.FX(j,r)$(vom(j,r)=0) = 1;
+PM.FX(j,r)$(vim(j,r)=0) = 1;
+PT.FX(j)$(vtw(j)=0) = 1;
+PF.FX(f,r)$(evom(f,r)=0) = 1;
+PS.FX(f,g,r)$(not i(g)) = 0;
+PS.FX(f,j,r)$((not sf(f)) or (vfm(f,j,r)=0)) = 1;
+FT.FX(f,r)$((not sf(f)) or (evom(f,r)=0)) = 1;
 
 *	Establish a price normalization using the reference region:
-ra.fx(rnum) = ra.l(rnum);
 
-gtap6mcp.iterlim = 0;
-solve gtap6mcp using mcp;
+RA.FX(rnum) = RA.L(rnum);
+
+gtap7mcp.iterlim = 0;
+solve gtap7mcp using mcp;
+gtap7mcp.iterlim = 10000;
 
 $exit
 
 *	Verify benchmark consistency with both MCP and CNS models:
 
-gtap6cns.iterlim = 0;
-solve gtap6cns using cns;
+gtap7cns.iterlim = 0;
+solve gtap7cns using cns;
+gtap7cns.iterlim = 10000;
 
-
-*	Run a GFT scenario using the CNS model;
+*	Run a GFT scenario using the MCP model;
 
 rtxs(i,r,s) = 0;
 rtms(i,r,s) = 0;
 
-gtap6cns.iterlim = 10000;
-solve gtap6cns using cns;
+*	Solve with CNS (does not work):
+*	solve gtap7cns using cns;
 
-*	Verify consistency of the solution using the MCP model:
+*	Solve the MCP model:
 
-gtap6mcp.iterlim = 0;
-solve gtap6mcp using mcp;
+solve gtap7mcp using mcp;

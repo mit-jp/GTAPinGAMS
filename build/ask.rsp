@@ -1,7 +1,0 @@
-T=checklistbox 
-M="What do you what to build?" 
-C="GTAP6INGAMS Build Script"
-D="Flex2GDX|ZIP2GDX|Filter|GTAPAGGR|IMPOSE" 
-E="Flex2GDX|ZIP2GDX|Filter|GTAPAGGR|IMPOSE" 
-R=%s
-O=irun.inc

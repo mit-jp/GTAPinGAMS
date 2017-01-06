@@ -18,13 +18,13 @@ $hidden		Uses identifiers: d_1*d_7,p1*p7,pd_1*pd7.
 $hidden
 $version 139
 
-$if not defined d_1 alias (d_1,d_2,d_3,d_4,d_5,d_6,d_7,*);
-$if not defined p_1 parameter p_1(d_1),p_2(d_1,d_2),p_3(d_1,d_2,d_3),p_4(d_1,d_2,d_3,d_4),
-$if not defined p_1 p_5(d_1,d_2,d_3,d_4,d_5),p_6(d_1,d_2,d_3,d_4,d_5,d_6),
-$if not defined p_1 p_7(d_1,d_2,d_3,d_4,d_5,d_6,d_7);
-$if not defined pd_1 set pd_1(d_1), pd_2(d_1,d_2), pd_3(d_1,d_2,d_3), pd_4(d_1,d_2,d_3,d_4),
-$if not defined pd_1 pd_5(d_1,d_2,d_3,d_4,d_5),	pd_6(d_1,d_2,d_3,d_4,d_5,d_6),
-$if not defined pd_1 pd_7(d_1,d_2,d_3,d_4,d_5,d_6,d_7);
+$if not declared d_1 alias (d_1,d_2,d_3,d_4,d_5,d_6,d_7,*);
+$if not declared p_1 parameter p_1(d_1),p_2(d_1,d_2),p_3(d_1,d_2,d_3),p_4(d_1,d_2,d_3,d_4),
+$if not declared p_5 p_5(d_1,d_2,d_3,d_4,d_5),p_6(d_1,d_2,d_3,d_4,d_5,d_6),
+$if not declared p_7 p_7(d_1,d_2,d_3,d_4,d_5,d_6,d_7);
+$if not declared pd_1 set pd_1(d_1), pd_2(d_1,d_2), pd_3(d_1,d_2,d_3), pd_4(d_1,d_2,d_3,d_4),
+$if not declared pd_5 pd_5(d_1,d_2,d_3,d_4,d_5),pd_6(d_1,d_2,d_3,d_4,d_5,d_6),
+$if not declared pd_7 pd_7(d_1,d_2,d_3,d_4,d_5,d_6,d_7);
 
 $set p %1
 $set d %2
@@ -52,8 +52,8 @@ $offuni
 $exit
 
 $label dim2
-$if not settype %d%	$abort "Error -- domain argument is not a set: %d%"
-$if not dimension 2 %d% $abort "Error -- expected a two dimensional domain, but got %d%."
+$if not settype %d%	$abort "Error -- row domain argument is not a set: %rd%"
+$if not dimension 2 %d% $abort "Error -- expected a two dimensional row domain, but got %d%."
 $onuni
 	p_2(d_1,d_2)=%p%(d_1,d_2); 
 	option pd_2<p_2; 
@@ -116,3 +116,4 @@ $onuni
 $offuni
 	pd_7(d_1,d_2,d_3,d_4,d_5,d_6,d_7)=no;
 $exit
+

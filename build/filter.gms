@@ -1,419 +1,542 @@
 $title	Generate a Sparse Version of the GTAP Dataset
 
-$if not set tol $set tol 01
-$set ghgdata yes
+$if not set tol $set tol 001
+$if not set nd $set nd 6
+$setglobal tol %tol%
+
+scalar tol	Tolerance parameter for filtering data /0.%tol%/;
+
 $if not set ds $set ds gsd
-$if not set output $set output gsd%tol%.gdx
-$if not defined tol scalar tol	Tolerance parameter for filtering data /0.%tol%/;
 
-$if not defined vdm $include gtap6data
+$include gtap7data
 
-alias (i,ii);
+*	Need to pay attention to what matters here:
 
-parameter	vdpm0,vipm0,vdgm0,vigm0,vfm0,vifm0,vdfm0,vdm0;
-vdm0(i,r) = vdm(i,r);
-vdpm0(i,r) = vdpm(i,r);
-vipm0(i,r) = vipm(i,r);
-vdgm0(i,r) = vdgm(i,r);
-vigm0(i,r) = vigm(i,r);
-vfm0(f,i,r) = vfm(f,i,r);
-vifm0(i,j,r) = vifm(i,j,r);
-vdfm0(i,j,r) = vdfm(i,j,r);
+*	1. "oil" is crude oil, the value of which is negligible outside of the oil producing
+*	states.  If filtering the data drops all this use, it is not a big problem.
 
-parameter	vxm(i,r)	Export volume,
-		gdp(r)		Scale factor
-		nz		Count of non-zeros
-		trace		Submatrix totals
-		ndropped	Number of nonzeros dropped;
+*	2. Natural gas is represented by "gas+gdt", and many countries have relatively few
+*	sources of natural gas.
 
+*	3. Coal is also somewhat small component of emissions in many countries.
+
+*	Bottom line: we may have large percentage changes in certain markets, but changes in
+*	overall energy use are small -- below 0.1% for all sectors and fuels.
+
+parameter	adjustment	Resulting adjustment in energy and co2 (%);
+adjustment("evd",r,i)$sum(g,evd(i,g,r))   = round(100*sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	
+						evd(i,g,r)) /sum(g,evd(i,g,r)), 1);
+adjustment("evd",r,"total")               = round(100*sum(i, sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	
+						evd(i,g,r)))/sum((i,g),evd(i,g,r)), 1);
+
+adjustment("eco2",r,i)$sum(g,eco2(i,g,r)) = round(100*sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	
+						eco2(i,g,r))/sum(g,eco2(i,g,r)), 1) + eps;
+adjustment("eco2",r,"total")              = round(100*sum(i, sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	
+						eco2(i,g,r)))/sum((i,g),eco2(i,g,r)), 1);
+option adjustment:1:2:1;
+display adjustment;
+
+
+alias (i,ii), (g,gg), (r,rr);
+
+parameter	vxm(g,r)	Export volume (total);
+vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
+
+parameter	theta(g,*)	Aggregate value shares;
+
+*	Value shares in global economy:
+
+theta(i,"vxm") = max(1e-5,sum(r,vxm(i,r))/sum((j,r),vxm(j,r)));
+theta(i,"vim") = max(1e-5,sum(r,vim(i,r))/sum((j,r),vim(j,r)));
+theta(i,"vom") = max(1e-5,sum(r,vom(i,r))/sum((j,r),vom(j,r)));
+theta(i,"vigm") = max(1e-5,sum(r,vifm(i,"g",r))/sum((j,r),vifm(j,"g",r)));
+theta(i,"vdgm") = max(1e-5,sum(r,vdfm(i,"g",r))/sum((j,r),vdfm(j,"g",r)));
+theta(i,"vipm") = max(1e-5,sum(r,vifm(i,"c",r))/sum((j,r),vifm(j,"c",r)));
+theta(i,"vdpm") = max(1e-5,sum(r,vdfm(i,"c",r))/sum((j,r),vdfm(j,"c",r)));
+
+set	noevd(i,g,r)		Elements for which evd>0 and vifm+vdfm=0, 
+	noevt(i,r,s)		Elements for which evt>0 and vxmd=0, 
+	noeco2(i,g,r)		Elements for which eco2>0 and vifm+vdfm=0,
+	nonco2(nco2,*,g,r)	Elements for which enco2>0 and vifm+vdfm=0;
+
+noevd(i,g,r)$evd(i,g,r) = yes$(vifm(i,g,r)+vdfm(i,g,r)=0);
+noevt(i,r,s)$evt(i,r,s) = yes$(vxmd(i,r,s)=0);
+noeco2(i,g,r)$eco2(i,g,r) = yes$(vifm(i,g,r)+vdfm(i,g,r)=0);
+nonco2(nco2,i,g,r)$enco2(nco2,i,g,r) = yes$(vifm(i,g,r)+vdfm(i,g,r)=0);
+nonco2(nco2,f,g,r)$enco2(nco2,f,g,r) = yes$(vfm(f,g,r)=0);
+nonco2(nco2,"process",j,r)$enco2(nco2,"process",j,r) = yes$(vom(j,r)=0);
+display "Energy flows dropped -- set ND=0 if you want to retain these:", noevd, noevt, noeco2, nonco2;
+
+parameter	totnco2(*,*,nco2)	NCO2 totals;
+totnco2("region",r,nco2) = sum((i,g), enco2(nco2,i,g,r))+sum((f,g), enco2(nco2,f,g,r)) + sum(j, enco2(nco2,"process",j,r));
+totnco2("sector",j,nco2) = sum((i,r), enco2(nco2,i,j,r))+sum((f,r), enco2(nco2,f,j,r)) + sum(r, enco2(nco2,"process",j,r));
+totnco2("commodity",i,nco2) = sum((g,r), enco2(nco2,i,g,r));
+totnco2("factor",f,nco2) = sum((g,r),  enco2(nco2,f,g,r));
+display totnco2;
+
+parameter
+	evdratio(i,g,r)		Energy demand ratio
+	evtratio(i,r,s)		Energy trade ratio
+	eco2ratio(i,g,r)	Carbon emissions ratio
+	etrace(*,r,*,*)		Energy flow trace
+	tevd(i,r)		Total energy volume demanded (mtoe),
+	tevt(i,r)		Total energy volume exported (mtoe),
+	tco2(i,r)		Total CO2 emissions total (Gg),
+	tnco2(nco2,r)		Total NCO2 emissions total (MM ton C-eq);
+
+tevd(i,r) = sum(g,evd(i,g,r));
+tevt(i,r) = sum(s,evt(i,r,s));
+tco2(i,r) = sum(g, eco2(i,g,r));
+tnco2(nco2,r) = sum((i,g), enco2(nco2,i,g,r)) + sum((f,g), enco2(nco2,f,g,r)) + sum(g, enco2(nco2,"process",g,r));
+etrace("tevd",r,i,"source") = tevd(i,r);
+etrace("tevt",r,i,"source") = tevt(i,r);
+etrace("tco2",r,i,"source") = tco2(i,r);
+etrace("tnco2",r,nco2,"source") = tnco2(nco2,r);
+
+*	Drop energy flows corresponding to negligible economic 
+*	flows:
+
+evd(noevd(i,g,r)) = 0;
+evt(noevt(i,r,s)) = 0;
+eco2(noeco2(i,g,r)) = 0;
+enco2(nonco2(nco2,i,g,r)) = 0;
+enco2(nonco2(nco2,"process",j,r)) = 0;
+enco2(nonco2(nco2,f,g,r)) = 0;
+
+evdratio(i,g,r)$evd(i,g,r) = evd(i,g,r)/(vifm(i,g,r)+vdfm(i,g,r));
+evtratio(i,r,s)$evt(i,r,s) = evt(i,r,s)/vxmd(i,r,s);
+eco2ratio(i,g,r)$eco2(i,g,r) = eco2(i,g,r)/(vifm(i,g,r)+vdfm(i,g,r));
+
+tevd(i,r) = sum(g,evd(i,g,r));
+tevt(i,r) = sum(s,evt(i,r,s));
+tco2(i,r) = sum(g, eco2(i,g,r));
+tnco2(nco2,r) = sum((i,g), enco2(nco2,i,g,r)) + sum((f,g), enco2(nco2,f,g,r)) + sum(g, enco2(nco2,"process",g,r));
+
+etrace("tevd",r,i,"filtered") = tevd(i,r);
+etrace("tevt",r,i,"filtered") = tevt(i,r);
+etrace("tco2",r,i,"filtered") = tco2(i,r);
+etrace("tnco2",r,nco2,"filtered") = tnco2(nco2,r);
+
+etrace("tevd",r,i,"adjust")$etrace("tevd",r,i,"source") = (etrace("tevd",r,i,"filtered")/etrace("tevd",r,i,"source")-1);
+etrace("tevt",r,i,"adjust")$etrace("tevt",r,i,"source") = (etrace("tevt",r,i,"filtered")/etrace("tevt",r,i,"source")-1);
+etrace("tco2",r,i,"adjust")$etrace("tco2",r,i,"source") = (etrace("tco2",r,i,"filtered")/etrace("tco2",r,i,"source")-1);
+etrace("tnco2",r,i,"adjust")$etrace("tnco2",r,i,"source") = (etrace("tnco2",r,i,"filtered")/etrace("tnco2",r,i,"source")-1);
+option etrace:3:2:1;
+display etrace;
+
+*	Filter demand functions except those associated with energy demand or carbon emissions:
+
+vifm(j,i,r)$(evd(j,i,r)=0     and eco2(j,i,r)=0   and vifm(j,i,r) < tol*vom(i,r)) = 0;
+vifm(i,"g",r)$(evd(i,"g",r)=0 and eco2(i,"g",r)=0 and vifm(i,"g",r)/sum(j,vifm(j,"g",r)) < 10*tol*theta(i,"vigm")) = 0;
+vifm(i,"c",r)$(evd(i,"c",r)=0 and eco2(i,"c",r)=0 and vifm(i,"c",r)/sum(j,vifm(j,"c",r)) < 10*tol*theta(i,"vipm")) = 0;
+
+vdfm(i,j,r)$(evd(j,i,r)=0 and eco2(j,i,r)=0 and vdfm(i,j,r) < tol*vom(j,r)) = 0;
+vdfm(i,"g",r)$(evd(i,"g",r)=0 and eco2(i,"g",r)=0 and vdfm(i,"g",r)/sum(j,vdfm(j,"g",r)) < 10*tol*theta(i,"vdgm")) = 0;
+vdfm(i,"c",r)$(evd(i,"c",r)=0 and eco2(i,"c",r)=0 and vdfm(i,"c",r)/sum(j,vdfm(j,"c",r)) < 10*tol*theta(i,"vdpm")) = 0;
+
+adjustment("evd",r,i)$sum(g,evd(i,g,r))   = sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),		evd(i,g,r)) /sum(g,evd(i,g,r));
+adjustment("evd",r,"total")               = sum(i, sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	evd(i,g,r)))/sum((i,g),evd(i,g,r));
+adjustment("eco2",r,i)$sum(g,eco2(i,g,r)) = sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),		eco2(i,g,r))/sum(g,eco2(i,g,r));
+adjustment("eco2",r,"total")              = sum(i, sum(g$(vifm(i,g,r)+vdfm(i,g,r)=0),	eco2(i,g,r)))/sum((i,g),eco2(i,g,r));
+display adjustment;
+
+set dropexports(i,r);
+
+*	Drop exports if a given region exports as a fraction of total
+*	exports is much smaller than the share of that commodity exports in
+*	the total:
+
+dropexports(i,r) = yes$(vxm(i,r)/sum(j,vxm(j,r)) < 10*tol*theta(i,"vxm"));
+
+*	Drop imports if regional imports are very small relative to 
+*	the import share in the world:
+
+set dropimports(i,r);
+dropimports(i,r) = yes$(vim(i,r)/sum(j,vim(j,r)) < 10*tol*theta(i,"vim"));
+dropimports(i,r)$(not dropimports(i,r)) = yes$(sum(g,vifm(i,g,r))=0);
+
+*	Drop production if the production share is small relative to the 
+*	world share:
+
+set dropprod(i,r) /(gdt,gas).chn /;
+dropprod(i,r)$(not dropprod(i,r)) = yes$(vom(i,r)/sum(j,vom(j,r)) < 10*tol*theta(i,"vom"));
+dropprod(i,r)$(not dropprod(i,r)) = yes$(vxm(i,r)+sum(g$(not sameas(i,g)),vdfm(i,g,r))=0);
+dropexports(dropprod(i,r)) = yes;
+
+parameter     regtotals       Regional totals - echo print
+	      regtrade        Regional bilateral trade echo print
+	      sectotals       Sectoral totals -- echo print
+	      sectrade        Sectoral bilateral trade echo print;
+
+regtotals(r,"vom0") = sum(i$vom(i,r),1);
+regtotals(r,"vom3") = sum(i,vom(i,r));
+regtotals(r,"vxm0") = sum(i$vxm(i,r),1);
+regtotals(r,"vxm3") = sum(i,vxm(i,r));
+regtotals(r,"vim0") = sum(i$vim(i,r),1);
+regtotals(r,"vim3") = sum(i,vim(i,r));
+
+sectotals(i,"vom0") = sum(r$vom(i,r),1);
+sectotals(i,"vom3") = sum(r,vom(i,r));
+sectotals(i,"vxm0") = sum(r$vxm(i,r),1);
+sectotals(i,"vxm3") = sum(r,vxm(i,r));
+sectotals(i,"vim0") = sum(r$vim(i,r),1);
+sectotals(i,"vim3") = sum(r,vim(i,r));
+
+regtrade(r,"vxmd_m0") = sum((i,s)$vxmd(i,s,r),1);
+regtrade(r,"vxmd_x0") = sum((i,s)$vxmd(i,r,s),1);
+regtrade(r,"vxmd_m3") = sum((i,s), vxmd(i,s,r));
+regtrade(r,"vxmd_x3") = sum((i,s), vxmd(i,r,s));
+
+sectrade(i,"vxmd0") = sum((r,s)$vxmd(i,s,r),1);
+sectrade(i,"vxmd3") = sum((r,s), vxmd(i,s,r));
+
+parameter       regstat         Filtering Statistics -- Regions,
+		comstat         Filtering Statistics -- Commodities;
+
+regstat(r,"vxm#") = 100 * sum(dropexports(i,r),1)/card(i);
+regstat(r,"vxm%") = 100 * sum(dropexports(i,r),vxm(i,r))/sum(j,vxm(j,r));
+
+comstat(i,"vxm#") = 100 * sum(dropexports(i,r),1)/card(r);
+comstat(i,"vxm%")$sum(r,vxm(i,r)) = 100 * sum(dropexports(i,r),vxm(i,r))/sum(r,vxm(i,r));
+
+vxmd(i,r,s)$dropexports(i,r) = 0;
+vtwr(j,i,r,s)$dropexports(i,r) = 0;
+rtxs(i,r,s)$dropexports(i,r) = 0;
+rtms(i,r,s)$dropexports(i,r) = 0;
+
+parameter       ndropped        Number of items to be dropped;
 ndropped("prod") = 0;
 ndropped("imports") = 0;
-gdp(r) = sum(i, vdim(i,r)+vdgm(i,r)+vigm(i,r)+vdpm(i,r)+vigm(i,r));
-display gdp;
 
-set	dropexports(i,r)	"Logical flag for set vxm(i,r) to zero", 
-	dropimports(i,r)	"Logical flag for set vim(i,r) to zero",  
-	dropprod(i,r)		"Logical flag for set vom(i,r) to zero", 
-	droptrade(i,r,s)	"Logical flag for set vxmd(i,r) to zero"; 
+*	Now do the filtering, with a subsequent sparsity check at each stage:
 
-dropexports(i,r) = no;
-dropimports(i,r) = no;
-dropprod(i,r)	 = no;
-droptrade(i,r,s) = no;
+while ((ndropped("prod")<>card(dropprod)) and (ndropped("imports")<>card(dropimports)),
 
-alias (r,rr);
+      ndropped("prod") = card(dropprod);
+      ndropped("imports") = card(dropimports);
 
-set	rb(r)	Region to be balanced;
+      vdfm(i,"g",r)$dropprod(i,r) = 0;
+      vdfm(i,"c",r)$dropprod(i,r) = 0;
+      vxmd(i,r,s)$dropprod(i,r) = 0;
+      vtwr(j,i,r,s)$dropprod(i,r) = 0;
+      rtxs(i,r,s)$dropprod(i,r) = 0;
+      rtms(i,r,s)$dropprod(i,r) = 0;
+      vst(i,r)$dropprod(i,r) = 0;
+      vfm(f,i,r)$dropprod(i,r) = 0;
+      vdfm(j,i,r)$dropprod(i,r) = 0;
+      vifm(j,i,r)$dropprod(i,r) = 0;
 
-variables	
-	obj		Objective function
-	vz		Value of zero values;
+      dropimports(i,r)$(not dropimports(i,r)) = yes$(sum(g,vifm(i,g,r))=0);
+
+      vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
+      vxmd(i,s,r)$dropimports(i,r) = 0;
+      vtwr(j,i,s,r)$dropimports(i,r) = 0;
+      rtxs(i,s,r)$dropimports(i,r) = 0;
+      rtms(i,s,r)$dropimports(i,r) = 0;
+
+      dropprod(i,r)$(not dropprod(i,r)) = yes$(vxm(i,r)+sum(g$(not sameas(g,i)),vdfm(i,g,r))=0);
+);
+regstat(r,"vim%") = 100 * sum(dropimports(i,r),vim(i,r))/sum(j,vim(j,r));
+regstat(r,"vim#") = 100 * sum(dropimports(i,r),1)/card(i);
+regstat(r,"vom%") = 100 * sum(dropprod(i,r),vom(i,r))/sum(j,vom(j,r));
+regstat(r,"vom#") = 100 * sum(dropprod(i,r),1)/card(i);
+
+comstat(i,"vim%")$sum(r,vim(i,r)) = 100 * sum(dropimports(i,r),vim(i,r))/sum(r,vim(i,r));
+comstat(i,"vim#") = 100 * sum(dropimports(i,r),1)/card(r);
+comstat(i,"vom%")$sum(r,vom(i,r)) = 100 * sum(dropprod(i,r),vom(i,r))/sum(r,vom(i,r));
+comstat(i,"vom#") = 100 * sum(dropprod(i,r),1)/card(r);
+
+vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
+vim(i,r) = sum(s,(vxmd(i,s,r)*(1-rtxs(i,s,r))+sum(j,vtwr(j,i,s,r)))*(1+rtms(i,s,r)));
+
+set droptrade;
+droptrade(i,r,s)$vxmd(i,r,s) = yes$(evt(i,r,s)=0 and vxmd(i,r,s) < tol/10 * min( vxm(i,r), vim(i,s)));
+
+regstat(r,"vxmd_x#") = 100 * sum(droptrade(i,r,s),1)/sum((i,s)$vxmd(i,r,s), 1);
+regstat(r,"vxmd_x%") = 100 * sum(droptrade(i,r,s),vxmd(i,r,s))/sum((i,s), vxmd(i,r,s));
+regstat(r,"vxmd_m#") = 100 * sum(droptrade(i,s,r),1)/sum((i,s)$vxmd(i,s,r), 1);
+regstat(r,"vxmd_m%") = 100 * sum(droptrade(i,s,r),vxmd(i,s,r))/sum((i,s), vxmd(i,s,r));
+
+comstat(i,"vxmd_x#")$sum((r,s)$vxmd(i,r,s), 1) = 100 * sum(droptrade(i,r,s),1)/sum((r,s)$vxmd(i,r,s), 1);
+comstat(i,"vxmd_x%")$sum((r,s), vxmd(i,r,s)) = 100 * sum(droptrade(i,r,s),vxmd(i,r,s))/sum((r,s), vxmd(i,r,s));
+comstat(i,"vxmd_m#")$sum((r,s)$vxmd(i,s,r), 1) = 100 * sum(droptrade(i,s,r),1)/sum((r,s)$vxmd(i,s,r), 1);
+comstat(i,"vxmd_m%")$sum((r,s), vxmd(i,s,r)) = 100 * sum(droptrade(i,s,r),vxmd(i,s,r))/sum((r,s), vxmd(i,s,r));
+display regstat,comstat;
+
+*	Zero out the arrays which are not to be included:
+
+vxmd(i,r,s)$droptrade(i,r,s) = 0;
+vtwr(j,i,r,s)$droptrade(i,r,s) = 0;
+rtxs(i,r,s)$droptrade(i,r,s) = 0;
+rtms(i,r,s)$droptrade(i,r,s) = 0;
+vim(i,r)$(sum(s,vxmd(i,s,r))=0) = 0;
+vifm(i,g,r)$(vim(i,r)=0) = 0;
+
+*       Aggregate value of imports:
+
+vim(i,r) = sum(s,(vxmd(i,s,r)*(1-rtxs(i,s,r))+sum(j,vtwr(j,i,s,r)))*(1+rtms(i,s,r)));
+
+*       Rescale transport demand:
+
+vst(i,r)$sum(s,vst(i,s)) = vst(i,r) * sum((j,s,rr), vtwr(i,j,s,rr)) / sum(s, vst(i,s));
+vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
+
+set     rb(r)   Region to be balanced;
+
+variables
+      obj             Objective function;
 
 positive variables
-	vdm_(i,r)	Calibrated value of vdm,
-	vifm_(i,j,r)	Calibrated value of vifm, 
-	vdfm_(i,j,r)	Calibrated value of vifm, 
-	vdgm_(i,r)	Calibrated value of vdgm,
-	vdpm_(i,r)	Calibrated value of vdpm,
-	vigm_(i,r)	Calibrated value of vigm,
-	vipm_(i,r)	Calibrated value of vipm,
-	vfm_(f,i,r)	Calibrated value of vfm;
+      vdm_(g,r)       Calibrated value of vdm,
+      vifm_(i,g,r)    Calibrated value of vifm,
+      vdfm_(i,g,r)    Calibrated value of vifm,
+      vfm_(f,g,r)     Calibrated value of vfm;
 
-scalar	lsqr /1/, entropy /0/;
+equations       objbal, profit, dommkt, impmkt;
 
-equations	objbal, vzdef, profit, dommkt, impmkt;
+scalar  target /1/, penalty /1e3/;
 
-scalar penalty /100/;
+parameter	weight(i,g,r)	Weight applied on demand function adjustments;
 
-objbal..        obj =e= sum((r,i)$rb(r), (1/gdp(r)) * (
-		  (sqr(vdpm_(i,r)-vdpm0(i,r))/vdpm0(i,r))$(vdpm(i,r)<>0)
-		+ (sqr(vipm_(i,r)-vipm0(i,r))/vipm0(i,r))$(vipm(i,r)<>0)
-		+ (sqr(vdgm_(i,r)-vdgm0(i,r))/vdgm0(i,r))$(vdgm(i,r)<>0)
-		+ (sqr(vigm_(i,r)-vigm0(i,r))/vigm0(i,r))$(vigm(i,r)<>0)
-		+ sum(f$(vfm(f,i,r)<>0),  sqr(vfm_(f,i,r)-vfm0(f,i,r))  /vfm0(f,i,r))
-		+ sum(j$(vifm(i,j,r)<>0), sqr(vifm_(i,j,r)-vifm0(i,j,r))/vifm0(i,j,r))
-		+ sum(j$(vdfm(i,j,r)<>0), sqr(vdfm_(i,j,r)-vdfm0(i,j,r))/vdfm0(i,j,r))))
-		+ penalty * vz;
+weight(i,g,r) = 1 + 99$(evd(i,g,r)>0 or eco2(i,g,r)>0);
 
-*	Use linear penalty term to impose sparsity:
+objbal..        obj =e= sum((r,i)$rb(r),
+      sum(f, (vfm(f,i,r)  * sqr(vfm_(f,i,r) /vfm(f,i,r) -1))$vfm(f,i,r)) +
+      sum(g, (weight(i,g,r)*vifm(i,g,r) * sqr(vifm_(i,g,r)/vifm(i,g,r)-1))$vifm(i,g,r) +
+             (weight(i,g,r)*vdfm(i,g,r) * sqr(vdfm_(i,g,r)/vdfm(i,g,r)-1))$vdfm(i,g,r)))$target +
 
-vzdef..		vz =e= sum((r,i)$rb(r), (1/gdp(r)) * (
-			vdpm_(i,r)$(vdpm(i,r)=0) +
-			vipm_(i,r)$(vipm(i,r)=0) +
-			vdgm_(i,r)$(vdgm(i,r)=0) +
-			vigm_(i,r)$(vigm(i,r)=0) +
-			sum(f, vfm_(f,i,r)$(vfm(f,i,r)=0)) +
-			sum(j, vifm_(i,j,r)$(vifm(i,j,r)=0) +
-			       vdfm_(i,j,r)$(vdfm(i,j,r)=0))));
+*       Use linear penalty term to impose sparsity:
 
-profit(i,r)$(rb(r) and vom(i,r)<>0).. 
-	(vdm_(i,r)+vxm(i,r))*(1-rto(i,r)) =e=  
-		sum(j,	vifm_(j,i,r)*(1+rtfi(j,i,r)) + 
-			vdfm_(j,i,r)*(1+rtfd(j,i,r)))  
-		+ sum(f, vfm_(f,i,r)*(1+rtf(f,i,r)));
+      penalty * sum((r,i)$rb(r),	sum(f,	vfm_(f,i,r)$(vfm(f,i,r)=0)) +
+					sum(g,	vifm_(i,g,r)$(vifm(i,g,r)=0) +
+						vdfm_(i,g,r)$(vdfm(i,g,r)=0)));
 
-dommkt(i,r)$(rb(r) and vdm(i,r)<>0)..
-	vdm_(i,r) =e= vdgm_(i,r) + vdpm_(i,r) 
-		+ sum(j,vdfm_(i,j,r)) + vdim(i,r);
+profit(g,r)$(rb(r) and (vdm_.up(g,r)+vxm(g,r)>0)).. (vdm_(g,r)+vxm(g,r))*(1-rto(g,r)) =e=
+      sum(i, vifm_(i,g,r)*(1+rtfi(i,g,r)) + vdfm_(i,g,r)*(1+rtfd(i,g,r))) + sum(f, vfm_(f,g,r)*(1+rtf(f,g,r)));
 
-impmkt(i,r)$(rb(r) and vim(i,r)<>0)..
-	vim(i,r)  =e= vigm_(i,r) + vipm_(i,r) + sum(j, vifm_(i,j,r));
-
-*	Define default scale factorsfor both benchmark values and
-*	equilibrium constraints:
-
-vdm_.scale(i,r) = vdm(i,r);
-vifm_.scale(i,j,r) = vifm(i,j,r);
-vdfm_.scale(i,j,r) = vdfm(i,j,r);
-vdgm_.scale(i,r) = vdgm(i,r);
-vdpm_.scale(i,r) = vdpm(i,r);
-vigm_.scale(i,r) = vigm(i,r);
-vipm_.scale(i,r) = vipm(i,r);
-vfm_.scale(f,i,r) = vfm(f,i,r);
-profit.scale(i,r) = vom(i,r);
-dommkt.scale(i,r) = vdm(i,r);
-impmkt.scale(i,r) = vim(i,r);
-
+dommkt(i,r)$(rb(r) and vdm_.up(i,r)>0)..     vdm_(i,r) =e= sum(g, vdfm_(i,g,r));
+impmkt(i,r)$(rb(r) and vim(i,r)>0)..     vim(i,r)  =e= sum(g, vifm_(i,g,r));
 model calib /all/;
-model lpfeas /impmkt,dommkt,profit,vzdef/;
 
-calib.holdfixed=yes;
-calib.solvelink=2;
-lpfeas.holdfixed=2;
-lpfeas.solvelink=2;
+vdm_.l(g,r)    = vdm(g,r);
+vfm_.l(f,i,r)  = vfm(f,i,r);
+vifm_.l(i,g,r) = vifm(i,g,r);
+vdfm_.l(i,g,r) = vdfm(i,g,r);
 
-file title_ /'%gams.scrdir%title.cmd'/; title_.nd=0; title_.nw=0; title_.lw=0;
+vdm_.fx(i,r)$(vdm_.l(i,r)=0) = 0;
+vfm_.fx(f,g,r)$(vfm_.l(f,g,r)=0) = 0;
+vifm_.fx(i,g,r)$(vifm_.l(i,g,r)=0) = 0;
+vdfm_.fx(i,g,r)$(vdfm_.l(i,g,r)=0) = 0;
+vdfm_.fx(i,i,r) = vdfm_.l(i,i,r);
+vdfm_.fx(i,g,r)$(vdm_.up(i,r)=0) = 0;
+vifm_.fx(i,g,r)$(vim(i,r)=0) = 0;
 
-$set updatetitle no
-$if %system.filesys%==MSNT $set updatetitle yes
+vdfm_.fx(i,g,r)$(vdm_.up(g,r)+vxm(g,r)=0) = 0;
+vifm_.fx(i,g,r)$(vdm_.up(g,r)+vxm(g,r)=0) = 0;
+vfm_.fx(f,g,r)$(vdm_.up(g,r)+vxm(g,r)=0) = 0;
 
-set	itr	Calibration steps /itr0*itr8/,
-	dsitem	Data set items to be balanced
-		/vfm,vxmd,vtwr,vifm,vdfm,vipm,vigm,vdpm,vdgm/;
+parameter	edchk	Cross check on energy demands;
+edchk(i,r)$sum(g,evd(i,g,r)+eco2(i,g,r)) = vim(i,r) - sum(g, vifm(i,g,r));
+display edchk;
 
-parameter	itrlog		Iteration log,
-		nzcount		Non-zero count /0/,
-		solvefeas	Solve the feasibility/0/;
 
-loop(itr$(nzcount<>card(vxmd)+card(vtwr)+card(vifm)+card(vdfm)+
-		card(vipm)+card(vigm)+card(vdpm)+card(vdgm)+card(vfm)),
+parameter       feas    Feasibility check;
+feas(r,g) = (vdm_.l(g,r)+vxm(g,r))*(1-rto(g,r)) - ( sum(i, vifm_.l(i,g,r)*(1+rtfi(i,g,r))
+	      + vdfm_.l(i,g,r)*(1+rtfd(i,g,r))) + sum(f, vfm_.l(f,g,r)*(1+rtf(f,g,r))));
+display feas;
 
-	nzcount = card(vxmd)+card(vtwr)+card(vifm)+card(vdfm)+
-		card(vipm)+card(vigm)+card(vdpm)+card(vdgm)+card(vfm);
+*	Define scaling to improve numerics:
 
-*	Aggregate value of imports:
+vdm_.scale(g,r)$round(vdm(g,r),5)       = vdm(g,r);
+vfm_.scale(f,i,r)$round(vfm(f,i,r),5)   = vfm(f,i,r);
+vifm_.scale(i,g,r)$round(vifm(i,g,r),5) = vifm(i,g,r);
+vdfm_.scale(i,g,r)$round(vdfm(i,g,r),5) = vdfm(i,g,r);
 
-	vim(i,r) = sum(s,(vxmd(i,s,r)*(1-rtxs(i,s,r))+sum(j,vtwr(j,i,s,r)))*(1+rtms(i,s,r)));
+profit.scale(g,r)$(round(vdm(g,r)+vxm(g,r),5))  = (vdm(g,r)+vxm(g,r))*(1-rto(g,r));
+dommkt.scale(i,r)$round(vdm(i,r),5) = vdm(i,r);
+impmkt.scale(i,r)$round(vim(i,r),5) = vim(i,r);
+calib.scaleopt = 1;
 
-*	Rescale transport demand:
+file title_ /'title.cmd'/; title_.nd=0; title_.nw=0;
 
-	vst(i,r)$sum(s, vst(i,s)) = vst(i,r) * sum((j,s,rr), vtwr(i,j,s,rr)) / sum(s, vst(i,s));
+parameter       itrlog          Iteration log,
+		echop           Echoprint of target values;
 
-*	Value of exports:
+$set stime %time%
+alias (r,rr);
 
-	vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
+parameter	vidfm(*,i,g)	Aggregate of imported plus domestic demand;
 
-*	Production for the domestic market:
+calib.solvelink = 2;
+loop(rr,
 
-	vdm(i,r) = vdpm(i,r) + vdgm(i,r) + sum(j, vdfm(i,j,r)) + vdim(i,r);
+      rb(rr) = yes;
 
-*	Aggregate production:
+      vidfm("base",i,g) = vifm(i,g,rr)+vdfm(i,g,rr);
+      vidfm("vifm",i,g) = vifm(i,g,rr);
+      vidfm("vdfm",i,g) = vdfm(i,g,rr);
 
-	vom(i,r) = vdm(i,r) + vxm(i,r);
+*       Update the title bar with the status prior to the solve:
 
-*	Record nonzero counts:
+      putclose title_ '@title Balancing  ',rr.tl, '  (',(round(100*(ord(rr)-1)/card(rr))),' %% complete)  ',
+		      'Start time: %stime%, Current time: %time% -- Ctrl-S to pause'/;
+      execute 'title.cmd';
 
-	nz("vfm","count") = card(vfm);
-	nz("vxmd","count") = card(vxmd);
-	nz("vtwr","count") = card(vtwr);
-	nz("vifm","count") = card(vifm);
-	nz("vdfm","count") = card(vdfm);
-	nz("vipm","count") = card(vipm);
-	nz("vigm","count") = card(vigm);
-	nz("vdpm","count") = card(vdpm);
-	nz("vdgm","count") = card(vdgm);
+      echop(i,"vxm") = vxm(i,rr);
+      echop(i,"vim") = vim(i,rr);
+      echop(i,"vdm") = vdm(i,rr);
+      echop(g,"vafm") = sum(i, vifm(i,g,rr)*(1+rtfi(i,g,rr))+vdfm(i,g,rr)*(1+rtfd(i,g,rr)));
+      echop(i,"vfm") = sum(f, vfm(f,i,rr)*(1+rtf(f,i,rr)));
+      echop(i,"vifm") = sum(g, vifm(i,g,rr));
+      echop(i,"vdfm") = sum(g, vdfm(i,g,rr));
 
-*	Filter small values here:
+*	We have a bug with holdfixed:
 
-	vifm(j,i,r)$(vifm(j,i,r) < tol/10 * vom(i,r)) = 0;
-	vdfm(j,i,r)$(vdfm(j,i,r) < tol/10 * vom(i,r)) = 0;
-	vipm(i,r)$(vipm(i,r)     < tol/10 * vpm(r)) = 0;
-	vdpm(i,r)$(vdpm(i,r)     < tol/10 * vpm(r)) = 0;
-	vigm(i,r)$(vigm(i,r)     < tol/10 * vgm(r)) = 0;
-	vdgm(i,r)$(vdgm(i,r)     < tol/10 * vgm(r)) = 0;
-	vdim(i,r)$(vdim(i,r)     < tol/10 * sum(j,vdim(j,r))) = 0;
+$if not set holdfixed $set holdfixed yes
+      calib.holdfixed=%holdfixed%;
 
-*	Decide whether to drop trade and prouduction:
+      calib.solprint = no;
+      calib.limrow = 0;
+      calib.limcol = 0;
+      solve calib using qcp minimizing obj;
 
-	vim(i,r) = sum(j,vifm(i,j,r)) + vipm(i,r) + vigm(i,r);
-	vdm(i,r) = vdgm(i,r)+vdim(i,r)+vdpm(i,r) + sum(j,vdfm(i,j,r));
-	dropexports(i,r)$(vxm(i,r) < tol/10*sum(j,vxm(j,r)) and 
-		    (smax(s$(vim(i,s)+vdm(i,s)), 
-		      (vxmd(i,r,s)*(1-rtxs(i,r,s))+sum(j,vtwr(j,i,r,s)))*(1+rtms(i,r,s)) /
-			(vim(i,s)+vdm(i,s))) < tol/10) ) = yes;
+      if(     (calib.solvestat <> 1) or
+	      (calib.modelstat > 2),
 
-	vxmd(i,r,s)$dropexports(i,r) = 0;
-	vtwr(j,i,r,s)$dropexports(i,r) = 0;
-	rtxs(i,r,s)$dropexports(i,r) = 0;
-	rtms(i,r,s)$dropexports(i,r) = 0;
+	display "Infeasibility encountered for region: ", rb;
 
-	dropimports(i,r)$( (vim(i,r) < tol/10*sum(j,vim(j,r))) and
-		    (smax(s$vom(i,s), vxmd(i,s,r)/vom(i,s)) < tol/10) ) = yes;
-	dropimports(i,r)$(vigm(i,r)+vipm(i,r)+sum(j,vifm(i,j,r))=0) = yes;
+	vdm_.l(g,rr)    = vdm(g,rr);
+	vfm_.l(f,i,rr)  = vfm(f,i,rr);
+	vifm_.l(i,g,rr) = vifm(i,g,rr);
+	vdfm_.l(i,g,rr) = vdfm(i,g,rr);
 
-	vim(i,r)$dropimports(i,r) = 0;
+*	We had a previous failure -- try to solve it with the NLP code:
 
-	dropprod(i,r)$(vom(i,r)-vdfm(i,i,r)<tol/10*sum(j,vom(j,r)-vdfm(j,j,r))) = yes;
-	dropprod(i,r)$(vxm(i,r)+vdgm(i,r)+vdim(i,r)+vdpm(i,r)
-			+sum(j$(not sameas(i,j)),vdfm(i,j,r))=0) = yes;
+	calib.solprint = yes;
+	calib.limrow = 1000;
+	calib.limcol = 1000;
+	solve calib using nlp minimizing obj;
+	if(   (calib.solvestat <> 1) or
+	      (calib.modelstat > 2),
+	      vdfm(i,g,r)$(not sameas(r,rr)) = 0;
+	      vifm(i,g,r)$(not sameas(r,rr)) = 0;
+	      abort "Calibration routine fails:",rb,echop,vdfm,vifm;
+      ));
 
-	while (	(ndropped("prod")   <>card(dropprod)) and 
-		(ndropped("imports")<>card(dropimports)),
+      loop(rb(r),
+	vdm(g,r) = vdm_.l(g,r);
+	vfm(f,i,r) = vfm_.l(f,i,r);
+	vifm(i,g,r) = vifm_.l(i,g,r);
+	vdfm(i,g,r) = vdfm_.l(i,g,r);
+	vom(g,r) = vdm(g,r);
+	vom(i,r) = vdm(i,r) +sum(s, vxmd(i,r,s)) + vst(i,r);
+      );
+      rb(rr) = no;
 
-		ndropped("prod")    = card(dropprod);
-		ndropped("imports") = card(dropimports);
-
-		vdm(i,r)$dropprod(i,r) = 0;
-		vdgm(i,r)$dropprod(i,r) = 0;
-		vdpm(i,r)$dropprod(i,r) = 0;
-		vxmd(i,r,s)$dropprod(i,r) = 0;
-		vtwr(j,i,r,s)$dropprod(i,r) = 0;
-		rtxs(i,r,s)$dropprod(i,r) = 0;
-		rtms(i,r,s)$dropprod(i,r) = 0;
-		vst(i,r)$dropprod(i,r) = 0;
-		vfm(f,i,r)$dropprod(i,r) = 0;
-		vdfm(j,i,r)$dropprod(i,r) = 0;
-		vifm(j,i,r)$dropprod(i,r) = 0;
-		vdfm(i,j,r)$dropprod(i,r) = 0;
-		vdim(i,r)$dropprod(i,r) = 0;
-
-		dropimports(i,r)$(not dropimports(i,r))
-			= yes$(vigm(i,r)+vipm(i,r)+sum(j,vifm(i,j,r))=0);
-
-		vxm(i,r) = sum(s, vxmd(i,r,s)) + vst(i,r);
-		vxmd(i,s,r)$dropimports(i,r) = 0;
-		vtwr(j,i,s,r)$dropimports(i,r) = 0;
-		rtxs(i,s,r)$dropimports(i,r) = 0;
-		rtms(i,s,r)$dropimports(i,r) = 0;
-		vipm(i,r)$dropimports(i,r) = 0;
-		vigm(i,r)$dropimports(i,r) = 0;
-		vifm(i,j,r)$dropimports(i,r) = 0;
-
-		dropprod(i,r)$(not dropprod(i,r)) = yes$(vxm(i,r)+vdgm(i,r)+vdpm(i,r)+vdim(i,r)
-					+sum(j$(not sameas(j,i)),vdfm(i,j,r))=0);
-	);
-	display ndropped;
-
-	vxm(i,r) = sum(s, vxmd(i,r,s)) + vst(i,r);
-	vdm(i,r) = vdgm(i,r)+vdim(i,r)+vdpm(i,r) + sum(j,vdfm(i,j,r));
-	vim(i,r) = sum(s,(vxmd(i,s,r)*(1-rtxs(i,s,r))+sum(j,vtwr(j,i,s,r)))*(1+rtms(i,s,r)));
-	droptrade(i,r,s)$vxmd(i,r,s) = yes$(vxmd(i,r,s)<tol * min( vxm(i,r), vim(i,s)));
-
-	vxmd(i,r,s)$droptrade(i,r,s) = 0;
-	vtwr(j,i,r,s)$droptrade(i,r,s) = 0;
-	rtxs(i,r,s)$droptrade(i,r,s) = 0;
-	rtms(i,r,s)$droptrade(i,r,s) = 0;
-
-	vim(i,r)$(sum(s,vxmd(i,s,r))=0) = 0;
-	vim(i,r) = sum(s,(vxmd(i,s,r)*(1-rtxs(i,s,r))+sum(j,vtwr(j,i,s,r)))*(1+rtms(i,s,r)));
-	vipm(i,r)$(vim(i,r)=0) = 0;
-	vigm(i,r)$(vim(i,r)=0) = 0;
-	vifm(i,j,r)$(vim(i,r)=0) = 0;
-
-*	Rescale transport demand:
-
-	vst(i,r)$sum(s,vst(i,s)) = vst(i,r) * sum((j,s,rr), vtwr(i,j,s,rr)) / sum(s, vst(i,s));
-	vxm(i,r) =  sum(s, vxmd(i,r,s)) + vst(i,r);
-
-*	Fix own-use:
-
-	calib.solvelink=2;
-	calib.holdfixed=1;
-	option limrow=0,limcol=0,solprint=off;
-*.option limrow=1000,limcol=1000;
-
-$set updatetitle no
-$if %system.filesys%==MSNT $set updatetitle yes
-
-	trace("vdm",r,"before") = sum(i, vdm(i,r));
-	trace("vfm",r,"before") = sum((f,i), vfm(f,i,r));
-	trace("vifm",r,"before") = sum((i,j), vifm(i,j,r));
-	trace("vdfm",r,"before") = sum((i,j), vdfm(i,j,r));
-	trace("vigm",r,"before") = sum(i, vigm(i,r));
-	trace("vdgm",r,"before") = sum(i, vdgm(i,r));
-	trace("vipm",r,"before") = sum(i, vipm(i,r));
-	trace("vdpm",r,"before") = sum(i, vdpm(i,r));
-	trace("vxmd",r,"before") = sum((i,s), vxmd(i,r,s));
-	trace("vtwr",r,"before") = sum((j,i,s), vtwr(j,i,r,s));
-
-	option nlp=conopt3;
-*.option nlp=pathnlp;
-	loop(rr,
-
-		rb(rr) = yes;
-
-*	Update the title bar with the status prior to the solve:
-
-		if (%updatetitle%,
-		  putclose title_,'@title ',itr.tl,', region  ',rr.tl,' (',(round(100*(ord(rr)-1)/card(rr))),' %%)  ',		'%system.time%/%time% -- Ctrl-S to pause'/; 
-		  execute '%gams.scrdir%title.cmd';
-		);
-
-		vdm_.l(i,rr)    = vdm(i,rr);
-		vfm_.l(f,i,rr)  = vfm(f,i,rr);
-		vifm_.l(i,j,rr) = vifm(i,j,rr);
-		vdfm_.l(i,j,rr) = vdfm(i,j,rr);
-		vdgm_.l(i,rr)   = vdgm(i,rr);
-		vdpm_.l(i,rr)   = vdpm(i,rr);
-		vigm_.l(i,rr)   = vigm(i,rr);
-		vipm_.l(i,rr)   = vipm(i,rr);
-
-*	Set some bounds to avoid numerical problems (Arne keeps us on a
-*	short leash):
-
-		vdm_.lo(i,rr)    = 0;	vdm_.up(i,rr)    = gdp(rr);
-		vfm_.lo(f,i,rr)  = 0;	vfm_.up(f,i,rr)  = gdp(rr);
-		vifm_.lo(i,j,rr) = 0;	vifm_.up(i,j,rr) = gdp(rr);
-		vdfm_.lo(i,j,rr) = 0;	vdfm_.up(i,j,rr) = gdp(rr);
-		vdgm_.lo(i,rr)   = 0;	vdgm_.up(i,rr)   = gdp(rr);
-		vdpm_.lo(i,rr)   = 0;	vdpm_.up(i,rr)   = gdp(rr);
-		vigm_.lo(i,rr)   = 0;	vigm_.up(i,rr)   = gdp(rr);
-		vipm_.lo(i,rr)   = 0;	vipm_.up(i,rr)   = gdp(rr);
-
-*	Fix to zero any flows associated with omitted markets:
-
-		vdm_.fx(i,rr)$(vdm(i,rr)=0) = 0;
-		vdfm_.fx(i,j,rr)$(vdm(i,rr)=0) = 0;
-		vdgm_.fx(i,rr)$(vdm(i,rr)=0) = 0;
-		vdpm_.fx(i,rr)$(vdm(i,rr)=0) = 0;
-
-		vdm_.fx(i,rr)$(vom(i,rr)=0) = 0;
-		vfm_.fx(f,i,rr)$(vom(i,rr)=0) = 0;
-		vdfm_.fx(j,i,rr)$(vom(i,rr)=0) = 0;
-		vifm_.fx(j,i,rr)$(vom(i,rr)=0) = 0;
-
-		vifm_.fx(i,j,rr)$(vim(i,rr)=0) = 0;
-		vigm_.fx(i,rr)$(vim(i,rr)=0) = 0;
-		vipm_.fx(i,rr)$(vim(i,rr)=0) = 0;
-
-*	If necessary, we can begin at a feasible point:
-
-		option lp=conopt;
-		solve lpfeas using lp minimizing vz;
-		if(	(lpfeas.solvestat<>1) or
-			(lpfeas.modelstat>2),
-			abort "Feasibility model fails:",rb;
-		);
-
-		solve calib using nlp minimizing obj;
-		if(	(calib.solvestat<>1) or
-			(calib.modelstat>2),
-			abort "Calibration model fails:",rb;
-		);
-
-		vdm(i,rb) = vdgm_.l(i,rb) + vdpm_.l(i,rb) + sum(j,vdfm_.l(i,j,rb)) + vdim(i,rb);
-		vfm(f,i,rb)  = vfm_.l(f,i,rb);
-		vifm(i,j,rb) = vifm_.l(i,j,rb);
-		vdfm(i,j,rb) = vdfm_.l(i,j,rb);
-		vdgm(i,rb) = vdgm_.l(i,rb);
-		vdpm(i,rb) = vdpm_.l(i,rb);
-		vigm(i,rb) = vigm_.l(i,rb);
-		vipm(i,rb) = vipm_.l(i,rb);
-		vom(i,rb)  = vdm(i,rb) + sum(s, vxmd(i,rb,s)) + vst(i,rb);
-		vxm(i,rb)  =  sum(s, vxmd(i,rb,s)) + vst(i,rb);
-
-		rb(rr) = no;
-	);
-	execute 'rm "%gams.scrdir%title.cmd"';
-
-	nz("vfm","change") = card(vfm) - nz("vfm","count");
-	nz("vxmd","change") = card(vxmd) - nz("vxmd","count");
-	nz("vtwr","change") = card(vtwr) - nz("vtwr","count");
-	nz("vifm","change") = card(vifm) - nz("vifm","count");
-	nz("vdfm","change") = card(vdfm) - nz("vdfm","count");
-	nz("vipm","change") = card(vipm) - nz("vipm","count");
-	nz("vigm","change") = card(vigm) - nz("vigm","count");
-	nz("vdpm","change") = card(vdpm) - nz("vdpm","count");
-	nz("vdgm","change") = card(vdgm) - nz("vdgm","count");
-	option nz:0;
-	display nz;
-
-	trace("vdm",r,"after") = sum(i, vdm(i,r));
-	trace("vfm",r,"after") = sum((f,i), vfm(f,i,r));
-	trace("vifm",r,"after") = sum((i,j), vifm(i,j,r));
-	trace("vdfm",r,"after") = sum((i,j), vdfm(i,j,r));
-	trace("vigm",r,"after") = sum(i, vigm(i,r));
-	trace("vdgm",r,"after") = sum(i, vdgm(i,r));
-	trace("vipm",r,"after") = sum(i, vipm(i,r));
-	trace("vdpm",r,"after") = sum(i, vdpm(i,r));
-	trace("vxmd",r,"after") = sum((i,s), vxmd(i,r,s));
-	trace("vtwr",r,"after") = sum((j,i,s), vtwr(j,i,r,s));
-	option trace:3:1:1;
-	display trace;
-
-	itrlog("nonzeros",itr,dsitem) = nz(dsitem,"count");
-	itrlog("change",itr,dsitem) = nz(dsitem,"change");
-	itrlog("trace",itr,dsitem) = sum(r,trace(dsitem,r,"before"));
+      vidfm("adjusted",i,g) = vifm(i,g,rr)+vdfm(i,g,rr);
+      vidfm("%diff",i,g)$vidfm("adjusted",i,g) = 100 * (vidfm("adjusted",i,g)/vidfm("base",i,g) - 1);
+      vidfm("vifm*",i,g) = vifm(i,g,rr);
+      vidfm("vdfm*",i,g) = vdfm(i,g,rr)
 );
+putclose title_ '@title Balancing complete'/;
+execute 'title.cmd';
+execute 'del /q "title.cmd"';
 
-option itrlog:3:2:1;
-display itrlog;
 
-*	Remove emissions and energy flows for inactive links:
+*	Drop energy demand and trade flows for which economic data are
+*	missing:
 
-eghg(ghg,i,"dom",j,r)$(vdfm(i,j,r)=0) = 0;
-eghg(ghg,i,"imp",j,r)$(vdfm(i,j,r)=0) = 0;
-eghg(ghg,i,"dom","hh",r)$(vdpm(i,r)=0) = 0;
-eghg(ghg,i,"imp","hh",r)$(vipm(i,r)=0) = 0;
-eghg(ghg,i,"dom","govt",r)$(vdgm(i,r)=0) = 0;
-eghg(ghg,i,"imp","govt",r)$(vigm(i,r)=0) = 0;
+evd(i,g,r)  = (vifm(i,g,r)+vdfm(i,g,r)) * evdratio(i,g,r);
+evt(i,r,s)  =               vxmd(i,r,s) * evtratio(i,r,s);
+eco2(i,g,r) = (vifm(i,g,r)+vdfm(i,g,r)) * eco2ratio(i,g,r);
 
-eta(i,r)$(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)) = 0) = 0;
-epsilon(i,r)$(vdpm(i,r)*(1+rtpd0(i,r))+vipm(i,r)*(1+rtpi0(i,r)) = 0) = 0;
 
-execute_unload '%datadir%%output%',i, r, f, 
-		vdgm,vigm,vdpm,vipm,vdim,vfm,
+parameter	evscale(i,r)		Scale factor for adjustment of energy and carbon demands,
+		ereport(*,*,i,r)	Report of adjustments in energy and carbon flows;
+
+evscale(i,r)$tevd(i,r) = sum(g,evd(i,g,r))/tevd(i,r);
+evd(i,g,r)$evscale(i,r) = evd(i,g,r)/evscale(i,r);
+ereport("pct","evd",i,r)$evscale(i,r) =  100 * (1/evscale(i,r)-1);
+ereport("diff","evd",i,r) = sum(g,evd(i,g,r)) - tevd(i,r);
+evscale(i,r) = 0;
+
+evscale(i,r)$tevt(i,r) = sum(s,evt(i,r,s))/tevt(i,r);
+evt(i,r,s)$evscale(i,r) = evt(i,r,s)/evscale(i,r);
+ereport("pct","evt",i,r)$evscale(i,r) =  100 * (1/evscale(i,r)-1);
+ereport("diff","evt",i,r) = sum(s,evt(i,r,s)) - tevt(i,r);
+evscale(i,r) = 0;
+
+evscale(i,r)$tco2(i,r) = sum(g,eco2(i,g,r))/tco2(i,r);
+eco2(i,g,r)$evscale(i,r) = eco2(i,g,r)/evscale(i,r);
+ereport("pct","eco2",i,r)$evscale(i,r) =  100 * (1/evscale(i,r)-1);
+ereport("diff","eco2",i,r) = sum(g,eco2(i,g,r)) - tco2(i,r);
+evscale(i,r) = 0;
+
+*.execute_unload 'ereport.gdx',ereport;
+*.execute 'gdxxrw i=ereport.gdx o=ereport.xls par=ereport rng="pivotdata!a2" cdim=0';
+
+*	Adjust income and price elasticities:
+
+eta(i,r)$(vdfm(i,"c",r)*(1+rtfd0(i,"c",r))+vifm(i,"c",r)*(1+rtfi0(i,"c",r)) = 0) = 0;
+epsilon(i,r)$(vdfm(i,"c",r)*(1+rtfd0(i,"c",r))+vifm(i,"c",r)*(1+rtfi0(i,"c",r)) = 0) = 0;
+
+execute_unload '%datadir%%ds%_%tol%.gdx', r, f, g, i, 
+		vfm,
 		vdfm,vifm,vxmd,vst,vtwr,
-		evf,evh,evt,evq,eghg,
-		rto,rtf,rtpd,rtpi,rtgd,rtgi,rtfd,rtfi,rtxs,rtms,
-		esubd,esubva,esubm,etrae,eta,epsilon;
+		rto,rtf,rtfd,rtfi,rtxs,rtms,
+		esubd,esubva,esubm,etrae,eta,epsilon, evd, evt, eco2, enco2;
+
+regtotals(r,"vom1") = sum(i$vom(i,r),1);
+regtotals(r,"vxm1") = sum(i$vxm(i,r),1);
+regtotals(r,"vim1") = sum(i$vim(i,r),1);
+sectotals(i,"vom1") = sum(r$vom(i,r),1);
+sectotals(i,"vxm1") = sum(r$vxm(i,r),1);
+sectotals(i,"vim1") = sum(r$vim(i,r),1);
+
+regtotals(r,"vom2")$regtotals(r,"vom0") = 100 * (regtotals(r,"vom1")/regtotals(r,"vom0")-1);
+regtotals(r,"vxm2")$regtotals(r,"vxm0") = 100 * (regtotals(r,"vxm1")/regtotals(r,"vxm0")-1);
+regtotals(r,"vim2")$regtotals(r,"vim0") = 100 * (regtotals(r,"vim1")/regtotals(r,"vim0")-1);
+
+sectotals(i,"vom2")$sectotals(i,"vom0") = 100 * (sectotals(i,"vom1")/sectotals(i,"vom0")-1);
+sectotals(i,"vxm2")$sectotals(i,"vxm0") = 100 * (sectotals(i,"vxm1")/sectotals(i,"vxm0")-1);
+sectotals(i,"vim2")$sectotals(i,"vim0") = 100 * (sectotals(i,"vim1")/sectotals(i,"vim0")-1);
+
+regtotals(r,"vom3")$regtotals(r,"vom3") = 100 * (sum(i,vom(i,r))/regtotals(r,"vom3")-1);
+regtotals(r,"vxm3")$regtotals(r,"vxm3") = 100 * (sum(i,vxm(i,r))/regtotals(r,"vxm3")-1);
+regtotals(r,"vim3")$regtotals(r,"vim3") = 100 * (sum(i,vim(i,r))/regtotals(r,"vim3")-1);
+
+sectotals(i,"vom3")$sectotals(i,"vom3") = 100 * (sum(r,vom(i,r))/sectotals(i,"vom3")-1);
+sectotals(i,"vxm3")$sectotals(i,"vxm3") = 100 * (sum(r,vxm(i,r))/sectotals(i,"vxm3")-1);
+sectotals(i,"vim3")$sectotals(i,"vim3") = 100 * (sum(r,vim(i,r))/sectotals(i,"vim3")-1);
+
+regtrade(r,"vxmd_m1") = sum((i,s)$vxmd(i,s,r),1);
+regtrade(r,"vxmd_x1") = sum((i,s)$vxmd(i,r,s),1);
+
+regtrade(r,"vxmd_m2")$regtrade(r,"vxmd_m0") = 100 * (regtrade(r,"vxmd_m1")/regtrade(r,"vxmd_m0")-1);
+regtrade(r,"vxmd_x2")$regtrade(r,"vxmd_x0") = 100 * (regtrade(r,"vxmd_x1")/regtrade(r,"vxmd_x0")-1);
+
+regtrade(r,"vxmd_m3") = 100 * (sum((i,s), vxmd(i,s,r)) / regtrade(r,"vxmd_m3") - 1);
+regtrade(r,"vxmd_x3") = 100 * (sum((i,s), vxmd(i,r,s)) / regtrade(r,"vxmd_x3") - 1);
+
+sectrade(i,"vxmd1") = sum((r,s)$vxmd(i,s,r),1);
+sectrade(i,"vxmd2")$sectrade(i,"vxmd0") = 100 * (sectrade(i,"vxmd1")/sectrade(i,"vxmd0")-1);
+sectrade(i,"vxmd4") = sectrade(i,"vxmd3");
+sectrade(i,"vxmd3")$sectrade(i,"vxmd3") = 100 * (sum((r,s), vxmd(i,s,r)) / sectrade(i,"vxmd3") - 1);
+
+*.display regtotals,regtrade,sectotals,sectrade;
+
+execute_unload 'filter.gdx',regtotals,regtrade,sectotals,sectrade,r,i;
+
+$onecho >filterlog.rsp
+set=r         rng=RegionalTrade!a6 cdim=0 
+set=r         rng=RegionalTotals!a6 cdim=0 
+set=i         rng=SectoralTrade!a6 cdim=0 
+set=i         rng=SectoralTotals!a6 cdim=0 
+par=regtotals cdim=1 clear EpsOut="0" rng=RegionalTotals!a5
+par=sectotals cdim=1 clear EpsOut="0" rng=SectoralTotals!a5
+par=regtrade  cdim=1 clear EpsOut="0" rng=RegionalTrade!a5
+par=sectrade  cdim=1 clear EpsOut="0" rng=SectoralTrade!a5
+$offecho
+
+*.execute 'copy filterlog.xls filterlog%tol%.xls';
+*.execute 'gdxxrw i=filter.gdx o=filterlog%tol%.xls @filterlog.rsp';

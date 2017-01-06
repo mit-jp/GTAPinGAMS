@@ -1,3 +1,7 @@
+set=r         rng=RegionalTrade!a6 cdim=0 
+set=r         rng=RegionalTotals!a6 cdim=0 
+set=i         rng=SectoralTrade!a6 cdim=0 
+set=i         rng=SectoralTotals!a6 cdim=0 
 par=regtotals cdim=1 clear EpsOut="0" rng=RegionalTotals!a5
 par=sectotals cdim=1 clear EpsOut="0" rng=SectoralTotals!a5
 par=regtrade  cdim=1 clear EpsOut="0" rng=RegionalTrade!a5

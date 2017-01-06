@@ -141,7 +141,7 @@ $batinclude domain %1 aggrset1
 aggrset1(%ii%) = no;
 *aggrset1(u__1) = yes$%1(u__1);  
 *.$offuni
-abort$card(aggrset1) "Source set does not include all nonzeros!",aggrset1;
+abort$card(aggrset1) "Source set for %1 does not include all nonzeros!",aggrset1;
 
 $batinclude chktarget %3 1
 $if setglobal aggrerror $goto error
@@ -174,7 +174,7 @@ $batinclude domain %1 aggrset2
 aggrset2(%ii%,%jj%) = no;
 $offuni
 
-abort$card(aggrset2) "Source set does not include all nonzeros!",aggrset2;
+abort$card(aggrset2) "Source set for %1 does not include all nonzeros!",aggrset2;
 
 $batinclude chktarget %4 2
 $if setglobal aggrerror $goto error
@@ -207,7 +207,7 @@ $batinclude domain %1 aggrset3
 aggrset3(%ii%,%jj%,%kk%) = no;
 $offuni
 
-abort$card(aggrset3) "Source set does not include all nonzeros!",aggrset3;
+abort$card(aggrset3) "Source set for %1 does not include all nonzeros!",aggrset3;
 
 $batinclude chktarget %5 3
 $if setglobal aggrerror $goto error
@@ -239,7 +239,7 @@ $batinclude domain %1 aggrset4
 aggrset4(%ii%,%jj%,%kk%,%ll%) = no;
 $offuni
 
-abort$card(aggrset4) "Source set does not include all nonzeros!",aggrset4;
+abort$card(aggrset4) "Source set for %1 does not include all nonzeros!",aggrset4;
 
 $batinclude chktarget %6 4
 $if setglobal aggrerror $goto error
