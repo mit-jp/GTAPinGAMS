@@ -1,12 +1,12 @@
 $title	Aggregation Program for the GTAP7 Database
 
-$if not set source $set source gtap7ingams_e
-$if not set target $set target gtap7iea
+$if not set source $set source gtap8ingams
+$if not set target $set target gtap8iea
 $if not set output $set output %target%
 
 *.$set energydata
 $set ds %source%
-$include gtap7data
+$include gtap8data
 $include ..\defines\%target%.map
 
 alias (ii,jj), (rr,ss);
@@ -26,8 +26,6 @@ parameters
 
 	evd_(ii,*,rr)	Volume of energy purchases (mtoe),
 	evt_(ii,rr,ss)	Volume of energy trade (mtoe),
-	eco2_(ii,*,rr)	Volume of carbon emissions,
-	enco2_(nco2,*,*,rr)	Volume of non-carbon ghg emissions,
 
 	rto_(ii,rr)	Output (or income) subsidy rates
 	rtf_(ff,jj,rr)	Primary factor and commodity rates taxes 
@@ -51,36 +49,26 @@ maps(r,rr) = mapr(r,rr);
 mapj(j,jj) = mapi(j,jj);
 mapg(i,ii) = mapi(i,ii);
 
-$batinclude aggr vst i r vst_
-$batinclude aggr vtwr i j r s vtwr_
-$batinclude aggr vom g r vom_
-$batinclude aggr vfm f j r vfm_
+file ktitle; put ktitle;
+
+put_utility 'title' /"Aggregating vst.";
+$batinclude aggr vst  i r   vst_
+put_utility 'title' /"Aggregating vom.";
+$batinclude aggr vom  g r   vom_
+put_utility 'title' /"Aggregating vfm.";
+$batinclude aggr vfm  f j r vfm_
+put_utility 'title' /"Aggregating vdfm.";
 $batinclude aggr vdfm i g r vdfm_
+put_utility 'title' /"Aggregating vifm.";
 $batinclude aggr vifm i g r vifm_
+put_utility 'title' /"Aggregating vxmd.";
 $batinclude aggr vxmd i r s vxmd_
-$batinclude aggr evd i g r evd_
-$batinclude aggr evt i r s evt_
-$batinclude aggr eco2 i g r eco2_
-
-parameter	enco2tmp(*,*,*)	Temporary array to aggregate enco2,
-		enco2tmp_(*,*,*)	Temporary array to aggregate enco2;
-
-loop(nco2,
-	enco2tmp(i,g,r) = enco2(nco2,i,g,r);
-$batinclude aggr enco2tmp i g r enco2tmp_
-	enco2_(nco2,ii,gg,rr) = enco2tmp_(ii,gg,rr);
-	enco2tmp_(ii,gg,rr) = 0;
-	enco2tmp(i,g,r) = 0;
-
-	enco2tmp(f,g,r) = enco2(nco2,f,g,r);
-$batinclude aggr enco2tmp f g r enco2tmp_
-	enco2_(nco2,ff,gg,rr) = enco2tmp_(ff,gg,rr);
-	enco2tmp_(ff,gg,rr) = 0;
-	enco2tmp(f,g,r) = 0;
-);
-set jrmap(j,jj,r,rr);
-jrmap(j,jj,r,rr)$(mapj(j,jj) and mapr(r,rr)) = yes;
-enco2_(nco2,"process",jj,rr) = sum(jrmap(j,jj,r,rr), enco2(nco2,"process",j,r));
+put_utility 'title' /"Aggregating evd.";
+$batinclude aggr evd  i g r evd_
+put_utility 'title' /"Aggregating evt.";
+$batinclude aggr evt  i r s evt_
+put_utility 'title' /"Aggregating vtwr.";
+$batinclude aggr vtwr i j r s vtwr_
 
 
 *	First, convert tax rates into tax payments:
@@ -92,13 +80,20 @@ rtfi(i,g,r) = rtfi(i,g,r) * vifm(i,g,r);
 rtms(i,r,s) = rtms(i,r,s)*((1-rtxs(i,r,s)) * vxmd(i,r,s) + sum(j,vtwr(j,i,r,s)));
 rtxs(i,r,s) = rtxs(i,r,s) * vxmd(i,r,s);
 
+
 *	Aggregate:
 
+put_utility 'title' /"Aggregating rto.";
 $batinclude aggr rto i r   rto_
+put_utility 'title' /"Aggregating rtf.";
 $batinclude aggr rtf f j r rtf_
+put_utility 'title' /"Aggregating rtfd.";
 $batinclude aggr rtfd i g r rtfd_
+put_utility 'title' /"Aggregating rtfi.";
 $batinclude aggr rtfi i g r rtfi_
+put_utility 'title' /"Aggregating rtxs.";
 $batinclude aggr rtxs i r s rtxs_
+put_utility 'title' /"Aggregating rtms.";
 $batinclude aggr rtms i r s rtms_
 
 parameter profit;
@@ -148,135 +143,9 @@ epsilon_(ii,rr)$sum((mapr(r,rr),mapi(i,ii)),vp(i,r))
 
 loop(mapf(mf,ff), etrae_(ff) = +inf;);
 
-$if set energydata $goto energydata
-
 execute_unload '%datadir%%output%.gdx', 
 	gg=g, rr=r, ff=f, ii=i, 
 	vfm_=vfm, vdfm_=vdfm, vifm_=vifm,vxmd_=vxmd, vst_=vst, vtwr_=vtwr, 
 	rto_=rto, rtf_=rtf, rtfd_=rtfd, rtfi_=rtfi, rtxs_=rtxs, rtms_=rtms, 
-	evd_=evd, evt_=evt, eco2_=eco2, enco2_=enco2,
+	evd_=evd, evt_=evt, 
 	esubd_=esubd, esubva_=esubva, esubm_=esubm, etrae_=etrae, eta_=eta, epsilon_=epsilon;
-
-$exit
-
-$label energydata
-
-**.set	ieo_gen	Generation technologies /oilgen, gasgen, colgen, nucgen, hydrogen, windgen, geogen, othrnwgen/;
-**.	iea_gen IEA generation technologies /thermalgen, hydrogen, rengen, nucleargen/;
-
-
-parameter
-	ieocarbon_(ieoscn,ii,rr,ieot)	     Emissions by fossil fuel (mmt co2)
-	ieoenergy_(ieoscn,ii,*,rr,ieot)	     Energy demand (mtoe)
-	ieogdp_(ieoscn,rr,ieot)		     Gross domestic product (index -- 2004=1)
-	ieoelegen_(ieoscn,ieo_gen, rr,ieot)  Power production by aggregate generaton technology
-	ieocrude_(ieoscn,rr,ieot)	     Crude oil production (index -- 2004=1)
-	ieoelec_(ieoscn,rr,ieot)	     IEO electricity supply (index -- 2004=1),
-	popdata_(sresscn,rr,ieot)	     CIESIN population data (millions)
-
-	ieaco2emit_(ii,rr,ieot)		     Carbon dioxide emissions  mmt CO2 (IEO 2008),
-	ieaelec_(iea_gen,rr,*)		     Base-year power production by technology and GTAP region as provided by IEA annuals
-
-
-	ieotmp1(r)	 Temporary array for aggregating ieogdp and ieocrude,
-	ieotmp2(rr)	 Temporary array for aggregating ieogdp and ieocrude,
-	ieotmp3(i,r)	 Temporary array for aggregating ieocarbon,
-	ieotmp4(ii,rr)	 Temporary array for aggregating ieocarbon
-	ieotmp5(i,g,r)	 Temporary array for aggregating ieoenergy,
-	ieotmp6(ii,*,rr) Temporary array for aggregating ieoenergy;
-
-
-parameter 
-	poptmp1(r)	Temporary array for aggregating population data,
-	poptmp2(rr)	Temporary array for aggregating population data;
-		
-poptmp1(r) = 1;
-$batinclude aggr poptmp1 r poptmp2
-loop((sresscn,ieot),
-	poptmp1(r)	= popdata(sresscn,r,ieot);
-$batinclude aggr poptmp1 r  poptmp2
-	popdata_(sresscn,rr,ieot) = poptmp2(rr);
-);
-
-parameter
-	ieatmp1(i,r)		Temporary array for aggregating ieaco2emit
-	ieatmp2(ii,rr)		Temporary array for aggregating ieaco2emit;
-
-loop(ieot,
-	ieatmp1(i,r) = ieaco2emit(i,r,ieot);
-$batinclude aggr ieatmp1 i r      ieatmp2
-	ieaco2emit_(ii,rr,ieot) = ieatmp2(ii,rr);
-     );	
-
-
-*.$setglobal debug yes
-
-$log Aggregating IEO Energy Projections...
-
-loop((ieoscn,ieot,ieo_gen), 
-	ieotmp1(r) = ieoelegen(ieoscn,ieo_gen,r,ieot);
-$batinclude aggr ieotmp1 r      ieotmp2
-	ieoelegen_(ieoscn,ieo_gen,rr,ieot) = ieotmp2(rr);
-); 
-
-
-loop((ieot,iea_gen), 
-	ieotmp1(r) = ieaelec(iea_gen,r,ieot);
-$batinclude aggr ieotmp1 r      ieotmp2
-	ieaelec_(iea_gen,rr,ieot) = ieotmp2(rr);
-); 
-
-
-loop((ieoscn,ieot),
-	ieotmp1(r) = ieogdp(ieoscn,r,ieot);
-$batinclude aggr ieotmp1 r      ieotmp2
-	ieogdp_(ieoscn,rr,ieot) = ieotmp2(rr);
-
-	ieotmp1(r) = ieocrude(ieoscn,r,ieot);
-$batinclude aggr ieotmp1 r      ieotmp2
-	ieocrude_(ieoscn,rr,ieot) = ieotmp2(rr);
-
-	ieotmp1(r) = ieoelec(ieoscn,r,ieot);
-$batinclude aggr ieotmp1 r      ieotmp2
-	ieoelec_(ieoscn,rr,ieot) = ieotmp2(rr);
-
-	ieotmp3(i,r) = ieocarbon(ieoscn,i,r,ieot);
-$batinclude aggr ieotmp3 i r      ieotmp4
-	ieocarbon_(ieoscn,ii,rr,ieot) = ieotmp4(ii,rr);
-
-	ieotmp5(i,g,r) = ieoenergy(ieoscn,i,g,r,ieot);
-$batinclude aggr ieotmp5 i g r     ieotmp6
-	ieoenergy_(ieoscn,ii,gg,rr,ieot) = ieotmp6(ii,gg,rr);
-);
-
-parameter	emitsrc_(nco2,nco2src,*,ieot)	Non-CO2 emissions inventory by source
-		mac_(nco2,nco2src,*,ieot,val)	Marginal abatement (percentage);
-
-parameter	nco2tmp(r)	Temporary array for aggregation,
-		nco2tmp2(rr)	Temporary array for aggregation;
-
-loop((nco2,nco2src,ieot)$sum(r,emitsrc(nco2,nco2src,r,ieot)),
-	nco2tmp(r) = emitsrc(nco2,nco2src,r,ieot);
-$batinclude aggr nco2tmp r nco2tmp2
-	emitsrc_(nco2,nco2src,rr,ieot) = nco2tmp2(rr);
-
-*	Convert from percentages to levels and then back to aggregate:
-	loop(val$sum(r,mac(nco2,nco2src,r,ieot,val)),
-	  nco2tmp(r) = mac(nco2,nco2src,r,ieot,val)*emitsrc(nco2,nco2src,r,ieot);
-$batinclude aggr nco2tmp r nco2tmp2
-	  mac_(nco2,nco2src,rr,ieot,val)$emitsrc_(nco2,nco2src,rr,ieot) 
-		= nco2tmp2(rr) / emitsrc_(nco2,nco2src,rr,ieot);
-	);
-);
-
-nco2tmp(r) = 0; nco2tmp2(rr) = 0;
-
-execute_unload '%datadir%%output%.gdx', 
-	gg=g, rr=r, ff=f, ii=i, 
-	vfm_=vfm, vdfm_=vdfm, vifm_=vifm,vxmd_=vxmd, vst_=vst, vtwr_=vtwr, 
-	evd_=evd, evt_=evt, eco2_=eco2, enco2_=enco2,
-	emitsrc_=emitsrc, mac_=mac,
-	rto_=rto, rtf_=rtf, rtfd_=rtfd, rtfi_=rtfi, rtxs_=rtxs, rtms_=rtms, 
-	esubd_=esubd, esubva_=esubva, esubm_=esubm, etrae_=etrae, eta_=eta, epsilon_=epsilon,
-	ieocarbon_=ieocarbon, ieogdp_=ieogdp, ieocrude_=ieocrude, ieoelec_=ieoelec, ieoenergy_=ieoenergy, ieoprice,
-	popdata_=popdata, ieaco2emit_=ieaco2emit, ieoelegen_=ieoelegen, ieaelec_=ieaelec ;

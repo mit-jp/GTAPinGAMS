@@ -1,0 +1,293 @@
+* Regional Mapping
+set rr  Regions in the aggregation /
+
+	USA	USA
+        CAN	Canada			       				       
+	MEX	Mexico			       			       
+	BRA	Brazil			       			       
+	LAM	Rest of Americas	       			       
+	EUR	Europe			       			       
+	RUS	Russia			       			       
+	ROE	Rest of Europe and Central Asia			       
+        CHN	China		     			     
+	IND	India		     		     
+	JPN	Japan		     		     
+	ASI	Dynamic Asia	     		     
+	REA	Rest of East Asia    		     
+	ANZ	Australia and Oceania		     
+        MES	Middle East
+        AFR	Africa
+        KOR     South Korea
+        IDZ     Indonesia
+
+/;
+
+SET mapr(r,rr) Mapping of GTAP Regions (from-to) 
+
+/
+
+ALB	.	roe	Albania
+ARE	.	mes	United Arab Emirates
+ARG	.	lam	Argentina
+ARM	.	roe	Armenia
+AUS	.	anz	Australia
+AUT	.	eur	Austria
+AZE	.	roe	Azerbaijan
+BEL	.	eur	Belgium
+BGD	.	rea	Bangladesh
+BGR	.	eur	Bulgaria
+BHR	.	mes	Bahrain
+BLR	.	roe	Belarus
+BOL	.	lam	Plurinational Republic of Bolivia
+BRA	.	bra	Brazil
+BWA	.	afr	Botswana
+CAN	.	can	Canada
+CHE	.	eur	Switzerland
+CHL	.	lam	Chile
+CHN	.	chn	China
+CIV	.	afr	Cote d'Ivoire
+CMR	.	afr	Cameroon
+COL	.	lam	Colombia
+CRI	.	lam	Costa Rica
+CYP	.	eur	Cyprus
+CZE	.	eur	Czech Republic
+DEU	.	eur	Germany
+DNK	.	eur	Denmark
+ECU	.	lam	Ecuador
+EGY	.	afr	Egypt
+ESP	.	eur	Spain
+EST	.	eur	Estonia
+ETH	.	afr	Ethiopia
+FIN	.	eur	Finland
+FRA	.	eur	France
+GBR	.	eur	United Kingdom
+GEO	.	roe	Georgia
+GHA	.	afr	Ghana
+GRC	.	eur	Greece
+GTM	.	lam	Guatemala
+HKG	.	chn	Hong Kong
+HND	.	lam	Honduras
+HRV	.	eur	Croatia
+HUN	.	eur	Hungary
+IDN	.	idz	Indonesia
+IND	.	ind	India
+IRL	.	eur	Ireland
+IRN	.	mes	Iran Islamic Republic of
+ISR	.	mes	Israel
+ITA	.	eur	Italy
+JPN	.	jpn	Japan
+KAZ	.	roe	Kazakhstan
+KEN	.	afr	Kenya
+KGZ	.	roe	Kyrgyzstan
+KHM	.	rea	Cambodia
+KOR	.	kor	Korea Republic of
+KWT	.	mes	Kuwait
+LAO	.	rea	Lao People's Democratic Republic
+LKA	.	rea	Sri Lanka
+LTU	.	eur	Lithuania
+LUX	.	eur	Luxembourg
+LVA	.	eur	Latvia
+MAR	.	afr	Morocco
+MDG	.	afr	Madagascar
+MEX	.	mex	Mexico
+MLT	.	eur	Malta
+MNG	.	rea	Mongolia
+MOZ	.	afr	Mozambique
+MUS	.	afr	Mauritius
+MWI	.	afr	Malawi
+MYS	.	asi	Malaysia
+NAM	.	afr	Namibia
+NGA	.	afr	Nigeria
+NIC	.	lam	Nicaragua
+NLD	.	eur	Netherlands
+NOR	.	eur	Norway
+NPL	.	rea	Nepal
+NZL	.	anz	New Zealand
+OMN	.	mes	Oman
+PAK	.	rea	Pakistan
+PAN	.	lam	Panama
+PER	.	lam	Peru
+PHL	.	asi	Philippines
+POL	.	eur	Poland
+PRT	.	eur	Portugal
+PRY	.	lam	Paraguay
+QAT	.	mes	Qatar
+ROU	.	eur	Romania
+RUS	.	rus	Russian Federation
+SAU	.	mes	Saudi Arabia
+SEN	.	afr	Senegal
+SGP	.	asi	Singapore
+SLV	.	lam	El Salvador
+SVK	.	eur	Slovakia
+SVN	.	eur	Slovenia
+SWE	.	eur	Sweden
+THA	.	asi	Thailand
+TUN	.	afr	Tunisia
+TUR	.	roe	Turkey
+TWN	.	asi	Taiwan
+TZA	.	afr	Tanzania United Republic of
+UGA	.	afr	Uganda
+UKR	.	roe	Ukraine
+URY	.	lam	Uruguay
+USA	.	usa	United States of America
+VEN	.	lam	Venezuela
+VNM	.	rea	Viet Nam
+XAC	.	afr	South Central Africa
+XCA	.	lam	Rest of Central America
+XCB	.	lam	Caribbean
+XCF	.	afr	Central Africa
+XEA	.	rea	Rest of East Asia
+XEC	.	afr	Rest of Eastern Africa
+XEE	.	roe	Rest of Eastern Europe
+XEF	.	eur	Rest of EFTA
+XER	.	roe	Rest of Europe
+XNA	.	lam	Rest of North America
+XNF	.	afr	Rest of North Africa
+XOC	.	anz	Rest of Oceania
+XSA	.	rea	Rest of South Asia
+XSC	.	afr	Rest of South African Customs Union
+XSE	.	rea	Rest of Southeast Asia
+XSM	.	lam	Rest of South America
+XSU	.	roe	Rest of Former Soviet Union
+XTW	.	anz	Rest of the World
+XWF	.	afr	Rest of Western Africa
+XWS	.	mes	Rest of Western Asia
+ZAF	.	afr	South Africa
+ZMB	.	afr	Zambia
+ZWE	.	afr	Zimbabwe
+
+/;
+
+* Sectoral Mapping
+
+*alias (i,ii);
+*SET mapi(i,ii)  Mapping for sectors and goods;
+*mapi(i,i) = yes;
+
+set ii Sectors and goods in aggregate model /
+	
+1_GrainCrops  
+2_MeatDairy   
+3_OthFoodBev  
+4_TextAppar   
+5_HousUtils   
+6_WRtrade     
+7_Mnfcs	      
+8_TransComm   
+9_FinService  
+10_HousOthServ
+11_forestry    
+
+/;
+
+SET mapi(*,ii)  Mapping for sectors and goods /
+
+PDR	.	1_GrainCrops
+WHT	.	1_GrainCrops
+GRO	.	1_GrainCrops
+V_F	.	1_GrainCrops
+OSD	.	1_GrainCrops
+C_B	.	1_GrainCrops
+PFB	.	4_TextAppar
+OCR	.	1_GrainCrops
+CTL	.	2_MeatDairy
+OAP	.	2_MeatDairy
+RMK	.	2_MeatDairy
+WOL	.	4_TextAppar
+FRS	.	11_forestry
+FSH	.	2_MeatDairy
+COA	.	5_HousUtils
+OIL	.	8_TransComm
+GAS	.	5_HousUtils
+OMN	.	7_Mnfcs
+CMT	.	2_MeatDairy
+OMT	.	2_MeatDairy
+VOL	.	3_OthFoodBev
+MIL	.	2_MeatDairy
+PCR	.	1_GrainCrops
+SGR	.	3_OthFoodBev
+OFD	.	3_OthFoodBev
+B_T	.	3_OthFoodBev
+TEX	.	4_TextAppar
+WAP	.	4_TextAppar
+LEA	.	4_TextAppar
+LUM	.	7_Mnfcs
+PPP	.	7_Mnfcs
+P_C	.	8_TransComm
+CRP	.	7_Mnfcs
+NMM	.	7_Mnfcs
+I_S	.	7_Mnfcs
+NFM	.	7_Mnfcs
+FMP	.	7_Mnfcs
+MVH	.	7_Mnfcs
+OTN	.	8_TransComm
+ELE	.	7_Mnfcs
+OME	.	7_Mnfcs
+OMF	.	7_Mnfcs
+ELY	.	5_HousUtils
+GDT	.	5_HousUtils
+WTR	.	5_HousUtils
+CNS	.	5_HousUtils
+TRD	.	6_WRtrade
+OTP	.	8_TransComm
+WTP	.	8_TransComm
+ATP	.	8_TransComm
+CMN	.	8_TransComm
+OFI	.	9_FinService
+ISR	.	5_HousUtils
+OBS	.	9_FinService
+ROS	.	10_HousOthServ
+OSG	.	10_HousOthServ
+DWE	.	10_HousOthServ
+                                   
+/;  
+
+* Note: (YHC: 20131121)
+* VOL.food  vegetable oils and fats                        	 
+** bio-diesel is included in VOL
+
+* OFD.food  food products nec                              	 
+** corn ethanol eth1 is included in OFD
+
+* CRP.eint  chemical - rubber - plastic products
+** sugarcane ethanol is included in CRP  
+
+*alias (f,ff);
+*SET mapf(f,ff)	Mapping of factors;
+*mapf(f,f) = yes;
+
+SET   ff   Factors of production 
+        /
+	lnd	Land,
+	lab	Labor,
+	cap	Capital,
+	fix	Natural resources 
+        /;
+
+
+SET	mapf(*,ff)   Factors of production 
+        /
+	Land.lnd	Land,
+	SkLab.lab	Skilled labor,
+	UnskLab.lab	Unskilled labor,
+	Capital.cap	Capital,
+	NatlRes.fix	Natural resources 
+        /;
+
+SET eec energy commodities
+        /
+	coal	Coal
+	oil	Crude oil
+	gas	Natural gas,
+	roil	Refined oil products,
+	elec	Electricity 
+        /;
+
+SET	mape(*,eec) 
+        /
+	ecoa.coal	Coal,
+	eoil.oil	Crude oil,
+	(egas,egdt).gas	Natural gas,
+	ep_c.roil	Refined oil products,
+	eely.elec	Electricity
+        /;

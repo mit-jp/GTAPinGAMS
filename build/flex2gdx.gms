@@ -1,39 +1,35 @@
 $title	FLEX2GDX.GMS	Read the FLEXAGG dataset gsddat.har and generate gsd.gdx
 
-$set nco2
 
+$if not set yr $set yr 04
 $if not set nd $set nd 0
 
 scalar nd	Number of decimals /%nd%/;
 abort$(nd<>round(nd)) "Number of decimals must be an integer";
 
-$if not set datadir $set datadir "..\data\"
-$if not set gtapdatadir $set gtapdatadir "..\gtapdata\"
+$if not set datadir $set datadir "..\data%yr%\"
+$if not set gtapdatadir $set gtapdatadir "..\gtapdata%yr%\"
 
-$if exist %datadir%gsddat.gdx $goto start
+* "if exist... $goto start" below is de-activated so har-to-gdx conversions will be executed even if they have been done before.
+* It doesn't take too much time to execute those conversions.  Further, de-activating that line can ensure that when adding
+* a new har-to-gdx conversion, that new conversion will always be done.  YHC: 20120628.
+
+* $if exist %datadir%gsddat.gdx $goto start
 
 *	Translate HAR files into GDX:
 
-$if not exist %gtapdatadir%gsdset.har $goto missingharfiles
-$if not exist %gtapdatadir%gsddat.har $goto missingharfiles
-$if not exist %gtapdatadir%gsdpar.har $goto missingharfiles
+$label har2gdx
+
+$if not exist %gtapdatadir%gsdset.har  $goto missingharfiles
+$if not exist %gtapdatadir%gsddat.har  $goto missingharfiles
+$if not exist %gtapdatadir%gsdpar.har  $goto missingharfiles
 $if not exist %gtapdatadir%gsdvole.har $goto missingharfiles
 
-*	This file comes from GTAP Resouce #1143:
-*	See https://www.gtap.agecon.purdue.edu/resources/download/4139.zip
-$if not exist %gtapdatadir%gtap_co2_v7.har $goto missingharfiles
-
-$if not set nco2 $goto har2gdx
-
-$if not exist %gtapdatadir%gtp_nco2_mmtceq_v7.har $goto missingharfiles
-
-$label har2gdx
 $call 'har2gdx %gtapdatadir%gsdset.har %datadir%gsdset.gdx'
 $call 'har2gdx %gtapdatadir%gsddat.har %datadir%gsddat.gdx'
 $call 'har2gdx %gtapdatadir%gsdpar.har %datadir%gsdpar.gdx'
 $call 'har2gdx %gtapdatadir%gsdvole.har %datadir%gsdvole.gdx'
-$call 'har2gdx %gtapdatadir%gtap_co2_v7.har %datadir%gtap_co2_v7.gdx'
-$if set nco2 $call 'har2gdx %gtapdatadir%gtp_nco2_mmtceq_v7.har %datadir%gtp_nco2_mmtceq_v7.gdx'
+$call 'har2gdx %gtapdatadir%gsdemiss.har %datadir%gsdemiss.gdx'
 
 $label start
 
@@ -41,7 +37,7 @@ $if not exist %datadir%gsdset.gdx $goto missinggdxfiles
 $if not exist %datadir%gsddat.gdx $goto missinggdxfiles
 $if not exist %datadir%gsdpar.gdx $goto missinggdxfiles
 $if not exist %datadir%gsdvole.gdx $goto missinggdxfiles
-$if not exist %datadir%gtap_co2_v7.gdx $goto missinggdxfiles
+*$if not exist %datadir%gsdemiss.gdx $goto missinggdxfiles
 
 $onecho >setx.gms
 $gdxin '%datadir%gsdset.gdx'
@@ -56,27 +52,299 @@ set	x(*)	All goods plus C - G - i and CGDS;
 $gdxin 'setx.gdx'
 $load x
 $gdxin
-$call del /q setx.gdx
+$call del /q setx.*
+
+set	r	Regions  /
+
+	AUS	Australia
+*		- Australia
+*		- Christmas Island
+*		- Cocos (Keeling) Islands
+*		- Heard Island and McDonald Islands
+*		- Norfolk Island
+	NZL	New Zealand
+	XOC	Rest of Oceania
+*		- American Samoa
+*		- Cook Islands
+*		- Fiji
+*		- French Polynesia
+*		- Guam
+*		- Kiribati
+*		- Marshall Islands
+*		- Micronesia Federated States of
+*		- Nauru
+*		- New Caledonia
+*		- Niue
+*		- Northern Mariana Islands
+*		- Palau
+*		- Papua New Guinea
+*		- Pitcairn
+*		- Samoa
+*		- Solomon Islands
+*		- Tokelau
+*		- Tonga
+*		- Tuvalu
+*		- United States Minor Outlying Islands
+*		- Vanuatu
+*		- Wallis and Futuna
+	CHN	China
+	HKG	Hong Kong
+	JPN	Japan
+	KOR	Korea Republic of
+	MNG	Mongolia
+	TWN	Taiwan
+	XEA	Rest of East Asia
+*		- Korea Democratic Peoples Republic of
+*		- Macao
+	KHM	Cambodia
+	IDN	Indonesia
+	LAO	Lao People's Democratic Republic
+	MYS	Malaysia
+	PHL	Philippines
+	SGP	Singapore
+	THA	Thailand
+	VNM	Viet Nam
+	XSE	Rest of Southeast Asia
+*		- Brunei Darussalam
+*		- Myanmar
+*		- Timor Leste
+	BGD	Bangladesh
+	IND	India
+	NPL	Nepal
+	PAK	Pakistan
+	LKA	Sri Lanka
+	XSA	Rest of South Asia
+*		- Afghanistan
+*		- Bhutan
+*		- Maldives
+	CAN	Canada
+	USA	United States of America
+	MEX	Mexico
+	XNA	Rest of North America
+*		- Bermuda
+*		- Greenland
+*		- Saint Pierre and Miquelon
+	ARG	Argentina
+	BOL	Plurinational Republic of Bolivia
+	BRA	Brazil
+	CHL	Chile
+	COL	Colombia
+	ECU	Ecuador
+	PRY	Paraguay
+	PER	Peru
+	URY	Uruguay
+	VEN	Venezuela
+	XSM	Rest of South America
+*		- Falkland Islands (Malvinas)
+*		- French Guiana
+*		- Guyana
+*		- South Georgia and the South Sandwich Islands
+*		- Suriname
+	CRI	Costa Rica
+	GTM	Guatemala
+	HND	Honduras
+	NIC	Nicaragua
+	PAN	Panama
+	SLV	El Salvador
+	XCA	Rest of Central America
+*		- Belize
+	XCB	Caribbean
+*		- Anguilla
+*		- Antigua & Barbuda
+*		- Aruba
+*		- Bahamas
+*		- Barbados
+*		- Cayman Islands
+*		- Cuba
+*		- Dominica
+*		- Dominican Republic
+*		- Grenada
+*		- Haiti
+*		- Jamaica
+*		- Montserrat
+*		- Netherlands Antilles
+*		- Puerto Rico
+*		- Saint Kitts and Nevis
+*		- Saint Lucia
+*		- Saint Vincent and the Grenadines
+*		- Trinidad and Tobago
+*		- Turks and Caicos Islands
+*		- Virgin Islands British
+*		- Virgin Islands U.S.
+	AUT	Austria
+	BEL	Belgium
+	CYP	Cyprus
+	CZE	Czech Republic
+	DNK	Denmark
+	EST	Estonia
+	FIN	Finland
+*		- Aland Islands
+*		- Finland
+	FRA	France
+*		- France
+*		- Guadeloupe
+*		- Martinique
+*		- Reunion
+	DEU	Germany
+	GRC	Greece
+	HUN	Hungary
+	IRL	Ireland
+	ITA	Italy
+	LVA	Latvia
+	LTU	Lithuania
+	LUX	Luxembourg
+	MLT	Malta
+	NLD	Netherlands
+	POL	Poland
+	PRT	Portugal
+	SVK	Slovakia
+	SVN	Slovenia
+	ESP	Spain
+	SWE	Sweden
+	GBR	United Kingdom
+	CHE	Switzerland
+	NOR	Norway
+*		- Norway
+*		- Svalbard and Jan Mayen
+	XEF	Rest of EFTA
+*		- Iceland
+*		- Liechtenstein
+	ALB	Albania
+	BGR	Bulgaria
+	BLR	Belarus
+	HRV	Croatia
+	ROU	Romania
+	RUS	Russian Federation
+	UKR	Ukraine
+	XEE	Rest of Eastern Europe
+*		- Moldova Republic of
+	XER	Rest of Europe
+*		- Andorra
+*		- Bosnia and Herzegovina
+*		- Faroe Islands
+*		- Gibraltar
+*		- Guernsey
+*		- Holy See (Vatican City State)
+*		- Isle of Man
+*		- Jersey
+*		- Macedonia the former Yugoslav Republic of
+*		- Monaco
+*		- Montenegro
+*		- San Marino
+*		- Serbia
+	KAZ	Kazakhstan
+	KGZ	Kyrgyzstan
+	XSU	Rest of Former Soviet Union
+*		- Tajikistan
+*		- Turkmenistan
+*		- Uzbekistan
+	ARM	Armenia
+	AZE	Azerbaijan
+	GEO	Georgia
+	BHR	Bahrain
+	IRN	Iran Islamic Republic of
+	ISR	Israel
+	KWT	Kuwait
+	OMN	Oman
+	QAT	Qatar
+	SAU	Saudi Arabia
+	TUR	Turkey
+	ARE	United Arab Emirates
+	XWS	Rest of Western Asia
+*		- Iraq
+*		- Jordan
+*		- Lebanon
+*		- Palestinian Territory Occupied
+*		- Syrian Arab Republic
+*		- Yemen
+	EGY	Egypt
+	MAR	Morocco
+	TUN	Tunisia
+	XNF	Rest of North Africa
+*		- Algeria
+*		- Libyan Arab Jamahiriya
+*		- Western Sahara
+	CMR	Cameroon
+	CIV	Cote d'Ivoire
+	GHA	Ghana
+	NGA	Nigeria
+	SEN	Senegal
+	XWF	Rest of Western Africa
+*		- Benin
+*		- Burkina Faso
+*		- Cape Verde
+*		- Gambia
+*		- Guinea
+*		- Guinea-Bissau
+*		- Liberia
+*		- Mali
+*		- Mauritania
+*		- Niger
+*		- Saint Helena, Ascension and Tristan Da Cunha
+*		- Sierra Leone
+*		- Togo
+	XCF	Central Africa
+*		- Central African Republic
+*		- Chad
+*		- Congo
+*		- Equatorial Guinea
+*		- Gabon
+*		- Sao Tome and Principe
+	XAC	South Central Africa
+*		- Angola
+*		- Congo the Democratic Republic of the
+	ETH	Ethiopia
+	KEN	Kenya
+	MDG	Madagascar
+	MWI	Malawi
+	MUS	Mauritius
+	MOZ	Mozambique
+	TZA	Tanzania United Republic of
+	UGA	Uganda
+	ZMB	Zambia
+	ZWE	Zimbabwe
+	XEC	Rest of Eastern Africa
+*		- Burundi
+*		- Comoros
+*		- Djibouti
+*		- Eritrea
+*		- Mayotte
+*		- Rwanda
+*		- Seychelles
+*		- Somalia
+*		- Sudan
+	BWA	Botswana
+	NAM	Namibia
+	ZAF	South Africa
+	XSC	Rest of South African Customs Union
+*		- Lesotho
+*		- Swaziland
+	XTW	Rest of the World 
+*		- Antarctica
+*		- Bouvet Island
+*		- British Indian Ocean Territory
+*		- French Southern Territories
+	/;
 
 set	g(x) 	All goods plus C - G - i /c,g,i/,
 	i(x)	Market goods,
-	f(*)	Factors,
-	r(*)	Regions ;
+	f(*)	Factors;
 
 $gdxin '%datadir%gsdset.gdx'
-$load r=reg f=endw_comm i=trad_comm
+$load f=endw_comm i=trad_comm
 g(i) =yes;
 
 set	src	Sources /domestic, imported/,
 	rnum(r)	Numeraire region,
 	sf(f)	Sluggish primary factors (sector-specific)
 	mf(f)	Mobile primary factors
+
 	ec	Energy goods /
 		ecoa	Coal,
 		eoil	Crude oil,
 		egas	Natural gas,
 		ep_c	Refined oil products,
-		eely	Electricity
+		eely	Electricity,
 		egdt	Gas distribution /;
 
 alias (r,s), (i,j,jj), (f,ff);
@@ -115,6 +383,7 @@ parameters
 	mfrv(i,r,s)	Protection - MFA export tax equivalent
 	xtrv(i,r,s)	Protection - ordinary export tax;
 
+* Read the GTAP data set gsddat.gdx converted from gsddat.har
 $gdxin '%datadir%gsddat.gdx'
 $load vdga viga vdgm vigm vdpa vipa vdpm vipm evoa evfa vfm vdfa 
 $load vifa vdfm vifm vims viws vxmd vxwd vst vtwr=vtwrini ftrv fbep isep 
@@ -219,38 +488,49 @@ if (nd>0,
 );
 
 parameter
+
+$ontext
 	evf_(ec,i,r)	Volume of input purchases by firms (mtoe)
 	evh_(ec,r)	Volume of purchases by households (mtoe)
 	evt_(ec,r,r)	Volume of bilateral trade (mtoe);
+$offtext
 
+* Redefine evf_, evh_, and evt_ so the first dimension is set j (alias of i) or i rather than ec.
+* This is because in the gsdvole.gdx, there is no set called ec.
+* It is infeasible to read, for example, edf(ec,i,r) from gsdvole.gdx
+* YHC (20120628)
+
+	evf_(j,i,r)	Volume of input purchases by firms (mtoe)
+	evh_(i,r)	Volume of purchases by households (mtoe)
+        evg_(i,r)       Volume of purchases by government (mtoe)
+ 	evt_(i,r,r)	Volume of bilateral trade (mtoe)
+
+
+* Newly declared parameters to read edf, eif, edp, eip, and exidag in gsdvole.gdx
+* YHC (20120628)
+
+        edf_(i,i,r)    usage of domestic product by firms (mtoe)
+        eif_(i,i,r)    usage of imported product by firms (mtoe)
+        edp_(i,r)      private consumption of domestic product (mtoe)
+        eip_(i,r)      private consumption of imported product (mtoe)
+        edg_(i,r)      government consumption of domestic product (mtoe)
+        eig_(i,r)      government consumption of imported product (mtoe)
+        exidag_(i,r,r) volume of trade (mtoe)
+        ;
+
+* Read edf, eif, edp, eip, edg, eig, exidag from gsdvole.gdx; YHC (20120628)
 $gdxin '%datadir%gsdvole.gdx'
-$load evf_=evf evh_=evh evt_=evt
+*$load evf_=evf evh_=evh evt_=evt
+$load edf_=edf eif_=eif edp_=edp eip_=eip edg_=edg eig_=eig exidag_=exidag
 $gdxin
 
-set	nco2		Non-carbon greenhouse gases /
-			n2o	Nitrous oxide,
-			ch4	Methane,
-			fgas	Fluorocarbons and sulfur hexafluoride /;
+* Assign values for evf_, evh_, and evt_; YHC (20120614)
 
-parameter
-	nc_hh(nco2,i,r)		Non-CO2 greenhouse gas emissions associated with input use by househods (MM ton of C-eq)
-	nc_qo(nco2,i,r)		Non-CO2 greenhouse gas emissions associated with industries  (MM ton of C-eq)
-	nc_endw(nco2,f,i,r)	Non-CO2 greenhouse gas emissions associated with endowments  (MM ton of C-eq),
-	nc_trad(nco2,i,j,r)	Non-CO2 greenhouse gas emissions associated with input use by industry  (MM ton of C-eq);
+       evf_(i,j,r) = edf_(i,j,r)+eif_(i,j,r);
+       evh_(i,r) = edp_(i,r)+eip_(i,r);
+       evg_(i,r) = edg_(i,r)+eig_(i,r);
+       evt_(i,r,s) = exidag_(i,r,s);
 
-$if     set nco2 $gdxin '%datadir%gtp_nco2_mmtceq_v7.gdx'
-
-*	Load without domain checking -- version 7.1 drops the MMR region, but this is in the dataset:
-
-$if     set nco2 $load	nc_hh=nc_hh_ceq nc_qo=nc_qo_ceq nc_endw=nc_endw_ceq nc_trad=nc_trad_ceq 
-$if not set nco2 nc_hh(nco2,i,r) = 0; nc_qo(nco2,i,r) = 0; nc_endw(nco2,f,i,r) = 0; nc_trad(nco2,i,j,r) = 0;
-
-set	ghg		Greenhouse gases in this dataset /co2/
-	fdlabels	Final demand labels /hh,govt/;
-
-parameter	eghg(ghg,ec,*,r)	Emissions of greenhouse gases (Gg);
-$gdxin '%datadir%gtap_co2_v7.gdx'
-$load eghg
 
 *	Declare some intermediate arrays which are required to 
 *	evaluate tax rates:
@@ -377,71 +657,54 @@ vb("chksum") = sum(r, vb(r));
 display vb;
 
 parameter
-	eco2(i,*,r)		Emissions of CO2 (Gg),
-	enco2(nco2,*,*,r)	Emissions of other greenhouse gases (MM ton C-eq),
 	evd(i,*,r)		Volume of energy purchases (mtoe),
 	evt(i,r,r)		Volume of energy exports (mtoe);
 
 set ffmap(i,ec)/ely.eely,coa.ecoa,oil.eoil,gas.egas,p_c.ep_c,gdt.egdt/;
 
-eco2(i,j,r)   = sum(ffmap(i,ec),eghg("co2",ec,j,r));
-eco2(i,"c",r) = sum(ffmap(i,ec),eghg("co2",ec,"hh",r));
-eco2(i,"g",r) = sum(ffmap(i,ec),eghg("co2",ec,"govt",r));
-
-*	Emissions of non-CO2 gases:
-
-$if set nco2	enco2(nco2,i,"c",r) = nc_hh(nco2,i,r);
-$if set nco2	enco2(nco2,"process",j,r) = nc_qo(nco2,j,r);
-$if set nco2	enco2(nco2,f,j,r) = nc_endw(nco2,f,j,r);
-$if set nco2	enco2(nco2,i,j,r) = nc_trad(nco2,i,j,r);
-
-$if not set nco2 enco2(nco2,i,"c",r) = 0;
-$if not set nco2 enco2(nco2,"process",j,r) = 0;
-$if not set nco2 enco2(nco2,f,j,r) = 0;
-$if not set nco2 enco2(nco2,i,j,r) = 0;
-
 loop(ffmap(i,ec),
+
+$ontext
 	evd(i,j,r) = evf_(ec,j,r);
 	evd(i,"c",r) = evh_(ec,r);
 	evt(i,r,s) = evt_(ec,r,s);
+$offtext
+
+* using newly defined parameters; (YHC: 20120604)
+
+	evd(i,j,r) = evf_(i,j,r);
+	evd(i,"c",r) = evh_(i,r);
+	evt(i,r,s) = evt_(i,r,s);
+
+
 );
 if (nd>0,
-	eco2(i,g,r) = eco2(i,g,r)$round(eco2(i,g,r), nd);
 	evt(i,r,s)  = evt(i,r,s)$round(evt(i,r,s), nd);
 	evd(i,g,r)  = evd(i,g,r)$round(evd(i,g,r), nd);
-	enco2(nco2,f,j,r) = enco2(nco2,f,j,r)$round(enco2(nco2,f,j,r),nd);
-	enco2(nco2,i,g,r) = enco2(nco2,i,g,r)$round(enco2(nco2,i,g,r),nd);
-	enco2(nco2,"process",j,r) = enco2(nco2,"process",j,r)$round(enco2(nco2,"process",j,r),nd);
 );
 if (nd>0,
 	execute_unload '%datadir%gsd_%nd%.gdx', r, f, g, i, vfm, vdfm, vifm, vxmd, vst, vtwr, 
-		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt, enco2, eco2;
+		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt;
 else
 	execute_unload '%datadir%gsd.gdx',      r, f, g, i, vfm, vdfm, vifm, vxmd, vst, vtwr, 
-		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt, enco2, eco2;
+		rto, rtf, rtfd, rtfi, rtxs, rtms, esubd, esubva, esubm, etrae, eta, epsilon, evd, evt;
 );
 
 parameter	eprice		Implicit energy prices
 		etprice		Energy trade price;
 
 eprice(i,g,r)$evd(i,g,r)  = (vdfm(i,g,r)+vifm(i,g,r))/evd(i,g,r);
+
 etprice(i,r,s)$evt(i,r,s) = vxmd(i,r,s)/evt(i,r,s);
+
 eprice(i,"average",r)$sum(g,evd(i,g,r))  = sum(g,vdfm(i,g,r)+vifm(i,g,r))/sum(g,evd(i,g,r));
+
 etprice(i,r,s)$evt(i,r,s) = vxmd(i,r,s)/evt(i,r,s);
 etprice(i,r,"domestic") = eprice(i,"average",r);
 etprice(i,"domestic",s) = eprice(i,"average",s);
+
 *.execute_unload 'eprice.gdx',eprice,etprice;	
 *.execute 'gdxxrw i=eprice.gdx o=eprice.xls par=eprice rng="eprice!a2" cdim=0 par=etprice rng="etprice!a2" cdim=0';
-
-parameter	co2ratio	Ratio of ghg emissions to energy use;
-co2ratio(r,i,g,"value")$eco2(i,g,r) = na;
-loop(ffmap(i,ec),
-	co2ratio(r,i,g,"value")$(vdfm(i,g,r)+vifm(i,g,r)) = eco2(i,g,r)/(vdfm(i,g,r)+vifm(i,g,r));
-	co2ratio(r,i,g,"energy")$evd(i,g,r)               = eco2(i,g,r)/evd(i,g,r);
-);
-display co2ratio;
-*.execute_unload 'co2ratio.gdx',co2ratio;
-*.execute 'gdxxrw i=co2ratio.gdx o=co2ratio.xls par=co2ratio rng="pivotdata!a2" cdim=0';
 
 $exit
 
@@ -454,10 +717,8 @@ $log		%gtapdatadir%gsdset.har
 $log		%gtapdatadir%gsddat.har 
 $log		%gtapdatadir%gsdpar.har 
 $log		%gtapdatadir%gsdvole.har 
-$log		%gtapdatadir%gtap_co2_v7.har
-$log		%gtapdatadir%gtp_nco2_mmtceq_v7.har
 $log	
-$log	These files are part of the flexagg distribution from GTAP7.
+$log	These files are part of the flexagg distribution from GTAP8.
 $log
 $exit
 
@@ -470,10 +731,8 @@ $log		har2gdx %gtapdatadir%gsdset.har gsdset.gdx
 $log		har2gdx %gtapdatadir%gsddat.har gsddat.gdx
 $log		har2gdx %gtapdatadir%gsdpar.har gsdpar.gdx
 $log		har2gdx %gtapdatadir%gsdvole.har gsdvole.gdx
-$log		har2gdx %gtapdatadir%gtap_co2_v7.har gtap_co2_v7.gdx
-$log		har2gdx %gtapdatadir%gtp_nco2_mmtceq_v7.har gtp_nco2_mmtceq_v7.gdx
 $log	
-$log	These files are part of the flexagg distribution from GTAP7.
+$log	These files are part of the flexagg distribution from GTAP8.
 $log
 $exit
 

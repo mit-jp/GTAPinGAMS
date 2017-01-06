@@ -1,68 +1,108 @@
 @echo off
 
 :	Read the GTAP master data file gsddat.har and transform it into GAMS data exchange file gsd.gdx
-gams flex2gdx 
-pause
 
-:	Generate the basic GTAP file while suppressing tiny values:
+gams flex2gdx --yr=04 o=flex2gdx_04.lst
+gams flex2gdx --yr=07 o=flex2gdx_07.lst
+
+:	Run this set of jobs in parallel:
+
 :filter
+
 title	Running filter.gms
-gams filter --tol=001  o=filter_001.lst qcp=cplex 
+
+set tol=01
+start gams filter --yr=04 --tol=%tol%  o=filter04_%tol%.lst qcp=cplex gdx=filter04_%tol%.gdx
+start gams filter --yr=07 --tol=%tol%  o=filter07_%tol%.lst qcp=cplex gdx=filter07_%tol%.gdx
+
+set tol=001
+start gams filter --yr=04 --tol=%tol%  o=filter04_%tol%.lst qcp=cplex gdx=filter04_%tol%.gdx
+start gams filter --yr=07 --tol=%tol%  o=filter07_%tol%.lst qcp=cplex gdx=filter07_%tol%.gdx
+
+set tol=0001
+start gams filter --yr=04 --tol=%tol%  o=filter04_%tol%.lst qcp=cplex gdx=filter04_%tol%.gdx
+start gams filter --yr=07 --tol=%tol%  o=filter07_%tol%.lst qcp=cplex gdx=filter07_%tol%.gdx
+
+set tol=00001
+start gams filter --yr=04 --tol=%tol%  o=filter04_%tol%.lst qcp=cplex gdx=filter04_%tol%.gdx
+start gams filter --yr=07 --tol=%tol%  o=filter07_%tol%.lst qcp=cplex gdx=filter07_%tol%.gdx
+
 pause
 
-:gtap7gams
-title	Running gtapaggr: gsd_001 to gtap7ingams
-gams gtapaggr --source=gsd_001  --target=gtap7ingams
+:	Run these aggregation jobs in parallel:
 
-:	Generate an aggregation for mapping to the EPA non-CO2 data:
+:gtap8ingams
 
-:epa
-gams gtapaggr --source=gsd_001  --target=epa
+title	Aggregating the GTAP8inGAMS datasets.
 
+start gams gtapaggr --yr=07 --source=gsd  --target=gtap8ingams o=gtapaggr07.lst --output=gtap8ingams
+start gams gtapaggr --yr=04 --source=gsd  --target=gtap8ingams o=gtapaggr04.lst --output=gtap8ingams
 
-:	Up to this point, the dataset is strictly GTAP data.
+set tol=01
+start gams gtapaggr --yr=07 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr07.lst --output=gtap8ingams_%tol%
+start gams gtapaggr --yr=04 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr04.lst --output=gtap8ingams_%tol%
+
+set tol=001
+start gams gtapaggr --yr=07 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr07.lst --output=gtap8ingams_%tol%
+start gams gtapaggr --yr=04 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr04.lst --output=gtap8ingams_%tol%
+
+set tol=0001
+start gams gtapaggr --yr=07 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr07.lst --output=gtap8ingams_%tol%
+start gams gtapaggr --yr=04 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr04.lst --output=gtap8ingams_%tol%
+
+set tol=00001
+start gams gtapaggr --yr=07 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr07.lst --output=gtap8ingams_%tol%
+start gams gtapaggr --yr=04 --source=gsd_%tol%  --target=gtap8ingams o=gtapaggr04.lst --output=gtap8ingams_%tol%
 
 pause
 
-:	Introduce data from DOE's International Energy Outlook (ieo) and 
-:	International Energy Annual (iea), and the EPA other greenhouse
-:	gas data to produce gtap7ingams_e,
+:g20
 
-:	This provides a comprehensive GTAP dataset with IEO baseline projections 
-:	on future GDP growth and energy demand as well as EPA projections
-:	on non-CO2 GHG marginal abatement cost and baseline emissions
+title	Aggregating some G20 datasets.
 
-:	To invoke addieo from scratch one needs to run
-:	1. the EPA extraction routine run.bat within subdirectory /EPA
-:	2. the IEO extraction routine translate.bat within the respective IEO subdirectory (IEO2010):
+start gams gtapaggr --yr=07 --source=gtap8ingams  --target=g20 
+start gams gtapaggr --yr=04 --source=gtap8ingams  --target=g20 
 
-:addieo
-title	Running addieo to produce gtap7ingams_e
-gams addieo
+set tol=01
+start gams gtapaggr --yr=07 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+start gams gtapaggr --yr=04 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+
+set tol=001
+start gams gtapaggr --yr=07 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+start gams gtapaggr --yr=04 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+
+set tol=0001
+start gams gtapaggr --yr=07 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+start gams gtapaggr --yr=04 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+
+set tol=00001
+start gams gtapaggr --yr=07 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+start gams gtapaggr --yr=04 --source=gtap8ingams_%tol%  --target=g20 --output=g20_%tol%
+
+
 pause
 
-:	Disaggregate energy sector mapping matching IEA data dimensions
+:iea
 
-:gtap7iea
-title	Running gtapaggr: gtap7ingams_e to gtap7iea
-gams gtapaggr --source=gtap7ingams_e --target=gtap7iea --energydata=yes o=gtap7iea.lst
+title	Aggregating some IEA datasets.
 
+gams gtapaggr --yr=07 --source=g20  --target=iea 
+gams gtapaggr --yr=04 --source=g20  --target=iea 
 
-:g20all
-gams gtapaggr --source=gtap7ingams_e  --target=g20all --energydata=yes
+set tol=01
+gams gtapaggr --yr=07 --source=g20_%tol%  --target=iea --output=iea_%tol%
+gams gtapaggr --yr=04 --source=g20_%tol%  --target=iea --output=iea_%tol%
 
-:g20dis
-gams gtapaggr --source=gtap7ingams_e  --target=g20dis --energydata=yes
+set tol=001
+gams gtapaggr --yr=07 --source=g20_%tol%  --target=iea --output=iea_%tol%
+gams gtapaggr --yr=04 --source=g20_%tol%  --target=iea --output=iea_%tol%
 
-:g20agg
-gams gtapaggr --source=gtap7ingams_e  --target=g20agg --energydata=yes
+set tol=0001
+gams gtapaggr --yr=07 --source=g20_%tol%  --target=iea --output=iea_%tol%
+gams gtapaggr --yr=04 --source=g20_%tol%  --target=iea --output=iea_%tol%
 
-:EMFall
-gams gtapaggr --source=gtap7ingams_e  --target=EMFall --energydata=yes
+set tol=00001
+gams gtapaggr --yr=07 --source=g20_%tol%  --target=iea --output=iea_%tol%
+gams gtapaggr --yr=04 --source=g20_%tol%  --target=iea --output=iea_%tol%
 
-:EMFdis
-gams gtapaggr --source=gtap7ingams_e  --target=EMFdis --energydata=yes
-
-:EMFagg
-gams gtapaggr --source=gtap7ingams_e  --target=EMFagg --energydata=yes
-
+:end

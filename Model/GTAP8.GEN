@@ -4,7 +4,7 @@ $OFFLISTING
 
 $OFFINLINE
 $INLINECOM { }
-PUT   MPS,'$MODEL:GTAP7'/;
+PUT   MPS,'$MODEL:GTAP8'/;
 
 {    2}  PUT /;
  
@@ -203,7 +203,7 @@ OPTION LIMCOL=0;
 PUT / '$PEPS:1.E-6'/;
 PUT / '$SOLVE'/;
 PUTCLOSE   MPS;
-GTAP7.INTEGER1 = GTAP7.INTEGER1 + 1;
-$IF %GTAP7%=="05/06/1114:25:52" $EXIT
+GTAP8.INTEGER1 = GTAP8.INTEGER1 + 1;
+$IF %GTAP8%=="08/26/1616:33:44" $EXIT
 $error model.gen file is inconsistent
 $abort preprocessor must be reinvoked

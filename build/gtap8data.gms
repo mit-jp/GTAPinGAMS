@@ -1,20 +1,13 @@
-$title	GTAP7DATA.GMS	Read a GTAP 7 dataset
+$title	GTAP8DATA.GMS	Read a GTAP 8 dataset
 
 $if not set nd $set nd 0
 
 scalar nd	Number of decimals /%nd%/;
 abort$(nd<>round(nd)) "Number of decimals must be an integer";
 
-*	Updates:
-
-*	February, 2007 - Added IEA energy statistics
-
-*	3 August 2005 - Introduced sets define sector-specific factors 
-*	sf(f) and mobile factors mf(f) on the basis of elasticity 
-*	etrae(f) which is read from default.prm.
-
 $if not set ds $set ds gsd
-$if not set datadir $set datadir "..\data\"
+$if not set yr $set yr 07
+$if not set datadir $set datadir "..\data%yr%\"
 $setglobal datadir %datadir%
 
 set	g(*)	Goods plus C and G;
@@ -29,17 +22,11 @@ $load f i
 $if declared hs6 $load hs6
 $if not defined r	set r(*)	Regions;
 $if not defined r	$load r
-set
-	rnum(r)	Numeraire region,
+
+
+set	rnum(r)	Numeraire region,
 	sf(f)	Sluggish primary factors (sector-specific),
-	mf(f)	Mobile primary factors,
-	ghg	Greenhouse gases /co2/,
-	ghgsrc	Sources of greenhouse gas emissions /imp,dom/,
-	src	Sources /domestic, imported/,
-	nco2	Non-carbon greenhouse gases /
-			n2o	Nitrous oxide,
-			ch4	Methane,
-			fgas	Fluorocarbons and sulfur hexafluoride /;
+	mf(f)	Mobile primary factors;
 
 alias (r,s), (i,j);
 
@@ -68,18 +55,12 @@ $if declared hs6	viws_hs6(i,hs6,r,s) = viws_hs6(i,hs6,r,s)$round(viws_hs6(i,hs6,
 
 parameter
 	evd(i,g,r)		Volume of energy demand (mtoe),
-	evt(i,r,r)		Volume of energy trade (mtoe),
-	eco2(i,g,r)		Volume of carbon emissions (Gg),
-	enco2(nco2,*,g,r)	Volume of other greenhouse gases (MM ton C-eq);
+	evt(i,r,r)		Volume of energy trade (mtoe);
 
-$loaddc evd evt eco2 enco2
+$loaddc evd evt 
 if (nd>0,
 	evd(i,g,r) = evd(i,g,r)$round(evd(i,g,r),   nd);
 	evt(i,r,s) = evt(i,r,s)$round(evt(i,r,s),   nd);
-	eco2(i,g,r) = eco2(i,g,r)$round(eco2(i,g,r),nd);
-	enco2(nco2,f,j,r) = enco2(nco2,f,j,r)$round(enco2(nco2,f,j,r),nd);
-	enco2(nco2,i,g,r) = enco2(nco2,i,g,r)$round(enco2(nco2,i,g,r),nd);
-	enco2(nco2,"process",j,r) = enco2(nco2,"process",j,r)$round(enco2(nco2,"process",j,r),nd);
 );
 
 parameter
@@ -193,79 +174,3 @@ display yprofit;
 rnum(r) = yes$(vom("c",r)=smax(s,vom("c",s)));
 display rnum;
 
-$if not set energydata $exit
-
-*	Read the IEA and IEO energy statistics and baseline growth path:
-
-$if not defined ieoscn set	ieoscn		IEO scenarios	 /ref,high,low,high_gdp,low_gdp/;
-
-set	yr		Years		 / 1990*2100/,
-	fds		Final demand sectors /Residential, Commercial, Industrial, ElectricPower, Transportation/,
-	ieot(yr)	IEO time periods / 1990,1995,2000,
-					2004,2005,2010,2015,2020,2025,2030,2035,2040,2045,2050,
-					2055,2060,2065,2070,2075,2080,2085,2090,2095,2100/,
-	sresscn		SRES scenario	/a1,b1,a2,b2/,
-	ieo_gen		IEO generation technologies /oilgen, gasgen, colgen, nucgen, hydrogen, windgen, geogen, othrnwgen/
-	iea_gen ´	IEA generation technologies /thermalgen, hydrogen, rengen, nucleargen/;
-
-parameter
-	ieocarbon(ieoscn,i,r,ieot)		IEO emissions by fossil fuel (mmt co2)
-	ieoenergy(ieoscn,i,g,r,ieot)		IEO energy demand (mtoe)
-	ieogdp(ieoscn,r,ieot)			IEO gross domestic product
-	ieocrude(ieoscn,r,ieot)			IEO crude oil production 
-	ieoelec(ieoscn,r,ieot)			IEO electricity supply 
-	ieoprice(ieoscn,ieot)			IEO crude oil price 
-	ieoelegen(ieoscn,ieo_gen,r,ieot)	IEO power generation by aggregate IEO technology and IEO region, 
-	ieaelec(iea_gen,r,ieot)			IEA base-year power production by IEA technology and GTAP region as provided by IEA annuals
-	ieaco2emit(i,r,ieot)			IEA carbon dioxide emissions  mmt CO2 (IEO 2008)
-	popdata(sresscn,r,ieot)			CIESIN population data (millions);  
-
-$load ieocarbon ieogdp ieocrude ieoelec ieoprice ieoenergy ieoelegen ieaco2emit  ieaelec  popdata
-
-*	Read the EPA baseline and MAC data for non-CO2 GHG.
-*	Set nco2 includes ch4, n2o and fgas.
-
-set	val	Abatement fraction per t of CO2e /0,15,30,45,60/;
-
-set	nco2src		Source of all NCO2 gases (CH4 - N2O - FGAS) /
-
-	entferm		Enteric Fermentation
-	oilgas		Fugitives from natural gas and oil systems
-	oil		Fugitives from oil systems (imputed)
-	cru		Fugitives from crude oil extraction (imputed)
-	gas		Fugitives from natural gas systems (imputed)
-	coal		Fugitives from Coal Mining Activities
-	statmob		Stationary and Mobile Combustion
-	biocomb		Biomass Combustion
-	ind_nonag	Other Industrial Non-Agricultural Sources
-	rice		Rice Cultivation
-	manure		Manure Management
-	othag		Other Agricultural Sources
-	lndfl		Landfilling of Solid Waste
-	wwter		Wastewater
-	nonag		Non-Agricultural Sources (Waste and Other), 
-	adipnit		Adipic Acid and Nitric Acid Production
-	soil		Agricultural Soils
-	humsew		Human Sewage
-
-	aerosols_mdi		"HFC and PFC Emissions from ODS Substitutes - Aerosols (MDI)",
-	aerosols_nmdi		"HFC and PFC Emissions from ODS Substitutes - Aerosols (Non-MDI)",
-	fire			"HFC and PFC Emissions from ODS Substitutes - Fire Extinguishing",
-	foams			"HFC and PFC Emissions from ODS Substitutes - Foams",
-	refrige			"HFC and PFC Emissions from ODS Substitutes - Refrigeration/Air Conditioning",
-	solvents		"HFC and PFC Emissions from ODS Substitutes - Solvents",
-	hcfc_22_1		"HFC-23 Emissions from HCFC-22 Production (Technology-Adoption)",
-	hcfc_22_2		"HFC-23 Emissions from HCFC-22 Production (No-Action)",
-	elepower_1		"SF6 Emissions from Electric Power Systems (Technology-Adoption)",
-	elepower_2		"SF6 Emissions from Electric Power Systems (No-Action)",
-	aluminum_1		"PFC Emissions from Primary Aluminum Production (Technology-Adoption)",
-	aluminum_2		"PFC Emissions from Primary Aluminum Production (No-Action)",
-	semiconductor_1		"HFC, PFC, SF6 Emissions from Semiconductor Manufacturing (Technology-Adoption)",
-	semiconductor_2		"HFC, PFC, SF6 Emissions from Semiconductor Manufacturing (No-Action)",
-	magnesium_1		"SF6 Emissions from Magnesium Manufacturing (Technology-Adoption)",
-	magnesium_2		"SF6 Emissions from Magnesium Manufacturing (No-Action)" /;
-
-parameter	emitsrc(nco2,nco2src,r,ieot)	Non-CO2 emissions inventory by source
-		mac(nco2,nco2src,r,ieot,val)	Marginal abatement (percentage);
-
-$loaddc emitsrc mac

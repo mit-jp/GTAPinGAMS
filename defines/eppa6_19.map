@@ -1,0 +1,170 @@
+
+set rr  Regions in the aggregation /
+
+	USA	USA
+        CAN	Canada			       				       
+	MEX	Mexico			       			       
+	BRA	Brazil			       			       
+	LAM	Rest of Americas	       			       
+	EUR	Europe			       			       
+	RUS	Russia			       			       
+	ROE	Rest of Europe and Central Asia			       
+        CHN	China		     			     
+	IND	India		     		     
+	JPN	Japan		     		     
+	ASI	Dynamic Asia	     		     
+	REA	Rest of East Asia    		     
+	ANZ	Australia and Oceania		     
+        MES	Middle East
+        AFR	Africa
+        KOR     South Korea
+        IDN     Indonesia
+        SAU     Saudi Arabia
+/;
+
+SET mapr(r,rr) Mapping of GTAP Regions (from-to) 
+
+/
+       ALB.roe       
+       ARE.mes
+       ARG.lam
+       ARM.roe
+       AUS.anz
+       AUT.eur
+       AZE.roe
+       BEL.eur
+       BGD.rea
+       BGR.eur
+       BHR.mes
+       BLR.roe
+       BOL.lam
+       BRA.bra
+       BWA.afr
+       CAN.can
+       CHE.eur
+       CHL.lam
+       CHN.chn
+       CIV.afr
+       CMR.afr
+       COL.lam
+       CRI.lam
+       CYP.eur
+       CZE.eur
+       DEU.eur
+       DNK.eur
+       ECU.lam
+       EGY.afr
+       ESP.eur
+       EST.eur
+       ETH.afr
+       FIN.eur
+       FRA.eur
+       GBR.eur
+       GEO.roe
+       GHA.afr
+       GRC.eur
+       GTM.lam
+       HKG.chn
+       HND.lam
+       HRV.roe
+       HUN.eur
+*       IDN.asi
+       IND.ind
+       IRL.eur
+       IRN.mes
+       ISR.mes
+       ITA.eur
+       JPN.jpn
+       KAZ.roe
+       KEN.afr
+       KGZ.roe
+       KHM.rea
+*       KOR.asi
+       KWT.mes
+       LAO.rea
+       LKA.rea
+       LTU.eur
+       LUX.eur
+       LVA.eur
+       MAR.afr
+       MDG.afr
+       MEX.mex
+       MLT.eur
+       MNG.rea
+       MOZ.afr
+       MUS.afr
+       MWI.afr
+       MYS.asi
+       NAM.afr
+       NGA.afr
+       NIC.lam
+       NLD.eur
+       NOR.eur
+       NPL.rea
+       NZL.anz
+       OMN.mes
+       PAK.rea
+       PAN.lam
+       PER.lam
+       PHL.asi
+       POL.eur
+       PRT.eur
+       PRY.lam
+       QAT.mes
+       ROU.eur
+       RUS.rus
+*       SAU.mes
+       SEN.afr
+       SGP.asi
+       SLV.lam
+       SVK.eur
+       SVN.eur
+       SWE.eur
+       THA.asi
+       TUN.afr
+       TUR.roe
+       TWN.asi
+       TZA.afr
+       UGA.afr
+       UKR.roe
+       URY.lam
+       USA.usa
+       VEN.lam
+       VNM.rea
+       XAC.afr
+       XCA.lam
+       XCB.lam
+       XCF.afr
+       XEA.rea
+       XEC.afr
+       XEE.roe
+       XEF.eur
+       XER.roe
+       XNA.lam
+       XNF.afr
+       XOC.anz
+       XSA.rea
+       XSC.afr
+       XSE.rea
+       XSM.lam
+       XSU.roe
+       XTW.anz
+       XWF.afr
+       XWS.mes
+       ZAF.afr
+       ZMB.afr
+       ZWE.afr
+
+       KOR.kor
+       IDN.idn
+       SAU.sau
+           /;
+
+
+alias (i,ii);
+SET mapi(i,ii)  Mapping for sectors and goods;
+mapi(i,i) = yes;
+
+alias (f,ff);
+SET mapf(f,ff)	Mapping of factors;
+mapf(f,f) = yes;

@@ -312,6 +312,9 @@ gtap8mcp.iterlim = 0;
 solve gtap8mcp using mcp;
 gtap8mcp.iterlim = 10000;
 
+execute_unload "mrtmcp.gdx";
+
+
 $exit
 
 *	Verify benchmark consistency with both MCP and CNS models:
@@ -331,3 +334,6 @@ rtms(i,r,s) = 0;
 *	Solve the MCP model:
 
 solve gtap8mcp using mcp;
+
+
+
