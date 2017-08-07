@@ -1,0 +1,362 @@
+* Regional Mapping
+set rr  Regions in the aggregation /
+
+	USA	USA
+        CAN	Canada			       				       
+	MEX	Mexico			       			       
+	BRA	Brazil			       			       
+	LAM	Rest of Americas	       			       
+	EUR	Europe			       			       
+	RUS	Russia			       			       
+	ROE	Rest of Europe and Central Asia			       
+        CHN	China		     			     
+	IND	India		     		     
+	JPN	Japan		     		     
+	ASI	Dynamic Asia	     		     
+	REA	Rest of East Asia    		     
+	ANZ	Australia and Oceania		     
+        MES	Middle East
+        AFR	Africa
+        KOR     South Korea
+        IDZ     Indonesia
+
+/;
+
+SET mapr(r,rr) Mapping of GTAP Regions (from-to) 
+
+/
+
+ALB	.	roe	Albania
+ARE	.	mes	United Arab Emirates
+ARG	.	lam	Argentina
+ARM	.	roe	Armenia
+AUS	.	anz	Australia
+AUT	.	eur	Austria
+AZE	.	roe	Azerbaijan
+BEL	.	eur	Belgium
+BEN	.	afr	Benin
+BFA	.	afr	Burkina Faso
+BGD	.	rea	Bangladesh
+BGR	.	eur	Bulgaria
+BHR	.	mes	Bahrain
+BLR	.	roe	Belarus
+BOL	.	lam	Plurinational Republic of Bolivia
+BRA	.	bra	Brazil
+BRN	.	rea	Brunei
+BWA	.	afr	Botswana
+CAN	.	can	Canada
+CHE	.	eur	Switzerland
+CHL	.	lam	Chile
+CHN	.	chn	China
+CIV	.	afr	Cote d'Ivoire
+CMR	.	afr	Cameroon
+COL	.	lam	Colombia
+CRI	.	lam	Costa Rica
+CYP	.	eur	Cyprus
+CZE	.	eur	Czech Republic
+DEU	.	eur	Germany
+DNK	.	eur	Denmark
+DOM	.	lam	Dominican Republic
+ECU	.	lam	Ecuador
+EGY	.	afr	Egypt
+ESP	.	eur	Spain
+EST	.	eur	Estonia
+ETH	.	afr	Ethiopia
+FIN	.	eur	Finland
+FRA	.	eur	France
+GBR	.	eur	United Kingdom
+GEO	.	roe	Georgia
+GHA	.	afr	Ghana
+GIN	.	afr	Guinea
+GRC	.	eur	Greece
+GTM	.	lam	Guatemala
+HKG	.	chn	Hong Kong
+HND	.	lam	Honduras
+HRV	.	eur	Croatia
+HUN	.	eur	Hungary
+IDN	.	idz	Indonesia
+IND	.	ind	India
+IRL	.	eur	Ireland
+IRN	.	mes	Iran Islamic Republic of
+ISR	.	mes	Israel
+ITA	.	eur	Italy
+JAM	.	lam	Jamaica
+JOR	.	mes	Jordan
+JPN	.	jpn	Japan
+KAZ	.	roe	Kazakhstan
+KEN	.	afr	Kenya
+KGZ	.	roe	Kyrgyzstan
+KHM	.	rea	Cambodia
+KOR	.	kor	Korea Republic of
+KWT	.	mes	Kuwait
+LAO	.	rea	Lao People's Democratic Republic
+LKA	.	rea	Sri Lanka
+LTU	.	eur	Lithuania
+LUX	.	eur	Luxembourg
+LVA	.	eur	Latvia
+MAR	.	afr	Morocco
+MDG	.	afr	Madagascar
+MEX	.	mex	Mexico
+MLT	.	eur	Malta
+MNG	.	rea	Mongolia
+MOZ	.	afr	Mozambique
+MUS	.	afr	Mauritius
+MWI	.	afr	Malawi
+MYS	.	asi	Malaysia
+NAM	.	afr	Namibia
+NGA	.	afr	Nigeria
+NIC	.	lam	Nicaragua
+NLD	.	eur	Netherlands
+NOR	.	eur	Norway
+NPL	.	rea	Nepal
+NZL	.	anz	New Zealand
+OMN	.	mes	Oman
+PAK	.	rea	Pakistan
+PAN	.	lam	Panama
+PER	.	lam	Peru
+PHL	.	asi	Philippines
+POL	.	eur	Poland
+PRI	.	lam	Puerto Rico
+PRT	.	eur	Portugal
+PRY	.	lam	Paraguay
+QAT	.	mes	Qatar
+ROU	.	eur	Romania
+RUS	.	rus	Russian Federation
+RWA	.	afr	Rwanda
+SAU	.	mes	Saudi Arabia
+SEN	.	afr	Senegal
+SGP	.	asi	Singapore
+SLV	.	lam	El Salvador
+SVK	.	eur	Slovakia
+SVN	.	eur	Slovenia
+SWE	.	eur	Sweden
+TGO	.	afr	Togo
+THA	.	asi	Thailand
+TTO	.	lam	Trinidad and Tobago
+TUN	.	afr	Tunisia
+TUR	.	roe	Turkey
+TWN	.	asi	Taiwan
+TZA	.	afr	Tanzania United Republic of
+UGA	.	afr	Uganda
+UKR	.	roe	Ukraine
+URY	.	lam	Uruguay
+USA	.	usa	United States of America
+VEN	.	lam	Venezuela
+VNM	.	rea	Viet Nam
+XAC	.	afr	South Central Africa
+XCA	.	lam	Rest of Central America
+XCB	.	lam	Caribbean
+XCF	.	afr	Central Africa
+XEA	.	rea	Rest of East Asia
+XEC	.	afr	Rest of Eastern Africa
+XEE	.	roe	Rest of Eastern Europe
+XEF	.	eur	Rest of EFTA
+XER	.	roe	Rest of Europe
+XNA	.	lam	Rest of North America
+XNF	.	afr	Rest of North Africa
+XOC	.	anz	Rest of Oceania
+XSA	.	rea	Rest of South Asia
+XSC	.	afr	Rest of South African Customs Union
+XSE	.	rea	Rest of Southeast Asia
+XSM	.	lam	Rest of South America
+XSU	.	roe	Rest of Former Soviet Union
+XTW	.	anz	Rest of the World
+XWF	.	afr	Rest of Western Africa
+XWS	.	mes	Rest of Western Asia
+ZAF	.	afr	South Africa
+ZMB	.	afr	Zambia
+ZWE	.	afr	Zimbabwe
+
+/;
+
+* Sectoral Mapping
+
+*alias (i,ii);
+*SET mapi(i,ii)  Mapping for sectors and goods;
+*mapi(i,i) = yes;
+
+set ii Sectors and goods in aggregate model /
+	crop	Agriculture - crops		
+	live	Agriculture - livestock		
+	fors	Agriculture - forestry		
+	food	Food products			
+	coal	Coal				
+	oil     Crude Oil			
+	roil	Refined Oil			
+	gas     Gas				
+*	elec	Electricity			
+	cele	coal fired power
+	gele	gas fired power
+	hele	hydro power
+	nele	nuclear power
+	oele	oil fired power
+	rele	other power
+	sele	solar power
+	wele	wind power
+	tele	transmission and distribution
+	eint	Energy-intensive Industries	
+	othr	Other Industries		
+	serv	Services			
+	tran	Transport                       
+        dwe     Ownership of dwellings
+*	cgd	Savings Good 
+/;
+
+SET mapi(*,ii)  Mapping for sectors and goods /
+
+PDR.crop  paddy rice                                     	 
+WHT.crop  wheat                                          	 
+GRO.crop  cereal grains nec                              	 
+V_F.crop  vegetables - fruit - nuts                        	 
+OSD.crop  oil seeds                                      	 
+C_B.crop  sugar cane - sugar beet                         	 
+PFB.crop  plant-based fibers                             	 
+OCR.crop  crops nec                                      	 
+CTL.live  bo horses         					 
+OAP.live  animal products nec                            	 
+RMK.live  raw milk                                       	 
+WOL.live  wool - silk-worm cocoons                        	 
+FRS.fors  forestry                                       	 
+FSH.live  fishing                                        	 
+COA.coal  coal                                           	 
+OIL.oil   oil                                            	 
+GAS.gas   gas                                            	 
+OMN.othr  minerals nec                                   	 
+CMT.food  bo meat products    					 
+OMT.food  meat products                                  	 
+VOL.food  vegetable oils and fats                        	 
+** bio-diesel is included in VOL
+MIL.food  dairy products                                 	 
+PCR.food  processed rice                                 	 
+SGR.food  sugar                                          	 
+OFD.food  food products nec                              	 
+** corn ethanol eth1 is included in OFD
+B_T.food  beverages and tobacco products                 	 
+TEX.othr  textiles                                       	 
+WAP.othr  wearing apparel                                	 
+LEA.othr  leather products                               	 
+LUM.othr  wood products                                  	 
+PPP.eint  paper products - publishing                     	 
+P_C.roil  petroleum - coal products                       	 
+CRP.eint  chemical - rubber - plastic products
+** sugarcane ethanol is included in CRP             	 
+NMM.eint  mineral products nec                           	 
+I_S.eint  ferrous metals                                 	 
+NFM.eint  metals nec                                     	 
+FMP.eint  metal products                                 	 
+MVH.othr  motor vehicles and parts                       	 
+OTN.othr  transport equipment nec                        	 
+ELE.othr  electronic equipment                           	 
+OME.othr  machinery and equipment nec                    	 
+OMF.othr  manufactures nec                               	 
+*ELY.elec  electricity                                    	 
+
+CoalBL.cele	electricity                                    	 
+GasBL.gele	electricity                                    	 
+GasP.gele	electricity                                    	 
+HydroBL.hele	electricity                                    	 
+HydroP.hele	electricity                                    	 
+NuclearBL.nele electricity                                    	 
+OilBL.oele	electricity                                    	 
+OilP.oele	electricity                                    	 
+OtherBL.rele	electricity                                    	 
+SolarP.sele	electricity                                    	 
+WindBL.wele	electricity                                    	 
+TnD.tele	electricity                                    	 
+
+GDT.gas   gas manufacture - distribution                  	 
+WTR.othr  water                                          	 
+CNS.othr  construction                                   	 
+TRD.serv  trade                                          	 
+OTP.tran  transport nec                                  	 
+WTP.tran  water transport                                	 
+ATP.tran  air transport                                  	 
+CMN.serv  communication                                  	 
+OFI.serv  financial services nec                         	 
+ISR.serv  insurance                                      	 
+OBS.serv  business services nec                          	 
+ROS.serv  recreational and other services                	 
+OSG.serv  public admin - and defence - education - health   	 
+DWE.dwe   ownership of dwellings
+*DWE.othr  ownership of dwellings 				 
+*CGDS.cgd  Savings good                                          
+/;  
+
+* Note: (YHC: 20131121)
+* VOL.food  vegetable oils and fats                        	 
+** bio-diesel is included in VOL
+
+* OFD.food  food products nec                              	 
+** corn ethanol eth1 is included in OFD
+
+* CRP.eint  chemical - rubber - plastic products
+** sugarcane ethanol is included in CRP  
+
+*alias (f,ff);
+*SET mapf(f,ff)	Mapping of factors;
+*mapf(f,f) = yes;
+
+SET   ff   Factors of production 
+        /
+	lnd	Land,
+	lab	Labor,
+	cap	Capital,
+	fix	Natural resources 
+        /;
+
+*set ff  /
+*	mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tec	Technicians technicians and associate professionals
+*	clk	Clerks
+*	srv	Service and market sales workers
+*	lab	Agricultural and unskilled workers (Major Groups 6-9)
+*	lnd     Land,    
+*	cap     Capital,    
+*	res     Natural resources /;
+
+*SET	mapf(*,ff)   Factors of production 
+*        /
+*	Land.lnd	Land,
+*	SkLab.lab	Skilled labor,
+*	UnskLab.lab	Unskilled labor,
+*	Capital.cap	Capital,
+*	NatlRes.fix	Natural resources 
+*        /;
+
+*set mapf(*,*) /
+*	off_mgr_pros.mgr	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+*	tech_aspros.tec		Technicians technicians and associate professionals
+*	clerks.clk		Clerks
+*	service_shop.srv	Service and market sales workers,
+*	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+*	Land.lnd		Land,    
+*	Capital.cap		Capital,    
+*	NatlRes.res		Natural resources/;
+
+set mapf(*,*) /
+	off_mgr_pros.lab	Officials and Mangers legislators (ISCO-88 Major Groups 1-2), 
+	tech_aspros.lab		Technicians technicians and associate professionals
+	clerks.lab		Clerks
+	service_shop.lab	Service and market sales workers,
+	ag_othlowsk.lab		Agricultural and unskilled workers (Major Groups 6-9)
+	Land.lnd		Land,    
+	Capital.cap		Capital,    
+	NatlRes.fix		Natural resources/;
+
+SET eec energy commodities
+        /
+	coal	Coal
+	oil	Crude oil
+	gas	Natural gas,
+	roil	Refined oil products,
+	elec	Electricity 
+        /;
+
+SET	mape(*,eec) 
+        /
+	ecoa.coal	Coal,
+	eoil.oil	Crude oil,
+	(egas,egdt).gas	Natural gas,
+	ep_c.roil	Refined oil products,
+	eely.elec	Electricity
+        /;
