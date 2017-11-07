@@ -47,7 +47,9 @@ dropimports(i,r)$(not dropimports(i,r)) = yes$(sum(g,vifm(i,g,r))=0);
 *	Drop production if the production share is small relative to the 
 *	world share:
 
-set dropprod(i,r) /(gdt,gas).chn /;
+*set dropprod(i,r) /(gdt,gas).chn /;
+set dropprod(i,r);
+dropprod(i,r) = no;
 dropprod(i,r)$(not dropprod(i,r)) = yes$(vom(i,r)/sum(j,vom(j,r)) < 10*tol*theta(i,"vom"));
 dropprod(i,r)$(not dropprod(i,r)) = yes$(vxm(i,r)+sum(g$(not sameas(i,g)),vdfm(i,g,r))=0);
 dropexports(dropprod(i,r)) = yes;
